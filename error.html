@@ -6,17 +6,10 @@
 
   <title>Error!</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
-
   <style>
     @font-face {
-      font-family: "Computer Says No";
-      src: url("computer-says-no.woff2") format("woff2");
+      font-family: "Determination Sans K2";
+      src: url("determination-sans-k2.ttf") format("truetype");
       font-display: swap;
     }
 
@@ -34,18 +27,45 @@
     body {
       overflow: hidden;
       color: #ffffff;
+      font-family: "Determination Sans K2", monospace;
     }
 
     .error-title {
       position: fixed;
-      top: 25px;
+      top: 26px;
       left: 28px;
+      z-index: 2;
       margin: 0;
-      color: #eeeeee;
-      font-family: "Computer Says No", "Handjet", monospace;
-      font-size: clamp(1.8rem, 7vw, 3rem);
+      padding-right: 0.12em;
+      color: #f4f4f4;
+      font-family: "Determination Sans K2", monospace;
+      font-size: clamp(1.9rem, 7vw, 3.15rem);
       font-weight: 400;
-      letter-spacing: 0.05em;
+      letter-spacing: -0.09em;
+      text-shadow:
+        0 0 3px rgba(255, 255, 255, 0.9),
+        0 0 10px rgba(255, 255, 255, 0.42),
+        0 0 22px rgba(255, 255, 255, 0.16);
+      animation: title-appear 0.75s steps(3, end) both;
+    }
+
+    @keyframes title-appear {
+      0% {
+        opacity: 0;
+        filter: blur(5px);
+        transform: translate(-4px, 1px);
+      }
+
+      60% {
+        opacity: 0.8;
+        transform: translate(2px, -1px);
+      }
+
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translate(0, 0);
+      }
     }
 
     .message-area {
@@ -56,35 +76,59 @@
     }
 
     .message {
-      width: min(100%, 620px);
+      width: min(100%, 640px);
       margin: 0;
-      color: #efefef;
-      font-family: "Noto Sans KR", sans-serif;
-      font-size: clamp(1.1rem, 4.5vw, 1.8rem);
+      color: #eeeeee;
+      font-family: "Determination Sans K2", monospace;
+      font-size: clamp(1.2rem, 5vw, 2rem);
       font-weight: 400;
-      letter-spacing: -0.04em;
-      line-height: 1.8;
+      letter-spacing: -0.05em;
+      line-height: 1.75;
+      text-align: center;
+      text-shadow:
+        0 0 3px rgba(255, 255, 255, 0.78),
+        0 0 11px rgba(255, 255, 255, 0.32),
+        0 0 22px rgba(255, 255, 255, 0.12);
     }
 
-    .cursor {
+    .typed-char {
       display: inline-block;
-      width: 0.65ch;
-      height: 1.1em;
-      margin-left: 3px;
-      vertical-align: -0.15em;
-      background: #ffffff;
-      animation: cursor-blink 0.8s steps(2, end) infinite;
+      animation: character-arrive 0.34s steps(2, end) both;
     }
 
-    @keyframes cursor-blink {
-      0%,
-      45% {
-        opacity: 1;
+    @keyframes character-arrive {
+      0% {
+        opacity: 0;
+        filter: blur(4px);
+        transform: translate(-2px, 2px);
+        text-shadow:
+          -2px 0 rgba(255, 40, 40, 0.7),
+          2px 0 rgba(0, 220, 255, 0.7);
       }
 
-      46%,
+      30% {
+        opacity: 0.35;
+        transform: translate(2px, -1px);
+      }
+
+      58% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translate(-1px, 0);
+      }
+
       100% {
-        opacity: 0;
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
       }
     }
   </style>
@@ -94,27 +138,89 @@
   <h1 class="error-title">Error!</h1>
 
   <main class="message-area">
-    <p class="message">
-      <span id="typed-message"></span><span class="cursor" aria-hidden="true"></span>
-    </p>
+    <p id="typed-message" class="message"></p>
   </main>
 
   <script>
-    const message = "잘못된 방에 입장하셨습니다.";
+    /*
+      ===== 이진1 대사 수정 구역 =====
+      나중에 문장을 바꾸고 싶으면 아래 따옴표 안만 수정하면 됨.
+    */
+    const errorMessage = "잘못된 방에 입장하셨습니다.";
+
+    /*
+      ===== 타이핑 속도 수정 구역 =====
+      숫자가 클수록 더 느려짐.
+      지금은 일부러 속도가 들쭉날쭉하게 설정되어 있음.
+    */
+    const typingSettings = {
+      startDelay: 900,
+      minimumDelay: 210,
+      maximumDelay: 430,
+      spaceExtraDelay: 180,
+      punctuationExtraDelay: 470,
+      strangePauseChance: 0.18,
+      strangePauseMinimum: 220,
+      strangePauseMaximum: 650
+    };
+
     const typedMessage = document.getElementById("typed-message");
 
-    let index = 0;
+    let characterIndex = 0;
 
-    setTimeout(() => {
-      const typing = setInterval(() => {
-        typedMessage.textContent += message[index];
-        index += 1;
+    function randomNumber(minimum, maximum) {
+      return Math.floor(
+        Math.random() * (maximum - minimum + 1) + minimum
+      );
+    }
 
-        if (index >= message.length) {
-          clearInterval(typing);
-        }
-      }, 115);
-    }, 700);
+    function getTypingDelay(character) {
+      let delay = randomNumber(
+        typingSettings.minimumDelay,
+        typingSettings.maximumDelay
+      );
+
+      if (character === " ") {
+        delay += typingSettings.spaceExtraDelay;
+      }
+
+      if ([".", "!", "?", "…"].includes(character)) {
+        delay += typingSettings.punctuationExtraDelay;
+      }
+
+      if (Math.random() < typingSettings.strangePauseChance) {
+        delay += randomNumber(
+          typingSettings.strangePauseMinimum,
+          typingSettings.strangePauseMaximum
+        );
+      }
+
+      return delay;
+    }
+
+    function typeNextCharacter() {
+      if (characterIndex >= errorMessage.length) {
+        return;
+      }
+
+      const character = errorMessage[characterIndex];
+      const characterElement = document.createElement("span");
+
+      characterElement.className = "typed-char";
+      characterElement.textContent =
+        character === " " ? "\u00A0" : character;
+
+      typedMessage.appendChild(characterElement);
+
+      characterIndex += 1;
+
+      setTimeout(
+        typeNextCharacter,
+        getTypingDelay(character)
+      );
+    }
+
+    setTimeout(typeNextCharacter, typingSettings.startDelay);
   </script>
 </body>
 </html>
