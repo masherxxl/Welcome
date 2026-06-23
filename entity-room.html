@@ -4,16 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>ENTITY ROOM</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
+  <title></title>
 
   <style>
+    @font-face {
+      font-family: "DeterminationK2";
+      src:
+        url("./DeterminationSansK2-FIX.woff2?v=3") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=3") format("woff");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -25,241 +28,350 @@
       background: #000000;
     }
 
+    html,
+    body,
+    #room-message,
+    .room-char {
+      font-family: "DeterminationK2", "Noto Sans KR", -apple-system, system-ui, sans-serif !important;
+      font-synthesis: none;
+    }
+
     body {
       overflow: hidden;
       color: #ffffff;
+      cursor: pointer;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .room-title {
-      position: fixed;
-      top: 24px;
-      left: 28px;
-      z-index: 2;
-      margin: 0;
-      color: #dcdcdc;
-      font-family: "Handjet", monospace;
-      font-size: clamp(1.35rem, 5vw, 2.3rem);
-      font-weight: 400;
-      letter-spacing: 0.13em;
-    }
-
-    .room-index {
-      position: fixed;
-      top: 31px;
-      right: 28px;
-      color: #777777;
-      font-family: "Handjet", monospace;
-      font-size: 1rem;
-      letter-spacing: 0.12em;
-    }
-
-    main {
+    .room-stage {
       display: grid;
       min-height: 100svh;
-      padding: 64px 28px;
+      padding: 34px;
       place-items: center;
     }
 
-    .message-stage {
-      position: relative;
-      width: min(100%, 650px);
-      min-height: 170px;
-    }
+    /*
+      ========================================================
+      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+      이진2 중앙 대사 글자 크기 변경 구역
 
-    .room-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
+      마지막 숫자 2.45rem을 줄이면 작아짐
+      마지막 숫자 2.45rem을 늘리면 커짐
+      ========================================================
+    */
+
+    #room-message {
+      width: min(100%, 660px);
       margin: 0;
-      color: rgba(255, 255, 255, 0.78);
-      font-family: "Noto Sans KR", sans-serif;
-      font-size: clamp(1.05rem, 4.6vw, 1.7rem);
+      color: #f5f5ff;
+
+      font-size: clamp(1.5rem, 6vw, 2.45rem);
+
       font-weight: 400;
-      letter-spacing: -0.045em;
-      line-height: 1.75;
+      line-height: 1.7;
       text-align: center;
-      transform: translate(-50%, -50%) translateY(28px);
-      opacity: 0;
-      filter: blur(4px);
+      white-space: pre-wrap;
+
+      /*
+        ======================================================
+        !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+        이진2 중앙 대사 자간 변경 구역
+
+        숫자가 커질수록 글자 사이가 넓어짐
+        ======================================================
+      */
+      letter-spacing: 0.07em;
+
+      /* 이진1과 같은 은은한 흰빛 글로우 */
+      text-shadow:
+        0 0 5px rgba(255, 255, 255, 0.72),
+        0 0 15px rgba(255, 255, 255, 0.38);
     }
 
-    .room-message.show {
-      animation: message-rise 0.8s ease forwards;
+    /*
+      글자 하나하나를 이진수 코드와 동일한 방식으로
+      제각각 미세하게 흔들리게 하는 부분
+    */
+
+    .room-char {
+      display: inline-block;
+      min-width: 0.01em;
+      transform-origin: center;
+      will-change: transform;
+      animation:
+        room-char-tremble var(--jitter-duration) steps(2, end)
+        var(--jitter-delay) infinite;
     }
 
-    .room-message.leave {
-      animation: message-leave 0.65s steps(2, end) forwards;
-    }
-
-    .room-message.vanish {
-      animation: message-vanish 0.22s steps(2, end) forwards;
-    }
-
-    @keyframes message-rise {
-      0% {
-        opacity: 0;
-        filter: blur(5px);
-        transform: translate(-50%, -50%) translateY(28px);
-      }
-
+    @keyframes room-char-tremble {
+      0%,
       100% {
-        opacity: 1;
-        filter: blur(0);
-        transform: translate(-50%, -50%) translateY(0);
+        transform: translate(0, 0) rotate(0deg);
       }
+
+      18% {
+        transform: translate(var(--jx1), var(--jy1)) rotate(var(--r1));
+      }
+
+      39% {
+        transform: translate(var(--jx2), var(--jy2)) rotate(var(--r2));
+      }
+
+      63% {
+        transform: translate(var(--jx3), var(--jy3)) rotate(var(--r3));
+      }
+
+      82% {
+        transform: translate(var(--jx4), var(--jy4)) rotate(var(--r4));
+      }
+    }
+
+    /*
+      화면을 터치해서 다음 대사로 넘길 때,
+      현재 대사가 짧게 흔들리며 사라지는 효과
+    */
+
+    #room-message.leaving {
+      animation: message-leave 0.42s steps(2, end) forwards;
     }
 
     @keyframes message-leave {
       0% {
         opacity: 1;
-        filter: blur(0);
-        transform: translate(-50%, -50%) translate(0, 0);
+        transform: translate(0, 0);
       }
 
-      18% {
-        transform: translate(-50%, -50%) translate(-4px, 2px);
+      20% {
+        transform: translate(-3px, 1px);
       }
 
-      38% {
-        transform: translate(-50%, -50%) translate(5px, -2px);
+      45% {
+        transform: translate(3px, -2px);
       }
 
-      60% {
-        transform: translate(-50%, -50%) translate(-3px, -1px);
+      70% {
+        transform: translate(-2px, 1px);
       }
 
       100% {
         opacity: 0;
-        filter: blur(6px);
-        transform: translate(-50%, -50%) translate(8px, 0);
+        transform: translate(5px, 0);
       }
     }
 
-    @keyframes message-vanish {
+    /*
+      마지막 문장 뒤 화면을 누르면
+      텍스트가 갑자기 사라지고 이진수 화면으로 복귀
+    */
+
+    #room-message.cut {
+      animation: message-cut 0.22s steps(2, end) forwards;
+    }
+
+    @keyframes message-cut {
       0% {
         opacity: 1;
-        transform: translate(-50%, -50%) scaleX(1);
+        transform: scaleX(1);
       }
 
       45% {
         opacity: 1;
-        transform: translate(-50%, -50%) scaleX(1.08);
+        transform: scaleX(1.05);
       }
 
       100% {
         opacity: 0;
-        filter: blur(10px);
-        transform: translate(-50%, -50%) scaleX(0.02);
+        transform: scaleX(0.02);
       }
     }
 
-    .closing {
-      animation: room-close 0.25s steps(2, end) forwards;
-    }
-
-    @keyframes room-close {
-      0% {
-        filter: brightness(1);
-      }
-
-      50% {
-        filter: brightness(2);
-      }
-
-      100% {
-        filter: brightness(0);
+    @media (prefers-reduced-motion: reduce) {
+      .room-char,
+      #room-message.leaving,
+      #room-message.cut {
+        animation: none !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <h1 class="room-title">ENTITY ROOM</h1>
-  <div class="room-index">ROOM // 03</div>
-
-  <main>
-    <section class="message-stage">
-      <p id="room-message" class="room-message"></p>
-    </section>
+  <main class="room-stage">
+    <p id="room-message" aria-live="polite"></p>
   </main>
 
   <script>
     /*
-      ===== 이 방의 대사 수정 구역 =====
-      text: 실제 대사
-      hold: 화면에 머무르는 시간 (밀리초)
+      ========================================================
+      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+      이진2 방 대사 수정 구역
+
+      text 안의 문장만 바꾸면 됨.
+      순서도 여기서 바꿀 수 있음.
+      ========================================================
     */
+
     const roomLines = [
-      {
-        text: "...여긴 왜 들어온 거야?",
-        hold: 2400
-      },
-      {
-        text: "거기 서서... 뭘 보고 있는 거야?",
-        hold: 2500
-      },
-      {
-        text: "......",
-        hold: 1650
-      },
-      {
-        text: "왜 계속... 왜 계속",
-        hold: 1750,
-        final: true
-      }
+      "...여긴 왜 들어온 거야?",
+      "거기 서서... 뭘 보고 있는 거야?",
+      "......",
+      "왜 계속... 왜 계속"
     ];
+
+    /*
+      ========================================================
+      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+      이진2 타이핑 속도 변경 구역
+
+      characterDelay 숫자가 커질수록 더 느려짐.
+      지금은 이진1보다 느리게 설정됨.
+
+      띄어쓰기 역시 한 글자로 계산되어
+      딱. 딱. 딱. 딱. 나타남.
+      ========================================================
+    */
+
+    const typingSettings = {
+      startDelay: 950,
+      characterDelay: 320
+    };
 
     const roomMessage = document.getElementById("room-message");
 
-    function returnToBinaryStage() {
-      window.location.replace("index.html?return=binary#binary-stage");
+    let currentLineIndex = 0;
+    let characterIndex = 0;
+    let canAdvance = false;
+    let isTransitioning = false;
+
+    function randomValue(maximum) {
+      return ((Math.random() * 2 - 1) * maximum).toFixed(2);
     }
 
-    function showLine(index) {
-      const line = roomLines[index];
+    function createShakingCharacter(character) {
+      const span = document.createElement("span");
 
-      roomMessage.className = "room-message";
-      roomMessage.textContent = line.text;
+      span.className = "room-char";
+      span.textContent = character === " " ? "\u00A0" : character;
 
-      requestAnimationFrame(() => {
-        roomMessage.classList.add("show");
-      });
+      span.style.setProperty("--jx1", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jy1", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jx2", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jy2", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jx3", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jy3", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jx4", `${randomValue(0.8)}px`);
+      span.style.setProperty("--jy4", `${randomValue(0.8)}px`);
 
-      setTimeout(() => {
-        if (line.final) {
-          roomMessage.classList.remove("show");
-          roomMessage.classList.add("vanish");
+      span.style.setProperty("--r1", `${randomValue(0.7)}deg`);
+      span.style.setProperty("--r2", `${randomValue(0.7)}deg`);
+      span.style.setProperty("--r3", `${randomValue(0.7)}deg`);
+      span.style.setProperty("--r4", `${randomValue(0.7)}deg`);
 
-          setTimeout(() => {
-            document.body.classList.add("closing");
-          }, 130);
+      span.style.setProperty(
+        "--jitter-duration",
+        `${(0.42 + Math.random() * 0.7).toFixed(2)}s`
+      );
 
-          setTimeout(() => {
-            returnToBinaryStage();
-          }, 390);
+      span.style.setProperty(
+        "--jitter-delay",
+        `${(-Math.random() * 1.2).toFixed(2)}s`
+      );
 
-          return;
-        }
+      return span;
+    }
 
-        roomMessage.classList.remove("show");
-        roomMessage.classList.add("leave");
+    function startTypingCurrentLine() {
+      const currentLine = roomLines[currentLineIndex];
+
+      roomMessage.className = "";
+      roomMessage.textContent = "";
+
+      characterIndex = 0;
+      canAdvance = false;
+      isTransitioning = false;
+
+      setTimeout(typeNextCharacter, typingSettings.startDelay);
+    }
+
+    function typeNextCharacter() {
+      const currentLine = roomLines[currentLineIndex];
+
+      if (characterIndex >= currentLine.length) {
+        canAdvance = true;
+        return;
+      }
+
+      roomMessage.appendChild(
+        createShakingCharacter(currentLine[characterIndex])
+      );
+
+      characterIndex += 1;
+
+      setTimeout(
+        typeNextCharacter,
+        typingSettings.characterDelay
+      );
+    }
+
+    function returnToBinaryStage() {
+      window.location.replace(
+        "index.html?return=binary#binary-stage"
+      );
+    }
+
+    function advanceToNextLine() {
+      if (!canAdvance || isTransitioning) {
+        return;
+      }
+
+      isTransitioning = true;
+      canAdvance = false;
+
+      const isFinalLine =
+        currentLineIndex === roomLines.length - 1;
+
+      if (isFinalLine) {
+        roomMessage.classList.add("cut");
 
         setTimeout(() => {
-          showLine(index + 1);
-        }, 670);
-      }, line.hold);
+          returnToBinaryStage();
+        }, 240);
+
+        return;
+      }
+
+      roomMessage.classList.add("leaving");
+
+      setTimeout(() => {
+        currentLineIndex += 1;
+        startTypingCurrentLine();
+      }, 440);
     }
 
-    setTimeout(() => {
-      showLine(0);
-    }, 850);
+    /*
+      화면 어디를 터치하거나 클릭해도 다음 대사로 진행.
+      타이핑이 끝나기 전 터치는 무시됨.
+    */
+
+    document.addEventListener("pointerup", () => {
+      advanceToNextLine();
+    });
+
+    /*
+      PC 테스트용:
+      Enter 또는 Space를 눌러도 다음 대사로 진행.
+    */
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        returnToBinaryStage();
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        advanceToNextLine();
       }
     });
+
+    startTypingCurrentLine();
   </script>
 </body>
 </html>
