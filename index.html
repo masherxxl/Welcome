@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -110,13 +111,6 @@
       width: min(100%, 500px);
     }
 
-    /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      메인 질문 글자 크기 변경 구역
-      ========================================================
-    */
-
     .question {
       position: relative;
       display: inline-block;
@@ -132,11 +126,6 @@
         0 0 4px rgba(255, 255, 255, 0.88),
         0 0 13px rgba(255, 255, 255, 0.42);
     }
-
-    /*
-      텍스트가 TV 신호처럼 눌려
-      가는 빛줄기가 된 뒤 꺼지는 부분
-    */
 
     .question::after {
       position: absolute;
@@ -155,9 +144,7 @@
       transform: translate(-50%, -50%);
     }
 
-    /*
-      접속 직후 텍스트가 아주 약하게 흔들리는 연출
-    */
+    /* 접속 직후 아주 약한 신호 흔들림 */
 
     #entrance.connection-arrived .question {
       animation: connection-question 0.3s steps(2, end) both;
@@ -205,9 +192,7 @@
       }
     }
 
-    /*
-      불규칙한 간격의 아주 짧은 흑백 글리치
-    */
+    /* 불규칙한 흑백 대기 글리치 */
 
     #entrance.idle-glitch .question {
       animation: idle-question-glitch 0.14s steps(2, end) both;
@@ -256,9 +241,7 @@
       }
     }
 
-    /*
-      예 / 아니오 — 가로 배치
-    */
+    /* 예 / 아니오 */
 
     .choice-buttons {
       display: flex;
@@ -266,13 +249,6 @@
       gap: 22px;
       margin-top: 32px;
     }
-
-    /*
-      ========================================================
-      픽셀 버튼
-      내부 줄 / 점선 / 스캔라인 없음
-      ========================================================
-    */
 
     .choice-button {
       position: relative;
@@ -369,10 +345,7 @@
       background: #dedede;
     }
 
-    /*
-      버튼은 이전 정전 파편 연출 유지
-      시작할 때만 아주 미세하게 흔들림 추가
-    */
+    /* 버튼 정전 파편 연출 */
 
     .choice-button.disintegrating {
       pointer-events: none;
@@ -488,10 +461,6 @@
       }
     }
 
-    /*
-      실제 흰 정전 파편
-    */
-
     .static-fragment {
       position: absolute;
       z-index: 4;
@@ -535,9 +504,7 @@
       }
     }
 
-    /*
-      질문만 TV 신호처럼 밝게 압축되어 꺼짐
-    */
+    /* 질문 TV 신호 종료 */
 
     #entrance.transitioning .question {
       animation: question-tv-shutdown 0.2s steps(3, end) forwards;
@@ -606,7 +573,9 @@
       }
     }
 
-    /* 01 → 02 전환 */
+    /* ========================================================
+       01 → 02 전환
+       ======================================================== */
 
     #blackout {
       position: fixed;
@@ -627,7 +596,9 @@
       transition: none !important;
     }
 
-    /* 02 — 만화 */
+    /* ========================================================
+       02 — 만화
+       ======================================================== */
 
     #comic {
       overflow: hidden;
@@ -638,12 +609,42 @@
       display: none !important;
     }
 
+    /*
+      ========================================================
+      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+      만화 등장 블러 조절 구역
+
+      blur(12px)의 숫자가 클수록 더 흐릿하게 시작.
+      0.72s 숫자가 클수록 선명해지는 시간이 길어짐.
+      ========================================================
+    */
+
     #comic > img {
       display: block;
       width: auto;
       max-width: 100%;
       height: auto;
       margin: 0 auto;
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+      transition:
+        opacity 0.72s ease,
+        filter 0.72s cubic-bezier(0.18, 0.72, 0.2, 1),
+        transform 0.72s cubic-bezier(0.18, 0.72, 0.2, 1);
+      will-change: opacity, filter, transform;
+    }
+
+    #comic.comic-revealing > img {
+      opacity: 0;
+      filter: blur(12px);
+      transform: scale(1.012);
+    }
+
+    #comic.comic-revealing.comic-sharp > img {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
     }
 
     /* 검은 공백 + 이진수 */
@@ -993,6 +994,12 @@
 
     function returnToBinaryStage() {
       storyHasStarted = true;
+
+      comic.classList.remove(
+        "comic-revealing",
+        "comic-sharp"
+      );
+
       entrance.hidden = true;
       comic.hidden = false;
 
@@ -1104,6 +1111,33 @@
       }, nextDelay);
     }
 
+    function revealComicWithBlur() {
+      comic.classList.remove("comic-sharp");
+      comic.classList.add("comic-revealing");
+
+      waitForComicImages(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            comic.classList.add("comic-sharp");
+
+            blackout.classList.add("drop");
+            blackout.classList.remove("active");
+
+            requestAnimationFrame(() => {
+              blackout.classList.remove("drop");
+            });
+
+            setTimeout(() => {
+              comic.classList.remove(
+                "comic-revealing",
+                "comic-sharp"
+              );
+            }, 790);
+          });
+        });
+      });
+    }
+
     function startStory(button) {
       if (storyHasStarted) {
         return;
@@ -1138,12 +1172,7 @@
         document.body.scrollTop = 0;
         window.scrollTo(0, 0);
 
-        blackout.classList.add("drop");
-        blackout.classList.remove("active");
-
-        requestAnimationFrame(() => {
-          blackout.classList.remove("drop");
-        });
+        revealComicWithBlur();
       }, 2500);
     }
 
@@ -1265,3 +1294,4 @@
   </script>
 </body>
 </html>
+```
