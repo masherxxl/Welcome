@@ -6,13 +6,27 @@
 
   <title>WELCOME</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
   <style>
+    @font-face {
+      font-family: "Computer Says No";
+      src: url("computer-says-no.woff2") format("woff2");
+      font-display: swap;
+    }
+
     * {
       box-sizing: border-box;
     }
 
     html {
       scroll-behavior: smooth;
+      background: #000000;
     }
 
     body {
@@ -22,12 +36,18 @@
       font-family: Arial, sans-serif;
     }
 
+    button {
+      font: inherit;
+    }
+
+    /* 첫 입장 화면 */
     #entrance {
       min-height: 100svh;
       display: grid;
       place-items: center;
       padding: 32px;
       text-align: center;
+      background: #000000;
     }
 
     h1 {
@@ -60,15 +80,304 @@
       color: #000000;
     }
 
+    /* 만화 이미지 */
     #comic {
-      width: min(100%, 760px);
+      overflow: hidden;
+      background: #000000;
+    }
+
+    #comic > img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: auto;
       margin: 0 auto;
     }
 
-    #comic img {
-      display: block;
+    /* 마지막 이진수 장면 */
+    #binary-stage {
+      position: relative;
+      width: min(100%, 505px);
+      aspect-ratio: 505 / 2048;
+      margin: 0 auto;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    .binary-field {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #binary-stage.awake .binary-field {
+      animation:
+        reveal 0.8s steps(3, end) forwards,
+        tremble 0.65s steps(2, end) 0.9s infinite;
+    }
+
+    .binary-text {
+      position: absolute;
+      left: 0;
       width: 100%;
-      height: auto;
+      color: #d8d8d8;
+      text-align: center;
+      font-family: "Handjet", monospace;
+      font-size: min(4.55vw, 23px);
+      font-weight: 400;
+      line-height: 1.83;
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .block-1 {
+      top: 50.05%;
+    }
+
+    .block-2 {
+      top: 64.90%;
+    }
+
+    .block-3 {
+      top: 72.70%;
+    }
+
+    .block-4 {
+      top: 80.08%;
+    }
+
+    /* :D 이스터에그 */
+    .face {
+      position: absolute;
+      top: 93.75%;
+      left: 50%;
+      z-index: 5;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #eeeeee;
+      cursor: pointer;
+      font-family: "Computer Says No", monospace;
+      font-size: min(6vw, 30px);
+      line-height: 1;
+      transform: translateX(-50%);
+      user-select: none;
+    }
+
+    .face::before,
+    .face::after {
+      position: absolute;
+      inset: 0;
+      content: attr(data-face);
+      pointer-events: none;
+    }
+
+    .face::before {
+      color: #00ff45;
+      opacity: 0.7;
+      transform: translate(-2px, 2px);
+      animation: face-glitch 1.9s steps(2, end) infinite;
+    }
+
+    .face::after {
+      color: #ff2525;
+      opacity: 0.6;
+      transform: translate(2px, -1px);
+      animation: face-glitch 2.7s steps(2, end) infinite reverse;
+    }
+
+    .noise {
+      position: absolute;
+      top: 94.85%;
+      left: 50%;
+      width: 2px;
+      height: 2px;
+      background: #00ff45;
+      box-shadow:
+        8px -10px #00d9ff,
+        -8px 12px #ff2a2a,
+        5px 18px #66ff00,
+        10px 22px #ffffff,
+        -3px 26px #00ff45;
+      animation: noise-blink 1.2s steps(2, end) infinite;
+      pointer-events: none;
+    }
+
+    /* 이진수 부분 전체를 누를 수 있는 투명 버튼 */
+    .secret-zone {
+      position: absolute;
+      top: 48%;
+      left: 0;
+      z-index: 4;
+      width: 100%;
+      height: 49%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    /* 10초마다 발생하는 글리치 */
+    #binary-stage.glitching .binary-text {
+      color: #ffffff;
+      text-shadow:
+        -2px 0 #ff3434,
+        2px 0 #00e5ff;
+    }
+
+    #binary-stage.glitching .block-1 {
+      transform: translateX(-4px);
+    }
+
+    #binary-stage.glitching .block-2 {
+      transform: translateX(3px);
+    }
+
+    #binary-stage.glitching .block-3 {
+      transform: translateX(-2px);
+    }
+
+    #binary-stage.glitching .block-4 {
+      transform: translateX(5px);
+    }
+
+    @keyframes reveal {
+      0% {
+        opacity: 0;
+        filter: blur(4px);
+      }
+
+      60% {
+        opacity: 0.65;
+      }
+
+      100% {
+        opacity: 1;
+        filter: blur(0);
+      }
+    }
+
+    @keyframes tremble {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      16% {
+        transform: translate(0.5px, -0.4px);
+      }
+
+      34% {
+        transform: translate(-0.6px, 0.3px);
+      }
+
+      56% {
+        transform: translate(0.35px, 0.5px);
+      }
+
+      78% {
+        transform: translate(-0.4px, -0.25px);
+      }
+    }
+
+    @keyframes face-glitch {
+      0%,
+      88%,
+      100% {
+        clip-path: inset(0 0 0 0);
+      }
+
+      90% {
+        clip-path: inset(25% 0 55% 0);
+      }
+
+      93% {
+        clip-path: inset(65% 0 10% 0);
+      }
+    }
+
+    @keyframes noise-blink {
+      0%,
+      100% {
+        opacity: 0.2;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* Error! 메시지 창 */
+    #error-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.78);
+    }
+
+    #error-modal.show {
+      display: grid;
+    }
+
+    .error-window {
+      width: min(100%, 330px);
+      border: 1px solid #ffffff;
+      background: #050505;
+      color: #ffffff;
+      box-shadow: 7px 7px 0 #ffffff;
+    }
+
+    .error-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 9px;
+      background: #ffffff;
+      color: #000000;
+      font-family: "Handjet", monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .close-button {
+      border: 0;
+      background: transparent;
+      color: #000000;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .error-content {
+      padding: 28px 24px 24px;
+      text-align: center;
+    }
+
+    .error-content p {
+      margin: 0;
+      font-family: "Computer Says No", monospace;
+      font-size: 2.1rem;
+    }
+
+    .error-content button {
+      margin-top: 24px;
+      padding: 7px 24px;
+      border: 1px solid #ffffff;
+      background: #000000;
+      color: #ffffff;
+      cursor: pointer;
+      font-family: "Handjet", monospace;
+      font-size: 1.1rem;
+    }
+
+    .error-content button:hover {
+      background: #ffffff;
+      color: #000000;
     }
   </style>
 </head>
@@ -79,9 +388,7 @@
       <h1>WELCOME</h1>
       <p>YOU ARE ALREADY INSIDE.</p>
 
-      <button id="enter-button">
-        ENTER
-      </button>
+      <button id="enter-button">ENTER</button>
     </div>
   </section>
 
@@ -89,17 +396,137 @@
     <img src="0.png" alt="WELCOME comic part 1" />
     <img src="00.png" alt="WELCOME comic part 2" />
     <img src="000.png" alt="WELCOME comic part 3" />
+
+    <section id="binary-stage" aria-label="숨겨진 이진수 메시지">
+      <div class="binary-field">
+        <div class="binary-text block-1">
+          11101100 10010110 10110100<br>
+          11101100 10000100 10011100<br>
+          11101100 10011000 10100100<br>
+          11101100 10000100 10111000<br>
+          11101100 10011010 10010100<br>
+          00101100
+        </div>
+
+        <div class="binary-text block-2">
+          11101010 10110000 10000000<br>
+          11101100 10000011 10000001<br>
+          11101100 10011101 10011000
+        </div>
+
+        <div class="binary-text block-3">
+          11101100 10000100 10111000<br>
+          11101010 10110011 10000100
+        </div>
+
+        <div class="binary-text block-4">
+          11101011 10101001 10010100<br>
+          11101100 10001011 10011100<br>
+          11101011 10110010 10000100<br>
+          11101100 10001010 10100100<br>
+          11101100 10010111 10010000
+        </div>
+      </div>
+
+      <button
+        id="secret-zone"
+        class="secret-zone"
+        aria-label="숨겨진 메시지 열기"
+      ></button>
+
+      <button
+        id="face"
+        class="face"
+        type="button"
+        data-face=":D"
+        aria-label="숨겨진 메시지 열기"
+      >:D</button>
+
+      <div class="noise" aria-hidden="true"></div>
+    </section>
   </main>
+
+  <div id="error-modal" aria-hidden="true">
+    <div class="error-window" role="dialog" aria-modal="true" aria-label="Error message">
+      <div class="error-titlebar">
+        <span>WELCOME.exe</span>
+        <button id="close-button" class="close-button" aria-label="닫기">×</button>
+      </div>
+
+      <div class="error-content">
+        <p>Error!</p>
+        <button id="ok-button">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const enterButton = document.getElementById("enter-button");
     const comic = document.getElementById("comic");
+    const binaryStage = document.getElementById("binary-stage");
+
+    const secretZone = document.getElementById("secret-zone");
+    const face = document.getElementById("face");
+
+    const errorModal = document.getElementById("error-modal");
+    const closeButton = document.getElementById("close-button");
+    const okButton = document.getElementById("ok-button");
 
     enterButton.addEventListener("click", () => {
       comic.scrollIntoView({
         behavior: "smooth",
         block: "start"
       });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        binaryStage.classList.add("awake");
+        observer.disconnect();
+      }
+    }, {
+      threshold: 0.25
+    });
+
+    observer.observe(binaryStage);
+
+    setInterval(() => {
+      if (binaryStage.classList.contains("awake")) {
+        binaryStage.classList.add("glitching");
+
+        setTimeout(() => {
+          binaryStage.classList.remove("glitching");
+        }, 280);
+      }
+    }, 10000);
+
+    function openError() {
+      errorModal.classList.add("show");
+      errorModal.setAttribute("aria-hidden", "false");
+      closeButton.focus();
+    }
+
+    function closeError() {
+      errorModal.classList.remove("show");
+      errorModal.setAttribute("aria-hidden", "true");
+    }
+
+    secretZone.addEventListener("click", openError);
+    face.addEventListener("click", openError);
+
+    closeButton.addEventListener("click", closeError);
+    okButton.addEventListener("click", closeError);
+
+    errorModal.addEventListener("click", (event) => {
+      if (event.target === errorModal) {
+        closeError();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeError();
+      }
     });
   </script>
 </body>
