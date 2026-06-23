@@ -6,21 +6,15 @@
 
   <title>Error!</title>
 
-  <link
-    rel="preload"
-    href="./determination-sans-k2.ttf?v=4"
-    as="font"
-    type="font/ttf"
-    crossorigin
-  />
-
   <style>
     @font-face {
-      font-family: "DeterminationSansK2";
-      src: url("./determination-sans-k2.ttf?v=4") format("truetype");
+      font-family: "DeterminationK2";
+      src:
+        url("./DeterminationSansK2-FIX.woff2?v=1") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=1") format("woff");
       font-weight: 400;
       font-style: normal;
-      font-display: block;
+      font-display: swap;
     }
 
     * {
@@ -34,64 +28,63 @@
       background: #000000;
     }
 
+    html,
+    body,
+    .error-title,
+    .message,
+    .typed-char {
+      font-family: "DeterminationK2", "Noto Sans KR", -apple-system, system-ui, sans-serif !important;
+      font-synthesis: none;
+    }
+
     body {
       overflow: hidden;
       color: #ffffff;
-      opacity: 0;
-      font-family: "DeterminationSansK2", monospace;
-      transition: opacity 0.25s ease;
     }
 
-    body.font-ready {
-      opacity: 1;
-    }
+    /* ===== 좌측 상단 Error! ===== */
 
     .error-title {
       position: fixed;
-      top: 25px;
-      left: 28px;
+      top: 22px;
+      left: 24px;
       z-index: 2;
       margin: 0;
-      color: #f2f2f2;
-      font-family: "DeterminationSansK2", monospace;
+      color: #f5f5ff;
 
       /*
-        ===== Error! 글자 크기 수정 구역 =====
-        첫 숫자 = 최소 크기
-        가운데 숫자 = 화면 크기에 따라 바뀌는 크기
-        마지막 숫자 = 최대 크기
+        ===== Error! 크기 수정 구역 =====
+        마지막 숫자 1.7rem을 줄이면 더 작아짐.
       */
-      font-size: clamp(1.35rem, 4.8vw, 2.3rem);
+      font-size: clamp(1.05rem, 4.3vw, 1.7rem);
 
       font-weight: 400;
-      letter-spacing: -0.06em;
+      letter-spacing: -0.08em;
 
-      /*
-        Error!에는 글로우 없음
-      */
+      /* Error!에는 글로우 없음 */
       text-shadow: none;
 
-      animation: title-appear 0.75s steps(3, end) both;
+      animation: title-appear 0.55s steps(3, end) both;
     }
 
     @keyframes title-appear {
       0% {
         opacity: 0;
-        filter: blur(5px);
-        transform: translate(-4px, 1px);
+        transform: translate(-2px, 1px);
       }
 
-      60% {
-        opacity: 0.8;
-        transform: translate(2px, -1px);
+      50% {
+        opacity: 0.7;
+        transform: translate(1px, 0);
       }
 
       100% {
         opacity: 1;
-        filter: blur(0);
         transform: translate(0, 0);
       }
     }
+
+    /* ===== 중앙 메시지 ===== */
 
     .message-area {
       display: grid;
@@ -103,46 +96,35 @@
     .message {
       width: min(100%, 640px);
       margin: 0;
-      color: #eeeeee;
-      font-family: "DeterminationSansK2", monospace;
+      color: #f5f5ff;
       font-size: clamp(1.15rem, 4.8vw, 1.9rem);
       font-weight: 400;
-      letter-spacing: -0.05em;
+      letter-spacing: -0.04em;
       line-height: 1.75;
       text-align: center;
 
-      /*
-        본문 글자만 은은한 흰빛 글로우
-      */
+      /* 본문에만 은은한 흰 글로우 */
       text-shadow:
-        0 0 3px rgba(255, 255, 255, 0.48),
-        0 0 10px rgba(255, 255, 255, 0.2);
+        0 0 6px rgba(255, 255, 255, 0.9),
+        0 0 18px rgba(255, 255, 255, 0.72);
     }
 
     .typed-char {
       display: inline-block;
-      animation: character-arrive 0.34s steps(2, end) both;
+      animation: character-arrive 0.26s steps(2, end) both;
     }
 
     @keyframes character-arrive {
       0% {
         opacity: 0;
-        filter: blur(4px);
-        transform: translate(-2px, 2px);
+        transform: translate(-1px, 1px);
         text-shadow:
-          -2px 0 rgba(255, 40, 40, 0.55),
-          2px 0 rgba(0, 220, 255, 0.55);
+          0 0 2px rgba(255, 255, 255, 0.35);
       }
 
-      30% {
-        opacity: 0.35;
-        transform: translate(2px, -1px);
-      }
-
-      58% {
-        opacity: 1;
-        filter: blur(0);
-        transform: translate(-1px, 0);
+      45% {
+        opacity: 0.55;
+        transform: translate(1px, 0);
       }
 
       100% {
@@ -172,23 +154,23 @@
   <script>
     /*
       ===== 이진1 대사 수정 구역 =====
-      나중에 문장을 바꾸고 싶으면 아래 따옴표 안만 수정하면 됨.
+      여기 따옴표 안 문장만 바꾸면 됨.
     */
     const errorMessage = "잘못된 방에 입장하셨습니다.";
 
     /*
       ===== 타이핑 속도 수정 구역 =====
-      숫자가 커질수록 더 느려짐.
+      숫자가 클수록 느려짐.
     */
     const typingSettings = {
-      startDelay: 950,
-      minimumDelay: 220,
+      startDelay: 900,
+      minimumDelay: 230,
       maximumDelay: 460,
-      spaceExtraDelay: 190,
+      spaceExtraDelay: 160,
       punctuationExtraDelay: 520,
-      strangePauseChance: 0.2,
-      strangePauseMinimum: 230,
-      strangePauseMaximum: 680
+      strangePauseChance: 0.16,
+      strangePauseMinimum: 180,
+      strangePauseMaximum: 520
     };
 
     const typedMessage = document.getElementById("typed-message");
@@ -247,26 +229,10 @@
       );
     }
 
-    async function prepareFontAndStart() {
-      try {
-        await document.fonts.load(
-          '400 16px "DeterminationSansK2"'
-        );
-
-        await document.fonts.ready;
-      } catch (error) {
-        console.warn("Font loading failed.", error);
-      }
-
-      document.body.classList.add("font-ready");
-
-      setTimeout(
-        typeNextCharacter,
-        typingSettings.startDelay
-      );
-    }
-
-    prepareFontAndStart();
+    setTimeout(
+      typeNextCharacter,
+      typingSettings.startDelay
+    );
   </script>
 </body>
 </html>
