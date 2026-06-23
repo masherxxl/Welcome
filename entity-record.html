@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ENTITY RECORD</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #000000;
+    }
+
+    body {
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    .page-title {
+      position: fixed;
+      top: 24px;
+      left: 28px;
+      z-index: 2;
+      margin: 0;
+      color: #e8e8e8;
+      font-family: "Handjet", monospace;
+      font-size: clamp(1.4rem, 5vw, 2.4rem);
+      font-weight: 400;
+      letter-spacing: 0.12em;
+    }
+
+    .record-number {
+      position: fixed;
+      top: 31px;
+      right: 28px;
+      color: #8f8f8f;
+      font-family: "Handjet", monospace;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+    }
+
+    main {
+      display: grid;
+      min-height: 100svh;
+      padding: 110px 28px 90px;
+      place-items: center;
+    }
+
+    .record {
+      width: min(100%, 440px);
+    }
+
+    .photo-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border: 1px solid #bfbfbf;
+      background:
+        linear-gradient(90deg, transparent 49.8%, rgba(255, 255, 255, 0.06) 50%, transparent 50.2%),
+        linear-gradient(transparent 49.8%, rgba(255, 255, 255, 0.06) 50%, transparent 50.2%),
+        #090909;
+    }
+
+    #entity-photo {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #8d8d8d;
+      font-family: "Handjet", monospace;
+      font-size: clamp(1rem, 4vw, 1.45rem);
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .record-caption {
+      margin: 16px 0 0;
+      color: #bdbdbd;
+      font-family: "Handjet", monospace;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      line-height: 1.5;
+    }
+
+    .return-button {
+      position: fixed;
+      bottom: 26px;
+      left: 28px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #d8d8d8;
+      cursor: pointer;
+      font-family: "Handjet", monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+    }
+
+    .return-button:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="page-title">ENTITY RECORD</h1>
+  <div class="record-number">OBJECT // 02</div>
+
+  <main>
+    <section class="record">
+      <div class="photo-frame">
+        <img
+          id="entity-photo"
+          src=""
+          alt="데이터 개체 기록 이미지"
+          hidden
+        />
+
+        <div id="placeholder" class="placeholder">
+          IMAGE DATA<br />
+          UNAVAILABLE
+        </div>
+      </div>
+
+      <p class="record-caption">
+        STATUS: OBSERVED<br />
+        ACCESS: TEMPORARY
+      </p>
+    </section>
+  </main>
+
+  <button id="return-button" class="return-button" type="button">
+    ← RETURN
+  </button>
+
+  <script>
+    /*
+      ===== 나중에 사진을 바꿀 곳 =====
+      GitHub에 올린 이미지 파일 이름을 아래 따옴표 안에 넣으면 돼.
+      추천 파일 이름: entity-photo.png
+    */
+    const entityImageFile = "entity-photo.png";
+
+    const entityPhoto = document.getElementById("entity-photo");
+    const placeholder = document.getElementById("placeholder");
+
+    entityPhoto.addEventListener("load", () => {
+      entityPhoto.hidden = false;
+      placeholder.hidden = true;
+    });
+
+    entityPhoto.addEventListener("error", () => {
+      entityPhoto.hidden = true;
+      placeholder.hidden = false;
+    });
+
+    entityPhoto.src = entityImageFile;
+
+    function returnToBinaryStage() {
+      window.location.href = "index.html?return=binary#binary-stage";
+    }
+
+    document
+      .getElementById("return-button")
+      .addEventListener("click", returnToBinaryStage);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        returnToBinaryStage();
+      }
+    });
+  </script>
+</body>
+</html>
