@@ -48,7 +48,7 @@
       font: inherit;
     }
 
-    /* 시작 화면 */
+    /* 01 — 시작 화면 */
 
     #entrance {
       min-height: 100svh;
@@ -57,6 +57,11 @@
       padding: 32px;
       background: #000000;
       text-align: center;
+    }
+
+    /* 중요: 01을 숨길 때 정말 사라지게 하는 부분 */
+    #entrance[hidden] {
+      display: none !important;
     }
 
     .entrance-content {
@@ -138,7 +143,7 @@
       }
     }
 
-    /* 검은 화면 전환 */
+    /* 01 → 02 전환용 검은 화면 */
 
     #blackout {
       position: fixed;
@@ -159,7 +164,7 @@
       transition: none !important;
     }
 
-    /* 만화 이미지 */
+    /* 02 — 만화 */
 
     #comic {
       overflow: hidden;
@@ -167,7 +172,7 @@
     }
 
     #comic[hidden] {
-      display: none;
+      display: none !important;
     }
 
     #comic > img {
@@ -285,7 +290,7 @@
       }
     }
 
-    /* 10초 글리치 */
+    /* 10초마다 글리치 */
 
     #binary-stage.glitching .binary-block.revealed {
       color: #ffffff;
@@ -503,15 +508,18 @@
       }, 420);
 
       setTimeout(() => {
+        /* 01 완전히 제거 */
         entrance.hidden = true;
+
+        /* 02 표시 */
         comic.hidden = false;
 
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: "auto"
-        });
+        /* 02의 맨 위로 강제 이동 */
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        window.scrollTo(0, 0);
 
+        /* 검은 화면 제거 → 02가 바로 나타남 */
         blackout.classList.add("drop");
         blackout.classList.remove("active");
 
@@ -526,8 +534,6 @@
         startStory(button);
       });
     });
-
-    /* 이진수 글자를 한 글자씩 분리해서 각각 흔들리게 만듦 */
 
     function randomValue(maximum) {
       return ((Math.random() * 2 - 1) * maximum).toFixed(2);
@@ -573,8 +579,6 @@
       });
     });
 
-    /* 스크롤로 각 이진수 블록에 도착했을 때만 나타남 */
-
     const binaryBlocks = document.querySelectorAll(".binary-block");
     const binaryStage = document.getElementById("binary-stage");
 
@@ -596,8 +600,6 @@
       binaryObserver.observe(block);
     });
 
-    /* 10초마다 짧은 RGB 글리치 */
-
     setInterval(() => {
       if (!binaryHasAppeared) {
         return;
@@ -609,8 +611,6 @@
         binaryStage.classList.remove("glitching");
       }, 280);
     }, 10000);
-
-    /* 이진수 또는 :D 클릭 시 별도 Error 페이지 이동 */
 
     function openErrorPage() {
       window.location.href = "error.html";
