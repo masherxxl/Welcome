@@ -10,8 +10,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=1") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=1") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=2") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=2") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -31,8 +31,7 @@
     html,
     body,
     .error-title,
-    .message,
-    .typed-char {
+    .message {
       font-family: "DeterminationK2", "Noto Sans KR", -apple-system, system-ui, sans-serif !important;
       font-synthesis: none;
     }
@@ -42,49 +41,40 @@
       color: #ffffff;
     }
 
-    /* ===== 좌측 상단 Error! ===== */
+    /* =========================================================
+       !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+       Error! 글자 크기 변경 구역
+
+       마지막 숫자 2.15rem을 줄이면 Error!가 작아짐
+       마지막 숫자 2.15rem을 늘리면 Error!가 커짐
+       ========================================================= */
 
     .error-title {
       position: fixed;
-      top: 22px;
-      left: 24px;
+      top: 24px;
+      left: 26px;
       z-index: 2;
       margin: 0;
       color: #f5f5ff;
 
-      /*
-        ===== Error! 크기 수정 구역 =====
-        마지막 숫자 1.7rem을 줄이면 더 작아짐.
-      */
-      font-size: clamp(1.05rem, 4.3vw, 1.7rem);
+      font-size: clamp(1.45rem, 5.5vw, 2.15rem);
 
       font-weight: 400;
-      letter-spacing: -0.08em;
 
-      /* Error!에는 글로우 없음 */
+      /* ======================================================
+         !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+         Error! 자간 변경 구역
+
+         숫자가 커질수록 글자 사이가 넓어짐
+         ====================================================== */
+      letter-spacing: 0.02em;
+
+      /* Error!은 원래부터 박혀 있던 것처럼: 효과 없음 */
       text-shadow: none;
-
-      animation: title-appear 0.55s steps(3, end) both;
+      animation: none;
+      transform: none;
+      opacity: 1;
     }
-
-    @keyframes title-appear {
-      0% {
-        opacity: 0;
-        transform: translate(-2px, 1px);
-      }
-
-      50% {
-        opacity: 0.7;
-        transform: translate(1px, 0);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translate(0, 0);
-      }
-    }
-
-    /* ===== 중앙 메시지 ===== */
 
     .message-area {
       display: grid;
@@ -93,52 +83,43 @@
       place-items: center;
     }
 
+    /* =========================================================
+       !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+       중앙 메시지 글자 크기 변경 구역
+
+       마지막 숫자 2.45rem을 줄이면 작아짐
+       마지막 숫자 2.45rem을 늘리면 커짐
+       ========================================================= */
+
     .message {
-      width: min(100%, 640px);
+      width: min(100%, 660px);
       margin: 0;
       color: #f5f5ff;
-      font-size: clamp(1.15rem, 4.8vw, 1.9rem);
+
+      font-size: clamp(1.5rem, 6vw, 2.45rem);
+
       font-weight: 400;
-      letter-spacing: -0.04em;
-      line-height: 1.75;
+      line-height: 1.7;
       text-align: center;
+      white-space: pre-wrap;
 
-      /* 본문에만 은은한 흰 글로우 */
+      /* ======================================================
+         !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+         중앙 메시지 자간 변경 구역
+
+         숫자가 커질수록 글자 사이가 넓어짐
+         ====================================================== */
+      letter-spacing: 0.07em;
+
+      /* 본문에만 은은한 흰빛 글로우 */
       text-shadow:
-        0 0 6px rgba(255, 255, 255, 0.9),
-        0 0 18px rgba(255, 255, 255, 0.72);
-    }
-
-    .typed-char {
-      display: inline-block;
-      animation: character-arrive 0.26s steps(2, end) both;
-    }
-
-    @keyframes character-arrive {
-      0% {
-        opacity: 0;
-        transform: translate(-1px, 1px);
-        text-shadow:
-          0 0 2px rgba(255, 255, 255, 0.35);
-      }
-
-      45% {
-        opacity: 0.55;
-        transform: translate(1px, 0);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translate(0, 0);
-      }
+        0 0 5px rgba(255, 255, 255, 0.72),
+        0 0 15px rgba(255, 255, 255, 0.38);
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
+      * {
+        animation: none !important;
       }
     }
   </style>
@@ -153,79 +134,49 @@
 
   <script>
     /*
-      ===== 이진1 대사 수정 구역 =====
-      여기 따옴표 안 문장만 바꾸면 됨.
+      ========================================================
+      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+      이진1 방 대사 수정 구역
+
+      따옴표 안의 문장만 바꾸면 됨.
+      ========================================================
     */
     const errorMessage = "잘못된 방에 입장하셨습니다.";
 
     /*
-      ===== 타이핑 속도 수정 구역 =====
-      숫자가 클수록 느려짐.
+      ========================================================
+      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
+      타이핑 속도 수정 구역
+
+      숫자가 커질수록 한 글자씩 나오는 속도가 느려짐.
+      언더테일처럼 글자 하나당 일정한 간격으로
+      딱. 딱. 딱. 나타나는 방식.
+      띄어쓰기 역시 한 글자로 계산됨.
+      ========================================================
     */
     const typingSettings = {
-      startDelay: 900,
-      minimumDelay: 230,
-      maximumDelay: 460,
-      spaceExtraDelay: 160,
-      punctuationExtraDelay: 520,
-      strangePauseChance: 0.16,
-      strangePauseMinimum: 180,
-      strangePauseMaximum: 520
+      startDelay: 750,
+      characterDelay: 180
     };
 
     const typedMessage = document.getElementById("typed-message");
+    const messageTextNode = document.createTextNode("");
+
+    typedMessage.appendChild(messageTextNode);
 
     let characterIndex = 0;
-
-    function randomNumber(minimum, maximum) {
-      return Math.floor(
-        Math.random() * (maximum - minimum + 1) + minimum
-      );
-    }
-
-    function getTypingDelay(character) {
-      let delay = randomNumber(
-        typingSettings.minimumDelay,
-        typingSettings.maximumDelay
-      );
-
-      if (character === " ") {
-        delay += typingSettings.spaceExtraDelay;
-      }
-
-      if ([".", "!", "?", "…"].includes(character)) {
-        delay += typingSettings.punctuationExtraDelay;
-      }
-
-      if (Math.random() < typingSettings.strangePauseChance) {
-        delay += randomNumber(
-          typingSettings.strangePauseMinimum,
-          typingSettings.strangePauseMaximum
-        );
-      }
-
-      return delay;
-    }
 
     function typeNextCharacter() {
       if (characterIndex >= errorMessage.length) {
         return;
       }
 
-      const character = errorMessage[characterIndex];
-      const characterElement = document.createElement("span");
-
-      characterElement.className = "typed-char";
-      characterElement.textContent =
-        character === " " ? "\u00A0" : character;
-
-      typedMessage.appendChild(characterElement);
-
+      messageTextNode.textContent += errorMessage[characterIndex];
       characterIndex += 1;
 
       setTimeout(
         typeNextCharacter,
-        getTypingDelay(character)
+        typingSettings.characterDelay
       );
     }
 
