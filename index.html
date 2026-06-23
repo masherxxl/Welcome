@@ -41,8 +41,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=8") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=8") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=9") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=9") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -118,6 +118,8 @@
     */
 
     .question {
+      position: relative;
+      display: inline-block;
       margin: 0;
       color: #f5f5f5;
       font-family: "DeterminationK2", "Noto Sans KR", sans-serif;
@@ -125,26 +127,49 @@
       font-weight: 400;
       letter-spacing: 0.065em;
       line-height: 1.42;
+      transform-origin: center;
       text-shadow:
         0 0 4px rgba(255, 255, 255, 0.88),
         0 0 13px rgba(255, 255, 255, 0.42);
     }
 
     /*
-      접속 직후 아주 약한 신호 흔들림
+      텍스트가 TV 신호처럼 눌려
+      가는 빛줄기가 된 뒤 꺼지는 부분
+    */
+
+    .question::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 1px;
+      opacity: 0;
+      content: "";
+      background: #ffffff;
+      box-shadow:
+        0 0 4px rgba(255, 255, 255, 1),
+        0 0 12px rgba(255, 255, 255, 0.95),
+        0 0 28px rgba(255, 255, 255, 0.62);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+
+    /*
+      접속 직후 텍스트가 아주 약하게 흔들리는 연출
     */
 
     #entrance.connection-arrived .question {
-      animation: connection-question 0.34s steps(2, end) both;
+      animation: connection-question 0.3s steps(2, end) both;
     }
 
     #entrance.connection-arrived .choice-label {
-      animation: connection-label 0.28s steps(2, end) both;
+      animation: connection-label 0.26s steps(2, end) both;
     }
 
     @keyframes connection-question {
       0% {
-        opacity: 0.72;
+        opacity: 0.82;
         transform: translate(-1px, 1px);
       }
 
@@ -165,7 +190,7 @@
 
     @keyframes connection-label {
       0% {
-        opacity: 0.7;
+        opacity: 0.76;
         transform: translate(1px, 0);
       }
 
@@ -181,15 +206,11 @@
     }
 
     /*
-      불규칙한 대기 글리치
+      불규칙한 간격의 아주 짧은 흑백 글리치
     */
 
     #entrance.idle-glitch .question {
-      animation: idle-question-glitch 0.12s steps(2, end) both;
-    }
-
-    #entrance.idle-glitch .choice-button {
-      animation: idle-button-glitch 0.12s steps(2, end) both;
+      animation: idle-question-glitch 0.14s steps(2, end) both;
     }
 
     #entrance.idle-glitch .choice-label {
@@ -199,35 +220,21 @@
     @keyframes idle-question-glitch {
       0%,
       100% {
+        filter: brightness(1);
         transform: translate(0, 0);
         clip-path: inset(0 0 0 0);
       }
 
       35% {
+        filter: brightness(1.8);
         transform: translate(-1px, 0);
-        clip-path: inset(0 0 48% 0);
+        clip-path: inset(0 0 52% 0);
       }
 
       70% {
+        filter: brightness(1.25);
         transform: translate(1px, 0);
-        clip-path: inset(50% 0 0 0);
-      }
-    }
-
-    @keyframes idle-button-glitch {
-      0%,
-      100% {
-        transform: translate(0, 0);
-        filter:
-          drop-shadow(0 0 3px rgba(255, 255, 255, 0.8))
-          drop-shadow(0 0 10px rgba(255, 255, 255, 0.24));
-      }
-
-      50% {
-        transform: translate(1px, 0);
-        filter:
-          drop-shadow(0 0 4px rgba(255, 255, 255, 0.95))
-          drop-shadow(0 0 14px rgba(255, 255, 255, 0.34));
+        clip-path: inset(48% 0 0 0);
       }
     }
 
@@ -240,17 +247,17 @@
 
       45% {
         transform: translate(-1px, 0);
-        clip-path: inset(0 0 55% 0);
+        clip-path: inset(0 0 54% 0);
       }
 
       75% {
         transform: translate(1px, 0);
-        clip-path: inset(45% 0 0 0);
+        clip-path: inset(46% 0 0 0);
       }
     }
 
     /*
-      예 / 아니오 — 가로 배치 유지
+      예 / 아니오 — 가로 배치
     */
 
     .choice-buttons {
@@ -273,8 +280,8 @@
       padding: 12px 20px;
       border: 0;
       overflow: visible;
-      background: #f5f5f5;
-      color: #f5f5f5;
+      background: #ffffff;
+      color: #ffffff;
       cursor: pointer;
       font-family: "DeterminationK2", "Noto Sans KR", sans-serif;
       font-size: clamp(1.15rem, 4.5vw, 1.55rem);
@@ -296,8 +303,8 @@
         0 calc(100% - 6px)
       );
       filter:
-        drop-shadow(0 0 3px rgba(255, 255, 255, 0.8))
-        drop-shadow(0 0 10px rgba(255, 255, 255, 0.24));
+        drop-shadow(0 0 3px rgba(255, 255, 255, 0.84))
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.22));
       transition:
         filter 0.12s steps(2, end),
         background 0.12s steps(2, end);
@@ -309,7 +316,6 @@
       z-index: 0;
       content: "";
       background: #000000;
-      transform-origin: center;
       clip-path: polygon(
         0 5px,
         5px 5px,
@@ -326,74 +332,65 @@
       );
     }
 
-    /*
-      클릭 순간만 잠깐 보이는 CRT 흰 선
-    */
-
     .choice-button::after {
       position: absolute;
       inset: 0;
-      z-index: 3;
+      z-index: 2;
       content: "";
       opacity: 0;
       background: #ffffff;
-      transform: scaleY(0.01);
-      transform-origin: center;
       pointer-events: none;
+      clip-path: polygon(
+        0 42%,
+        100% 42%,
+        100% 49%,
+        0 49%
+      );
     }
 
     .choice-label {
       position: relative;
-      z-index: 1;
+      z-index: 3;
       display: inline-block;
-      transform-origin: center;
       pointer-events: none;
       text-shadow:
-        0 0 4px rgba(255, 255, 255, 0.88),
-        0 0 11px rgba(255, 255, 255, 0.38);
+        0 0 4px rgba(255, 255, 255, 0.9),
+        0 0 11px rgba(255, 255, 255, 0.34);
     }
 
     .choice-button:hover:not(:disabled) {
       background: #ffffff;
       filter:
         drop-shadow(0 0 5px rgba(255, 255, 255, 0.96))
-        drop-shadow(0 0 16px rgba(255, 255, 255, 0.42));
+        drop-shadow(0 0 16px rgba(255, 255, 255, 0.4));
     }
 
     .choice-button:active:not(:disabled) {
-      background: #d9d9d9;
+      background: #dedede;
     }
 
     /*
-      ========================================================
-      클릭 연출:
-      1. 아주 미세하게 신호 흔들림
-      2. 세로로 압축
-      3. 흰 선이 남았다가 탁 꺼짐
-      ========================================================
+      버튼은 이전 정전 파편 연출 유지
+      시작할 때만 아주 미세하게 흔들림 추가
     */
 
-    #entrance.transitioning .question {
-      animation: question-crt-collapse 0.18s steps(3, end) forwards;
-    }
-
-    .choice-button.shutting-down {
+    .choice-button.disintegrating {
       pointer-events: none;
       animation:
-        button-micro-jitter 0.07s steps(2, end),
-        button-crt-collapse 0.15s steps(3, end) 0.07s forwards;
+        button-micro-jitter 0.08s steps(2, end),
+        button-outline-cut 0.28s steps(2, end) 0.08s forwards;
     }
 
-    .choice-button.shutting-down::before {
-      animation: inner-crt-collapse 0.15s steps(3, end) 0.07s forwards;
+    .choice-button.disintegrating::before {
+      animation: button-inner-cut 0.24s steps(2, end) 0.08s forwards;
     }
 
-    .choice-button.shutting-down::after {
-      animation: crt-line-flash 0.15s steps(3, end) 0.07s forwards;
+    .choice-button.disintegrating::after {
+      animation: button-static-snap 0.16s steps(2, end) 0.08s forwards;
     }
 
-    .choice-button.shutting-down .choice-label {
-      animation: label-crt-collapse 0.15s steps(3, end) 0.07s forwards;
+    .choice-button.disintegrating .choice-label {
+      animation: label-static-shred 0.3s steps(3, end) 0.08s forwards;
     }
 
     @keyframes button-micro-jitter {
@@ -402,156 +399,131 @@
         transform: translate(0, 0);
       }
 
-      34% {
+      33% {
         transform: translate(-1px, 1px);
       }
 
-      67% {
+      66% {
         transform: translate(1px, 0);
       }
     }
 
-    @keyframes button-crt-collapse {
+    @keyframes button-outline-cut {
       0% {
-        opacity: 1;
-        transform: translate(0, 0) scaleY(1);
-      }
-
-      35% {
-        opacity: 1;
-        transform: translate(0, 0) scaleY(0.55);
-      }
-
-      70% {
-        opacity: 1;
-        transform: translate(0, 0) scaleX(1.08) scaleY(0.06);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(0, 0) scaleX(1.26) scaleY(0.01);
-      }
-    }
-
-    @keyframes inner-crt-collapse {
-      0% {
-        opacity: 1;
-        transform: scaleY(1);
-      }
-
-      65% {
-        opacity: 1;
-        transform: scaleX(1.03) scaleY(0.06);
-      }
-
-      100% {
-        opacity: 0;
-        transform: scaleX(1.2) scaleY(0.01);
-      }
-    }
-
-    @keyframes label-crt-collapse {
-      0% {
-        opacity: 1;
-        transform: scaleY(1);
-      }
-
-      50% {
-        opacity: 1;
-        transform: scaleY(0.3);
-      }
-
-      75% {
-        opacity: 1;
-        transform: scaleX(1.12) scaleY(0.02);
-      }
-
-      100% {
-        opacity: 0;
-        transform: scaleX(1.3) scaleY(0.01);
-      }
-    }
-
-    @keyframes crt-line-flash {
-      0% {
-        opacity: 0;
-        transform: scaleX(0.3) scaleY(0.01);
+        background: #ffffff;
+        filter:
+          drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))
+          drop-shadow(0 0 12px rgba(255, 255, 255, 0.36));
       }
 
       45% {
-        opacity: 1;
-        transform: scaleX(0.88) scaleY(0.04);
-      }
-
-      78% {
-        opacity: 1;
-        transform: scaleX(1.18) scaleY(0.02);
+        background: #ffffff;
+        filter:
+          drop-shadow(-2px 0 0 rgba(255, 255, 255, 0.72))
+          drop-shadow(2px 0 0 rgba(255, 255, 255, 0.72));
       }
 
       100% {
-        opacity: 0;
-        transform: scaleX(1.35) scaleY(0.01);
+        background: transparent;
+        filter: none;
       }
     }
 
-    @keyframes question-crt-collapse {
+    @keyframes button-inner-cut {
       0% {
         opacity: 1;
-        transform: scaleY(1);
+        transform: translate(0, 0);
       }
 
-      55% {
-        opacity: 0.95;
-        transform: scaleY(0.16);
+      48% {
+        opacity: 0.55;
+        transform: translate(-3px, 1px) scaleX(1.1);
       }
 
       100% {
         opacity: 0;
-        transform: scaleY(0.01);
+        transform: translate(7px, -1px) scaleX(0.18);
+      }
+    }
+
+    @keyframes button-static-snap {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0);
+      }
+
+      25% {
+        opacity: 1;
+        transform: translate(-4px, 0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(9px, 0);
+      }
+    }
+
+    @keyframes label-static-shred {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+
+      28% {
+        opacity: 1;
+        transform: translate(-2px, 0);
+        clip-path: inset(0 0 46% 0);
+      }
+
+      58% {
+        opacity: 0.72;
+        transform: translate(5px, -1px);
+        clip-path: inset(46% 0 0 0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-12px, 2px);
+        clip-path: inset(0 0 100% 0);
       }
     }
 
     /*
-      아주 가는 흰 정전 파편
+      실제 흰 정전 파편
     */
 
     .static-fragment {
       position: absolute;
-      z-index: 5;
+      z-index: 4;
       top: var(--fragment-top);
       left: var(--fragment-left);
       width: var(--fragment-width);
-      height: 1px;
+      height: var(--fragment-height);
       opacity: 0;
       background: #ffffff;
       box-shadow:
-        0 0 3px rgba(255, 255, 255, 0.95),
-        0 0 7px rgba(255, 255, 255, 0.34);
+        0 0 3px rgba(255, 255, 255, 0.9),
+        0 0 8px rgba(255, 255, 255, 0.32);
       pointer-events: none;
     }
 
-    .choice-button.shutting-down .static-fragment {
-      animation: white-static-fragment 0.2s steps(3, end) forwards;
+    .choice-button.disintegrating .static-fragment {
+      animation: white-static-fragment 0.46s steps(3, end) forwards;
       animation-delay: var(--fragment-delay);
     }
 
     @keyframes white-static-fragment {
       0% {
-        opacity: 0;
-        transform: translate(0, 0) scaleX(0.7);
-      }
-
-      25% {
         opacity: 1;
         transform: translate(0, 0) scaleX(1);
       }
 
-      70% {
+      35% {
         opacity: 1;
         transform: translate(
-          calc(var(--fragment-drift-x) * 0.3),
-          calc(var(--fragment-drift-y) * 0.3)
-        ) scaleX(1.2);
+          calc(var(--fragment-drift-x) * 0.28),
+          calc(var(--fragment-drift-y) * 0.28)
+        ) scaleX(1.35);
       }
 
       100% {
@@ -560,6 +532,77 @@
           var(--fragment-drift-x),
           var(--fragment-drift-y)
         ) scaleX(var(--fragment-stretch));
+      }
+    }
+
+    /*
+      질문만 TV 신호처럼 밝게 압축되어 꺼짐
+    */
+
+    #entrance.transitioning .question {
+      animation: question-tv-shutdown 0.2s steps(3, end) forwards;
+    }
+
+    #entrance.transitioning .question::after {
+      animation: question-tv-line 0.2s steps(3, end) forwards;
+    }
+
+    @keyframes question-tv-shutdown {
+      0% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: scaleX(1) scaleY(1);
+        text-shadow:
+          0 0 4px rgba(255, 255, 255, 0.88),
+          0 0 13px rgba(255, 255, 255, 0.42);
+      }
+
+      28% {
+        opacity: 1;
+        filter: brightness(2.4);
+        transform: scaleX(1.01) scaleY(0.68);
+        text-shadow:
+          0 0 6px rgba(255, 255, 255, 1),
+          0 0 18px rgba(255, 255, 255, 0.9),
+          0 0 36px rgba(255, 255, 255, 0.58);
+      }
+
+      62% {
+        opacity: 1;
+        filter: brightness(3.4);
+        transform: scaleX(1.06) scaleY(0.07);
+        text-shadow:
+          0 0 8px rgba(255, 255, 255, 1),
+          0 0 24px rgba(255, 255, 255, 0.98),
+          0 0 48px rgba(255, 255, 255, 0.74);
+      }
+
+      100% {
+        opacity: 0;
+        filter: brightness(1);
+        transform: scaleX(1.22) scaleY(0.01);
+      }
+    }
+
+    @keyframes question-tv-line {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+
+      42% {
+        width: 56%;
+        opacity: 1;
+      }
+
+      72% {
+        width: 112%;
+        opacity: 1;
+      }
+
+      100% {
+        width: 136%;
+        opacity: 0;
       }
     }
 
@@ -993,37 +1036,42 @@
 
         fragment.style.setProperty(
           "--fragment-left",
-          `${randomRange(2, 94).toFixed(2)}%`
+          `${randomRange(2, 88).toFixed(2)}%`
         );
 
         fragment.style.setProperty(
           "--fragment-top",
-          `${randomRange(12, 86).toFixed(2)}%`
+          `${randomRange(10, 84).toFixed(2)}%`
         );
 
         fragment.style.setProperty(
           "--fragment-width",
-          `${Math.floor(randomRange(2, 11))}px`
+          `${Math.floor(randomRange(5, 26))}px`
+        );
+
+        fragment.style.setProperty(
+          "--fragment-height",
+          `${Math.floor(randomRange(1, 4))}px`
         );
 
         fragment.style.setProperty(
           "--fragment-drift-x",
-          `${randomRange(-44, 44).toFixed(2)}px`
+          `${randomRange(-78, 78).toFixed(2)}px`
         );
 
         fragment.style.setProperty(
           "--fragment-drift-y",
-          `${randomRange(-8, 8).toFixed(2)}px`
+          `${randomRange(-18, 18).toFixed(2)}px`
         );
 
         fragment.style.setProperty(
           "--fragment-stretch",
-          randomRange(0.45, 1.7).toFixed(2)
+          randomRange(0.35, 2.1).toFixed(2)
         );
 
         fragment.style.setProperty(
           "--fragment-delay",
-          `${Math.floor(randomRange(0, 28))}ms`
+          `${Math.floor(randomRange(0, 85))}ms`
         );
 
         button.appendChild(fragment);
@@ -1033,9 +1081,7 @@
     function scheduleIdleGlitch() {
       const irregularIntervals = [
         5000,
-        6500,
         7000,
-        8500,
         10000
       ];
 
@@ -1054,7 +1100,7 @@
         setTimeout(() => {
           entrance.classList.remove("idle-glitch");
           scheduleIdleGlitch();
-        }, 130);
+        }, 150);
       }, nextDelay);
     }
 
@@ -1074,15 +1120,15 @@
 
         createStaticFragments(
           choiceButton,
-          choiceButton === button ? 42 : 28
+          choiceButton === button ? 44 : 28
         );
 
-        choiceButton.classList.add("shutting-down");
+        choiceButton.classList.add("disintegrating");
       });
 
       setTimeout(() => {
         blackout.classList.add("active");
-      }, 340);
+      }, 470);
 
       setTimeout(() => {
         entrance.hidden = true;
