@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ENTITY ROOM</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #000000;
+    }
+
+    body {
+      overflow: hidden;
+      color: #ffffff;
+    }
+
+    .room-title {
+      position: fixed;
+      top: 24px;
+      left: 28px;
+      z-index: 2;
+      margin: 0;
+      color: #dcdcdc;
+      font-family: "Handjet", monospace;
+      font-size: clamp(1.35rem, 5vw, 2.3rem);
+      font-weight: 400;
+      letter-spacing: 0.13em;
+    }
+
+    .room-index {
+      position: fixed;
+      top: 31px;
+      right: 28px;
+      color: #777777;
+      font-family: "Handjet", monospace;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+    }
+
+    main {
+      display: grid;
+      min-height: 100svh;
+      padding: 64px 28px;
+      place-items: center;
+    }
+
+    .message-stage {
+      position: relative;
+      width: min(100%, 650px);
+      min-height: 170px;
+    }
+
+    .room-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: clamp(1.05rem, 4.6vw, 1.7rem);
+      font-weight: 400;
+      letter-spacing: -0.045em;
+      line-height: 1.75;
+      text-align: center;
+      transform: translate(-50%, -50%) translateY(28px);
+      opacity: 0;
+      filter: blur(4px);
+    }
+
+    .room-message.show {
+      animation: message-rise 0.8s ease forwards;
+    }
+
+    .room-message.leave {
+      animation: message-leave 0.65s steps(2, end) forwards;
+    }
+
+    .room-message.vanish {
+      animation: message-vanish 0.22s steps(2, end) forwards;
+    }
+
+    @keyframes message-rise {
+      0% {
+        opacity: 0;
+        filter: blur(5px);
+        transform: translate(-50%, -50%) translateY(28px);
+      }
+
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translate(-50%, -50%) translateY(0);
+      }
+    }
+
+    @keyframes message-leave {
+      0% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translate(-50%, -50%) translate(0, 0);
+      }
+
+      18% {
+        transform: translate(-50%, -50%) translate(-4px, 2px);
+      }
+
+      38% {
+        transform: translate(-50%, -50%) translate(5px, -2px);
+      }
+
+      60% {
+        transform: translate(-50%, -50%) translate(-3px, -1px);
+      }
+
+      100% {
+        opacity: 0;
+        filter: blur(6px);
+        transform: translate(-50%, -50%) translate(8px, 0);
+      }
+    }
+
+    @keyframes message-vanish {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scaleX(1);
+      }
+
+      45% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scaleX(1.08);
+      }
+
+      100% {
+        opacity: 0;
+        filter: blur(10px);
+        transform: translate(-50%, -50%) scaleX(0.02);
+      }
+    }
+
+    .closing {
+      animation: room-close 0.25s steps(2, end) forwards;
+    }
+
+    @keyframes room-close {
+      0% {
+        filter: brightness(1);
+      }
+
+      50% {
+        filter: brightness(2);
+      }
+
+      100% {
+        filter: brightness(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="room-title">ENTITY ROOM</h1>
+  <div class="room-index">ROOM // 03</div>
+
+  <main>
+    <section class="message-stage">
+      <p id="room-message" class="room-message"></p>
+    </section>
+  </main>
+
+  <script>
+    /*
+      ===== 이 방의 대사 수정 구역 =====
+      text: 실제 대사
+      hold: 화면에 머무르는 시간 (밀리초)
+    */
+    const roomLines = [
+      {
+        text: "...여긴 왜 들어온 거야?",
+        hold: 2400
+      },
+      {
+        text: "거기 서서... 뭘 보고 있는 거야?",
+        hold: 2500
+      },
+      {
+        text: "......",
+        hold: 1650
+      },
+      {
+        text: "왜 계속... 왜 계속",
+        hold: 1750,
+        final: true
+      }
+    ];
+
+    const roomMessage = document.getElementById("room-message");
+
+    function returnToBinaryStage() {
+      window.location.replace("index.html?return=binary#binary-stage");
+    }
+
+    function showLine(index) {
+      const line = roomLines[index];
+
+      roomMessage.className = "room-message";
+      roomMessage.textContent = line.text;
+
+      requestAnimationFrame(() => {
+        roomMessage.classList.add("show");
+      });
+
+      setTimeout(() => {
+        if (line.final) {
+          roomMessage.classList.remove("show");
+          roomMessage.classList.add("vanish");
+
+          setTimeout(() => {
+            document.body.classList.add("closing");
+          }, 130);
+
+          setTimeout(() => {
+            returnToBinaryStage();
+          }, 390);
+
+          return;
+        }
+
+        roomMessage.classList.remove("show");
+        roomMessage.classList.add("leave");
+
+        setTimeout(() => {
+          showLine(index + 1);
+        }, 670);
+      }, line.hold);
+    }
+
+    setTimeout(() => {
+      showLine(0);
+    }, 850);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        returnToBinaryStage();
+      }
+    });
+  </script>
+</body>
+</html>
