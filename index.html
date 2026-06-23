@@ -41,8 +41,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=7") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=7") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=8") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=8") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -114,9 +114,6 @@
       ========================================================
       !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
       메인 질문 글자 크기 변경 구역
-
-      마지막 숫자 2.78rem을 줄이면 작아짐.
-      마지막 숫자 2.78rem을 늘리면 커짐.
       ========================================================
     */
 
@@ -124,7 +121,7 @@
       margin: 0;
       color: #f5f5f5;
       font-family: "DeterminationK2", "Noto Sans KR", sans-serif;
-      font-size: clamp(1.62rem, 6.3vw, 2.78rem);
+      font-size: clamp(1.56rem, 6vw, 2.62rem);
       font-weight: 400;
       letter-spacing: 0.065em;
       line-height: 1.42;
@@ -134,21 +131,139 @@
     }
 
     /*
-      예 / 아니오를 예전처럼 양옆 배치
+      접속 직후 아주 약한 신호 흔들림
+    */
+
+    #entrance.connection-arrived .question {
+      animation: connection-question 0.34s steps(2, end) both;
+    }
+
+    #entrance.connection-arrived .choice-label {
+      animation: connection-label 0.28s steps(2, end) both;
+    }
+
+    @keyframes connection-question {
+      0% {
+        opacity: 0.72;
+        transform: translate(-1px, 1px);
+      }
+
+      35% {
+        opacity: 1;
+        transform: translate(1px, 0);
+      }
+
+      70% {
+        transform: translate(-1px, 0);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes connection-label {
+      0% {
+        opacity: 0.7;
+        transform: translate(1px, 0);
+      }
+
+      50% {
+        opacity: 1;
+        transform: translate(-1px, 0);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+    }
+
+    /*
+      불규칙한 대기 글리치
+    */
+
+    #entrance.idle-glitch .question {
+      animation: idle-question-glitch 0.12s steps(2, end) both;
+    }
+
+    #entrance.idle-glitch .choice-button {
+      animation: idle-button-glitch 0.12s steps(2, end) both;
+    }
+
+    #entrance.idle-glitch .choice-label {
+      animation: idle-label-glitch 0.12s steps(2, end) both;
+    }
+
+    @keyframes idle-question-glitch {
+      0%,
+      100% {
+        transform: translate(0, 0);
+        clip-path: inset(0 0 0 0);
+      }
+
+      35% {
+        transform: translate(-1px, 0);
+        clip-path: inset(0 0 48% 0);
+      }
+
+      70% {
+        transform: translate(1px, 0);
+        clip-path: inset(50% 0 0 0);
+      }
+    }
+
+    @keyframes idle-button-glitch {
+      0%,
+      100% {
+        transform: translate(0, 0);
+        filter:
+          drop-shadow(0 0 3px rgba(255, 255, 255, 0.8))
+          drop-shadow(0 0 10px rgba(255, 255, 255, 0.24));
+      }
+
+      50% {
+        transform: translate(1px, 0);
+        filter:
+          drop-shadow(0 0 4px rgba(255, 255, 255, 0.95))
+          drop-shadow(0 0 14px rgba(255, 255, 255, 0.34));
+      }
+    }
+
+    @keyframes idle-label-glitch {
+      0%,
+      100% {
+        transform: translate(0, 0);
+        clip-path: inset(0 0 0 0);
+      }
+
+      45% {
+        transform: translate(-1px, 0);
+        clip-path: inset(0 0 55% 0);
+      }
+
+      75% {
+        transform: translate(1px, 0);
+        clip-path: inset(45% 0 0 0);
+      }
+    }
+
+    /*
+      예 / 아니오 — 가로 배치 유지
     */
 
     .choice-buttons {
       display: flex;
       justify-content: center;
-      gap: 14px;
+      gap: 22px;
       margin-top: 32px;
     }
 
     /*
       ========================================================
-      픽셀 버튼:
+      픽셀 버튼
       내부 줄 / 점선 / 스캔라인 없음
-      검정 내부 + 흰 픽셀 외곽선만 유지
       ========================================================
     */
 
@@ -165,6 +280,7 @@
       font-size: clamp(1.15rem, 4.5vw, 1.55rem);
       font-weight: 400;
       letter-spacing: 0.08em;
+      transform-origin: center;
       clip-path: polygon(
         0 6px,
         6px 6px,
@@ -193,6 +309,7 @@
       z-index: 0;
       content: "";
       background: #000000;
+      transform-origin: center;
       clip-path: polygon(
         0 5px,
         5px 5px,
@@ -209,25 +326,27 @@
       );
     }
 
+    /*
+      클릭 순간만 잠깐 보이는 CRT 흰 선
+    */
+
     .choice-button::after {
       position: absolute;
       inset: 0;
-      z-index: 2;
+      z-index: 3;
       content: "";
       opacity: 0;
       background: #ffffff;
+      transform: scaleY(0.01);
+      transform-origin: center;
       pointer-events: none;
-      clip-path: polygon(
-        0 42%,
-        100% 42%,
-        100% 49%,
-        0 49%
-      );
     }
 
     .choice-label {
       position: relative;
       z-index: 1;
+      display: inline-block;
+      transform-origin: center;
       pointer-events: none;
       text-shadow:
         0 0 4px rgba(255, 255, 255, 0.88),
@@ -246,167 +365,193 @@
     }
 
     /*
-      선택 순간:
-      색 없는 흰 정전 파편 / 미세 절단형 글리치
+      ========================================================
+      클릭 연출:
+      1. 아주 미세하게 신호 흔들림
+      2. 세로로 압축
+      3. 흰 선이 남았다가 탁 꺼짐
+      ========================================================
     */
 
     #entrance.transitioning .question {
-      animation: question-signal-drop 0.32s steps(2, end) forwards;
+      animation: question-crt-collapse 0.18s steps(3, end) forwards;
     }
 
-    @keyframes question-signal-drop {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0);
-      }
-
-      45% {
-        opacity: 0.72;
-        transform: translate(-1px, 1px);
-        text-shadow:
-          0 0 4px rgba(255, 255, 255, 0.96),
-          0 0 15px rgba(255, 255, 255, 0.58);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(4px, 0);
-      }
-    }
-
-    .choice-button.disintegrating {
+    .choice-button.shutting-down {
       pointer-events: none;
-      animation: button-outline-cut 0.28s steps(2, end) forwards;
+      animation:
+        button-micro-jitter 0.07s steps(2, end),
+        button-crt-collapse 0.15s steps(3, end) 0.07s forwards;
     }
 
-    .choice-button.disintegrating::before {
-      animation: button-inner-cut 0.24s steps(2, end) forwards;
+    .choice-button.shutting-down::before {
+      animation: inner-crt-collapse 0.15s steps(3, end) 0.07s forwards;
     }
 
-    .choice-button.disintegrating::after {
-      animation: button-static-snap 0.16s steps(2, end) forwards;
+    .choice-button.shutting-down::after {
+      animation: crt-line-flash 0.15s steps(3, end) 0.07s forwards;
     }
 
-    .choice-button.disintegrating .choice-label {
-      animation: label-static-shred 0.3s steps(3, end) forwards;
+    .choice-button.shutting-down .choice-label {
+      animation: label-crt-collapse 0.15s steps(3, end) 0.07s forwards;
     }
 
-    @keyframes button-outline-cut {
+    @keyframes button-micro-jitter {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      34% {
+        transform: translate(-1px, 1px);
+      }
+
+      67% {
+        transform: translate(1px, 0);
+      }
+    }
+
+    @keyframes button-crt-collapse {
       0% {
-        background: #f5f5f5;
-        filter:
-          drop-shadow(0 0 4px rgba(255, 255, 255, 0.88))
-          drop-shadow(0 0 12px rgba(255, 255, 255, 0.36));
+        opacity: 1;
+        transform: translate(0, 0) scaleY(1);
+      }
+
+      35% {
+        opacity: 1;
+        transform: translate(0, 0) scaleY(0.55);
+      }
+
+      70% {
+        opacity: 1;
+        transform: translate(0, 0) scaleX(1.08) scaleY(0.06);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(0, 0) scaleX(1.26) scaleY(0.01);
+      }
+    }
+
+    @keyframes inner-crt-collapse {
+      0% {
+        opacity: 1;
+        transform: scaleY(1);
+      }
+
+      65% {
+        opacity: 1;
+        transform: scaleX(1.03) scaleY(0.06);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scaleX(1.2) scaleY(0.01);
+      }
+    }
+
+    @keyframes label-crt-collapse {
+      0% {
+        opacity: 1;
+        transform: scaleY(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scaleY(0.3);
+      }
+
+      75% {
+        opacity: 1;
+        transform: scaleX(1.12) scaleY(0.02);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scaleX(1.3) scaleY(0.01);
+      }
+    }
+
+    @keyframes crt-line-flash {
+      0% {
+        opacity: 0;
+        transform: scaleX(0.3) scaleY(0.01);
       }
 
       45% {
-        background: #ffffff;
-        filter:
-          drop-shadow(-2px 0 0 rgba(255, 255, 255, 0.72))
-          drop-shadow(2px 0 0 rgba(255, 255, 255, 0.72));
+        opacity: 1;
+        transform: scaleX(0.88) scaleY(0.04);
+      }
+
+      78% {
+        opacity: 1;
+        transform: scaleX(1.18) scaleY(0.02);
       }
 
       100% {
-        background: transparent;
-        filter: none;
+        opacity: 0;
+        transform: scaleX(1.35) scaleY(0.01);
       }
     }
 
-    @keyframes button-inner-cut {
+    @keyframes question-crt-collapse {
       0% {
         opacity: 1;
-        transform: translate(0, 0);
+        transform: scaleY(1);
       }
 
-      48% {
-        opacity: 0.55;
-        transform: translate(-3px, 1px) scaleX(1.1);
+      55% {
+        opacity: 0.95;
+        transform: scaleY(0.16);
       }
 
       100% {
         opacity: 0;
-        transform: translate(7px, -1px) scaleX(0.18);
-      }
-    }
-
-    @keyframes button-static-snap {
-      0% {
-        opacity: 0;
-        transform: translate(0, 0);
-      }
-
-      25% {
-        opacity: 1;
-        transform: translate(-4px, 0);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(9px, 0);
-      }
-    }
-
-    @keyframes label-static-shred {
-      0% {
-        opacity: 1;
-        transform: translate(0, 0);
-      }
-
-      28% {
-        opacity: 1;
-        transform: translate(-2px, 0);
-        clip-path: inset(0 0 46% 0);
-      }
-
-      58% {
-        opacity: 0.72;
-        transform: translate(5px, -1px);
-        clip-path: inset(46% 0 0 0);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(-12px, 2px);
-        clip-path: inset(0 0 100% 0);
+        transform: scaleY(0.01);
       }
     }
 
     /*
-      실제 흰 정전 파편
+      아주 가는 흰 정전 파편
     */
 
     .static-fragment {
       position: absolute;
-      z-index: 4;
+      z-index: 5;
       top: var(--fragment-top);
       left: var(--fragment-left);
       width: var(--fragment-width);
-      height: var(--fragment-height);
+      height: 1px;
       opacity: 0;
       background: #ffffff;
       box-shadow:
-        0 0 3px rgba(255, 255, 255, 0.9),
-        0 0 8px rgba(255, 255, 255, 0.34);
+        0 0 3px rgba(255, 255, 255, 0.95),
+        0 0 7px rgba(255, 255, 255, 0.34);
       pointer-events: none;
     }
 
-    .choice-button.disintegrating .static-fragment {
-      animation: white-static-fragment 0.46s steps(3, end) forwards;
+    .choice-button.shutting-down .static-fragment {
+      animation: white-static-fragment 0.2s steps(3, end) forwards;
       animation-delay: var(--fragment-delay);
     }
 
     @keyframes white-static-fragment {
       0% {
+        opacity: 0;
+        transform: translate(0, 0) scaleX(0.7);
+      }
+
+      25% {
         opacity: 1;
         transform: translate(0, 0) scaleX(1);
       }
 
-      35% {
+      70% {
         opacity: 1;
         transform: translate(
-          calc(var(--fragment-drift-x) * 0.28),
-          calc(var(--fragment-drift-y) * 0.28)
-        ) scaleX(1.35);
+          calc(var(--fragment-drift-x) * 0.3),
+          calc(var(--fragment-drift-y) * 0.3)
+        ) scaleX(1.2);
       }
 
       100% {
@@ -679,9 +824,9 @@
 </head>
 
 <body>
-  <section id="entrance">
+  <section id="entrance" class="connection-arrived">
     <div class="entrance-content">
-      <p class="question">세계를 관전하시겠습니까?</p>
+      <p class="question">관전하시겠습니까?</p>
 
       <div class="choice-buttons">
         <button class="choice-button" type="button">
@@ -776,6 +921,7 @@
     const binaryBlocks = document.querySelectorAll(".binary-block");
 
     let storyHasStarted = false;
+    let idleGlitchTimer;
 
     function waitForComicImages(callback) {
       const images = [...comic.querySelectorAll("img")];
@@ -847,46 +993,69 @@
 
         fragment.style.setProperty(
           "--fragment-left",
-          `${randomRange(2, 88).toFixed(2)}%`
+          `${randomRange(2, 94).toFixed(2)}%`
         );
 
         fragment.style.setProperty(
           "--fragment-top",
-          `${randomRange(10, 84).toFixed(2)}%`
+          `${randomRange(12, 86).toFixed(2)}%`
         );
 
         fragment.style.setProperty(
           "--fragment-width",
-          `${Math.floor(randomRange(5, 26))}px`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-height",
-          `${Math.floor(randomRange(1, 4))}px`
+          `${Math.floor(randomRange(2, 11))}px`
         );
 
         fragment.style.setProperty(
           "--fragment-drift-x",
-          `${randomRange(-78, 78).toFixed(2)}px`
+          `${randomRange(-44, 44).toFixed(2)}px`
         );
 
         fragment.style.setProperty(
           "--fragment-drift-y",
-          `${randomRange(-18, 18).toFixed(2)}px`
+          `${randomRange(-8, 8).toFixed(2)}px`
         );
 
         fragment.style.setProperty(
           "--fragment-stretch",
-          randomRange(0.35, 2.1).toFixed(2)
+          randomRange(0.45, 1.7).toFixed(2)
         );
 
         fragment.style.setProperty(
           "--fragment-delay",
-          `${Math.floor(randomRange(0, 85))}ms`
+          `${Math.floor(randomRange(0, 28))}ms`
         );
 
         button.appendChild(fragment);
       }
+    }
+
+    function scheduleIdleGlitch() {
+      const irregularIntervals = [
+        5000,
+        6500,
+        7000,
+        8500,
+        10000
+      ];
+
+      const nextDelay =
+        irregularIntervals[
+          Math.floor(Math.random() * irregularIntervals.length)
+        ];
+
+      idleGlitchTimer = setTimeout(() => {
+        if (storyHasStarted || entrance.hidden) {
+          return;
+        }
+
+        entrance.classList.add("idle-glitch");
+
+        setTimeout(() => {
+          entrance.classList.remove("idle-glitch");
+          scheduleIdleGlitch();
+        }, 130);
+      }, nextDelay);
     }
 
     function startStory(button) {
@@ -895,6 +1064,9 @@
       }
 
       storyHasStarted = true;
+      clearTimeout(idleGlitchTimer);
+
+      entrance.classList.remove("connection-arrived");
       entrance.classList.add("transitioning");
 
       choiceButtons.forEach((choiceButton) => {
@@ -902,15 +1074,15 @@
 
         createStaticFragments(
           choiceButton,
-          choiceButton === button ? 44 : 28
+          choiceButton === button ? 42 : 28
         );
 
-        choiceButton.classList.add("disintegrating");
+        choiceButton.classList.add("shutting-down");
       });
 
       setTimeout(() => {
         blackout.classList.add("active");
-      }, 560);
+      }, 340);
 
       setTimeout(() => {
         entrance.hidden = true;
@@ -926,7 +1098,7 @@
         requestAnimationFrame(() => {
           blackout.classList.remove("drop");
         });
-      }, 2650);
+      }, 2500);
     }
 
     choiceButtons.forEach((button) => {
@@ -934,6 +1106,12 @@
         startStory(button);
       });
     });
+
+    setTimeout(() => {
+      entrance.classList.remove("connection-arrived");
+    }, 500);
+
+    scheduleIdleGlitch();
 
     function randomValue(maximum) {
       return ((Math.random() * 2 - 1) * maximum).toFixed(2);
