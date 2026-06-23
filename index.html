@@ -59,7 +59,6 @@
       text-align: center;
     }
 
-    /* 중요: 01을 숨길 때 정말 사라지게 하는 부분 */
     #entrance[hidden] {
       display: none !important;
     }
@@ -143,7 +142,7 @@
       }
     }
 
-    /* 01 → 02 전환용 검은 화면 */
+    /* 01 → 02 전환 */
 
     #blackout {
       position: fixed;
@@ -183,7 +182,7 @@
       margin: 0 auto;
     }
 
-    /* 검은 공백 + 이진수 장면 */
+    /* 검은 공백 + 이진수 */
 
     #binary-stage {
       position: relative;
@@ -290,7 +289,7 @@
       }
     }
 
-    /* 10초마다 글리치 */
+    /* 10초마다 짧은 글리치 */
 
     #binary-stage.glitching .binary-block.revealed {
       color: #ffffff;
@@ -400,7 +399,6 @@
       *::after {
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
       }
     }
   </style>
@@ -431,7 +429,8 @@
         class="binary-block block-1"
         role="button"
         tabindex="0"
-        aria-label="숨겨진 메시지 열기"
+        data-destination="error.html"
+        aria-label="잘못된 방으로 이동"
       >
         <div class="binary-line">11101100 10010110 10110100</div>
         <div class="binary-line">11101100 10000100 10011100</div>
@@ -445,7 +444,8 @@
         class="binary-block block-2"
         role="button"
         tabindex="0"
-        aria-label="숨겨진 메시지 열기"
+        data-destination="entity-record.html"
+        aria-label="개체 기록으로 이동"
       >
         <div class="binary-line">11101010 10110000 10000000</div>
         <div class="binary-line">11101100 10000011 10000001</div>
@@ -456,7 +456,8 @@
         class="binary-block block-3"
         role="button"
         tabindex="0"
-        aria-label="숨겨진 메시지 열기"
+        data-destination="entity-room.html"
+        aria-label="개체의 방으로 이동"
       >
         <div class="binary-line">11101100 10000100 10111000</div>
         <div class="binary-line">11101010 10110011 10000100</div>
@@ -466,21 +467,22 @@
         class="binary-block block-4"
         role="button"
         tabindex="0"
-        aria-label="숨겨진 메시지 열기"
+        data-destination="world-message.html"
+        aria-label="기록 메시지로 이동"
       >
         <div class="binary-line">11101011 10101001 10010100</div>
         <div class="binary-line">11101100 10001011 10011100</div>
-        <div class="binary-line">11101011 10110010 10000100</div>
+        <div class="binary-line">11101100 10110010 10000100</div>
         <div class="binary-line">11101100 10001010 10100100</div>
         <div class="binary-line">11101100 10010111 10010000</div>
       </div>
 
       <button
-        id="face"
         class="face"
         type="button"
         data-face=":D"
-        aria-label="숨겨진 메시지 열기"
+        data-destination="error.html"
+        aria-label="잘못된 방으로 이동"
       >:D</button>
 
       <div class="noise" aria-hidden="true"></div>
@@ -492,8 +494,56 @@
     const comic = document.getElementById("comic");
     const blackout = document.getElementById("blackout");
     const choiceButtons = document.querySelectorAll(".choice-button");
+    const binaryStage = document.getElementById("binary-stage");
+    const binaryBlocks = document.querySelectorAll(".binary-block");
 
     let storyHasStarted = false;
+
+    function waitForComicImages(callback) {
+      const images = [...comic.querySelectorAll("img")];
+      const unloadedImages = images.filter((image) => !image.complete);
+
+      if (unloadedImages.length === 0) {
+        callback();
+        return;
+      }
+
+      let finished = 0;
+
+      function countFinished() {
+        finished += 1;
+
+        if (finished >= unloadedImages.length) {
+          callback();
+        }
+      }
+
+      unloadedImages.forEach((image) => {
+        image.addEventListener("load", countFinished, { once: true });
+        image.addEventListener("error", countFinished, { once: true });
+      });
+    }
+
+    function returnToBinaryStage() {
+      storyHasStarted = true;
+      entrance.hidden = true;
+      comic.hidden = false;
+
+      waitForComicImages(() => {
+        requestAnimationFrame(() => {
+          binaryStage.scrollIntoView({
+            behavior: "auto",
+            block: "start"
+          });
+
+          history.replaceState(
+            null,
+            "",
+            `${window.location.pathname}#binary-stage`
+          );
+        });
+      });
+    }
 
     function startStory(button) {
       if (storyHasStarted) {
@@ -508,18 +558,13 @@
       }, 420);
 
       setTimeout(() => {
-        /* 01 완전히 제거 */
         entrance.hidden = true;
-
-        /* 02 표시 */
         comic.hidden = false;
 
-        /* 02의 맨 위로 강제 이동 */
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
         window.scrollTo(0, 0);
 
-        /* 검은 화면 제거 → 02가 바로 나타남 */
         blackout.classList.add("drop");
         blackout.classList.remove("active");
 
@@ -579,9 +624,6 @@
       });
     });
 
-    const binaryBlocks = document.querySelectorAll(".binary-block");
-    const binaryStage = document.getElementById("binary-stage");
-
     let binaryHasAppeared = false;
 
     const binaryObserver = new IntersectionObserver((entries, observer) => {
@@ -612,22 +654,35 @@
       }, 280);
     }, 10000);
 
-    function openErrorPage() {
-      window.location.href = "error.html";
+    function openDestination(element) {
+      const destination = element.dataset.destination;
+
+      if (destination) {
+        window.location.href = destination;
+      }
     }
 
-    binaryBlocks.forEach((block) => {
-      block.addEventListener("click", openErrorPage);
-
-      block.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openErrorPage();
-        }
+    document.querySelectorAll("[data-destination]").forEach((element) => {
+      element.addEventListener("click", () => {
+        openDestination(element);
       });
+
+      if (element.classList.contains("binary-block")) {
+        element.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openDestination(element);
+          }
+        });
+      }
     });
 
-    document.getElementById("face").addEventListener("click", openErrorPage);
+    const isReturningFromRoom =
+      new URLSearchParams(window.location.search).get("return") === "binary";
+
+    if (isReturningFromRoom) {
+      returnToBinaryStage();
+    }
   </script>
 </body>
 </html>
