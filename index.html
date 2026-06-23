@@ -392,15 +392,6 @@
         opacity: 1;
       }
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-      }
-    }
   </style>
 </head>
 
@@ -425,6 +416,7 @@
     <img src="00.png" alt="WELCOME comic part 2" />
 
     <section id="binary-stage" aria-label="숨겨진 이진수 메시지">
+      <!-- 1번째 이진수 → Error -->
       <div
         class="binary-block block-1"
         role="button"
@@ -440,29 +432,32 @@
         <div class="binary-line">          00101100</div>
       </div>
 
+      <!-- 2번째 이진수 → 기존 3번째 방: ENTITY ROOM -->
       <div
         class="binary-block block-2"
         role="button"
         tabindex="0"
-        data-destination="entity-record.html"
-        aria-label="개체 기록으로 이동"
+        data-destination="entity-room.html"
+        aria-label="개체의 방으로 이동"
       >
         <div class="binary-line">11101010 10110000 10000000</div>
         <div class="binary-line">11101100 10000011 10000001</div>
         <div class="binary-line">11101100 10011101 10011000</div>
       </div>
 
+      <!-- 3번째 이진수 → 기존 2번째 방: ENTITY RECORD -->
       <div
         class="binary-block block-3"
         role="button"
         tabindex="0"
-        data-destination="entity-room.html"
-        aria-label="개체의 방으로 이동"
+        data-destination="entity-record.html"
+        aria-label="개체 기록으로 이동"
       >
         <div class="binary-line">11101100 10000100 10111000</div>
         <div class="binary-line">11101010 10110011 10000100</div>
       </div>
 
+      <!-- 4번째 이진수 → 세계관 대사 -->
       <div
         class="binary-block block-4"
         role="button"
