@@ -7,19 +7,19 @@
   <title>WELCOME</title>
 
   <meta property="og:title" content="WELCOME" />
-<meta property="og:description" content="YOU ARE ALREADY INSIDE." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://masherxxl.github.io/Welcome/" />
-<meta property="og:image" content="https://masherxxl.github.io/Welcome/preview.png" />
-<meta property="og:image:alt" content="WELCOME — black and white hand" />
-<meta property="og:site_name" content="WELCOME" />
+  <meta property="og:description" content="YOU ARE ALREADY INSIDE." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://masherxxl.github.io/Welcome/" />
+  <meta property="og:image" content="https://masherxxl.github.io/Welcome/preview.png" />
+  <meta property="og:image:alt" content="WELCOME — black and white hand" />
+  <meta property="og:site_name" content="WELCOME" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap"
     rel="stylesheet"
-  >
+  />
 
   <style>
     @font-face {
@@ -33,12 +33,12 @@
     }
 
     html {
-      scroll-behavior: smooth;
       background: #000000;
     }
 
     body {
       margin: 0;
+      overflow-x: hidden;
       background: #000000;
       color: #ffffff;
       font-family: Arial, sans-serif;
@@ -48,50 +48,126 @@
       font: inherit;
     }
 
-    /* 첫 입장 화면 */
+    /* 시작 화면 */
+
     #entrance {
       min-height: 100svh;
       display: grid;
       place-items: center;
       padding: 32px;
-      text-align: center;
       background: #000000;
+      text-align: center;
     }
 
-    h1 {
+    .entrance-content {
+      width: min(100%, 500px);
+    }
+
+    .site-title {
       margin: 0;
-      font-size: clamp(3rem, 12vw, 7rem);
+      color: #d9d9d9;
+      font-family: "Handjet", monospace;
+      font-size: clamp(1.15rem, 4vw, 1.7rem);
       font-weight: 400;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.22em;
     }
 
-    #entrance p {
-      margin: 22px 0 0;
-      color: #bdbdbd;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
+    .question {
+      margin: 42px 0 0;
+      color: #ffffff;
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: clamp(1.1rem, 4.7vw, 1.6rem);
+      font-weight: 400;
+      letter-spacing: -0.04em;
     }
 
-    #enter-button {
-      margin-top: 42px;
-      padding: 14px 24px;
-      border: 1px solid #ffffff;
+    .choice-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .choice-button {
+      min-width: 92px;
+      padding: 12px 20px;
+      border: 1px solid #d8d8d8;
       background: transparent;
       color: #ffffff;
       cursor: pointer;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: 0.95rem;
+      transition:
+        background 0.18s ease,
+        color 0.18s ease;
     }
 
-    #enter-button:hover {
+    .choice-button:hover {
       background: #ffffff;
       color: #000000;
     }
 
+    .choice-button.chosen {
+      animation: button-rattle 0.42s steps(2, end) both;
+    }
+
+    @keyframes button-rattle {
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      15% {
+        transform: translate(-3px, 1px);
+      }
+
+      32% {
+        transform: translate(4px, -2px);
+      }
+
+      49% {
+        transform: translate(-2px, -1px);
+      }
+
+      66% {
+        transform: translate(3px, 2px);
+      }
+
+      82% {
+        transform: translate(-1px, 2px);
+      }
+    }
+
+    /* 검은 화면 전환 */
+
+    #blackout {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      pointer-events: none;
+      background: #000000;
+      opacity: 0;
+      transition: opacity 0.55s ease;
+    }
+
+    #blackout.active {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    #blackout.drop {
+      transition: none !important;
+    }
+
     /* 만화 이미지 */
+
     #comic {
       overflow: hidden;
       background: #000000;
+    }
+
+    #comic[hidden] {
+      display: none;
     }
 
     #comic > img {
@@ -102,65 +178,135 @@
       margin: 0 auto;
     }
 
-    /* 마지막 이진수 장면 */
+    /* 검은 공백 + 이진수 장면 */
+
     #binary-stage {
       position: relative;
+      isolation: isolate;
       width: min(100%, 505px);
-      aspect-ratio: 505 / 2048;
+      aspect-ratio: 505 / 1650;
       margin: 0 auto;
       overflow: hidden;
       background: #000000;
     }
 
-    .binary-field {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #binary-stage.awake .binary-field {
-      animation:
-        reveal 0.8s steps(3, end) forwards,
-        tremble 0.65s steps(2, end) 0.9s infinite;
-    }
-
-    .binary-text {
+    .binary-block {
       position: absolute;
       left: 0;
+      z-index: 2;
       width: 100%;
       color: #d8d8d8;
-      text-align: center;
+      cursor: pointer;
       font-family: "Handjet", monospace;
-      font-size: min(4.55vw, 23px);
+      font-size: clamp(16px, 4.55vw, 23px);
       font-weight: 400;
-      line-height: 1.83;
-      letter-spacing: 0;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
+      line-height: 1.78;
+      text-align: center;
+      text-shadow: 0 0 1px rgba(255, 255, 255, 0.25);
       user-select: none;
     }
 
+    .binary-block:focus-visible {
+      outline: 1px solid #ffffff;
+      outline-offset: 4px;
+    }
+
     .block-1 {
-      top: 50.05%;
+      top: 50%;
     }
 
     .block-2 {
-      top: 64.90%;
+      top: 66.5%;
     }
 
     .block-3 {
-      top: 72.70%;
+      top: 74.2%;
     }
 
     .block-4 {
-      top: 80.08%;
+      top: 81%;
     }
 
-    /* :D 이스터에그 */
+    .binary-line {
+      display: block;
+      opacity: 0;
+      transform: translateY(5px);
+      white-space: pre;
+    }
+
+    .binary-block.revealed .binary-line {
+      animation: line-reveal 0.55s ease forwards;
+      animation-delay: calc(var(--line-index) * 0.14s);
+    }
+
+    @keyframes line-reveal {
+      0% {
+        opacity: 0;
+        filter: blur(3px);
+        transform: translateY(5px);
+      }
+
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    .binary-char {
+      display: inline-block;
+      min-width: 0.01em;
+      transform-origin: center;
+      animation:
+        char-tremble var(--jitter-duration) steps(2, end)
+        var(--jitter-delay) infinite;
+    }
+
+    @keyframes char-tremble {
+      0%,
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      18% {
+        transform: translate(var(--jx1), var(--jy1)) rotate(var(--r1));
+      }
+
+      39% {
+        transform: translate(var(--jx2), var(--jy2)) rotate(var(--r2));
+      }
+
+      63% {
+        transform: translate(var(--jx3), var(--jy3)) rotate(var(--r3));
+      }
+
+      82% {
+        transform: translate(var(--jx4), var(--jy4)) rotate(var(--r4));
+      }
+    }
+
+    /* 10초 글리치 */
+
+    #binary-stage.glitching .binary-block.revealed {
+      color: #ffffff;
+      filter:
+        drop-shadow(-2px 0 rgba(255, 55, 55, 0.85))
+        drop-shadow(2px 0 rgba(0, 225, 255, 0.85));
+    }
+
+    #binary-stage.glitching .binary-block.revealed .binary-line:nth-child(odd) {
+      margin-left: -4px;
+    }
+
+    #binary-stage.glitching .binary-block.revealed .binary-line:nth-child(even) {
+      margin-left: 3px;
+    }
+
+    /* :D */
+
     .face {
       position: absolute;
-      top: 93.75%;
+      top: 95.5%;
       left: 50%;
       z-index: 5;
       margin: 0;
@@ -170,7 +316,7 @@
       color: #eeeeee;
       cursor: pointer;
       font-family: "Computer Says No", monospace;
-      font-size: min(6vw, 30px);
+      font-size: clamp(24px, 6vw, 31px);
       line-height: 1;
       transform: translateX(-50%);
       user-select: none;
@@ -186,22 +332,39 @@
 
     .face::before {
       color: #00ff45;
-      opacity: 0.7;
+      opacity: 0.68;
       transform: translate(-2px, 2px);
-      animation: face-glitch 1.9s steps(2, end) infinite;
+      animation: face-glitch 1.8s steps(2, end) infinite;
     }
 
     .face::after {
-      color: #ff2525;
-      opacity: 0.6;
+      color: #ff3030;
+      opacity: 0.62;
       transform: translate(2px, -1px);
-      animation: face-glitch 2.7s steps(2, end) infinite reverse;
+      animation: face-glitch 2.5s steps(2, end) infinite reverse;
+    }
+
+    @keyframes face-glitch {
+      0%,
+      86%,
+      100% {
+        clip-path: inset(0 0 0 0);
+      }
+
+      89% {
+        clip-path: inset(15% 0 62% 0);
+      }
+
+      93% {
+        clip-path: inset(68% 0 8% 0);
+      }
     }
 
     .noise {
       position: absolute;
-      top: 94.85%;
+      top: 97%;
       left: 50%;
+      z-index: 4;
       width: 2px;
       height: 2px;
       background: #00ff45;
@@ -215,102 +378,10 @@
       pointer-events: none;
     }
 
-    /* 이진수 부분 전체를 누를 수 있는 투명 버튼 */
-    .secret-zone {
-      position: absolute;
-      top: 48%;
-      left: 0;
-      z-index: 4;
-      width: 100%;
-      height: 49%;
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    /* 10초마다 발생하는 글리치 */
-    #binary-stage.glitching .binary-text {
-      color: #ffffff;
-      text-shadow:
-        -2px 0 #ff3434,
-        2px 0 #00e5ff;
-    }
-
-    #binary-stage.glitching .block-1 {
-      transform: translateX(-4px);
-    }
-
-    #binary-stage.glitching .block-2 {
-      transform: translateX(3px);
-    }
-
-    #binary-stage.glitching .block-3 {
-      transform: translateX(-2px);
-    }
-
-    #binary-stage.glitching .block-4 {
-      transform: translateX(5px);
-    }
-
-    @keyframes reveal {
-      0% {
-        opacity: 0;
-        filter: blur(4px);
-      }
-
-      60% {
-        opacity: 0.65;
-      }
-
-      100% {
-        opacity: 1;
-        filter: blur(0);
-      }
-    }
-
-    @keyframes tremble {
-      0%,
-      100% {
-        transform: translate(0, 0);
-      }
-
-      16% {
-        transform: translate(0.5px, -0.4px);
-      }
-
-      34% {
-        transform: translate(-0.6px, 0.3px);
-      }
-
-      56% {
-        transform: translate(0.35px, 0.5px);
-      }
-
-      78% {
-        transform: translate(-0.4px, -0.25px);
-      }
-    }
-
-    @keyframes face-glitch {
-      0%,
-      88%,
-      100% {
-        clip-path: inset(0 0 0 0);
-      }
-
-      90% {
-        clip-path: inset(25% 0 55% 0);
-      }
-
-      93% {
-        clip-path: inset(65% 0 10% 0);
-      }
-    }
-
     @keyframes noise-blink {
       0%,
       100% {
-        opacity: 0.2;
+        opacity: 0.18;
       }
 
       50% {
@@ -318,129 +389,86 @@
       }
     }
 
-    /* Error! 메시지 창 */
-    #error-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: none;
-      place-items: center;
-      padding: 24px;
-      background: rgba(0, 0, 0, 0.78);
-    }
-
-    #error-modal.show {
-      display: grid;
-    }
-
-    .error-window {
-      width: min(100%, 330px);
-      border: 1px solid #ffffff;
-      background: #050505;
-      color: #ffffff;
-      box-shadow: 7px 7px 0 #ffffff;
-    }
-
-    .error-titlebar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 7px 9px;
-      background: #ffffff;
-      color: #000000;
-      font-family: "Handjet", monospace;
-      font-size: 1.1rem;
-      letter-spacing: 0.05em;
-    }
-
-    .close-button {
-      border: 0;
-      background: transparent;
-      color: #000000;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-
-    .error-content {
-      padding: 28px 24px 24px;
-      text-align: center;
-    }
-
-    .error-content p {
-      margin: 0;
-      font-family: "Computer Says No", monospace;
-      font-size: 2.1rem;
-    }
-
-    .error-content button {
-      margin-top: 24px;
-      padding: 7px 24px;
-      border: 1px solid #ffffff;
-      background: #000000;
-      color: #ffffff;
-      cursor: pointer;
-      font-family: "Handjet", monospace;
-      font-size: 1.1rem;
-    }
-
-    .error-content button:hover {
-      background: #ffffff;
-      color: #000000;
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
 
 <body>
   <section id="entrance">
-    <div>
-      <h1>WELCOME</h1>
-      <p>YOU ARE ALREADY INSIDE.</p>
+    <div class="entrance-content">
+      <h1 class="site-title">WELCOME</h1>
 
-      <button id="enter-button">ENTER</button>
+      <p class="question">세계를 관전하시겠습니까?</p>
+
+      <div class="choice-buttons">
+        <button class="choice-button" type="button">예</button>
+        <button class="choice-button" type="button">아니오</button>
+      </div>
     </div>
   </section>
 
-  <main id="comic">
+  <div id="blackout" aria-hidden="true"></div>
+
+  <main id="comic" hidden>
     <img src="0.png" alt="WELCOME comic part 1" />
     <img src="00.png" alt="WELCOME comic part 2" />
-    <img src="000.png" alt="WELCOME comic part 3" />
 
     <section id="binary-stage" aria-label="숨겨진 이진수 메시지">
-      <div class="binary-field">
-        <div class="binary-text block-1">
-          11101100 10010110 10110100<br>
-          11101100 10000100 10011100<br>
-          11101100 10011000 10100100<br>
-          11101100 10000100 10111000<br>
-          11101100 10011010 10010100<br>
-          00101100
-        </div>
-
-        <div class="binary-text block-2">
-          11101010 10110000 10000000<br>
-          11101100 10000011 10000001<br>
-          11101100 10011101 10011000
-        </div>
-
-        <div class="binary-text block-3">
-          11101100 10000100 10111000<br>
-          11101010 10110011 10000100
-        </div>
-
-        <div class="binary-text block-4">
-          11101011 10101001 10010100<br>
-          11101100 10001011 10011100<br>
-          11101011 10110010 10000100<br>
-          11101100 10001010 10100100<br>
-          11101100 10010111 10010000
-        </div>
+      <div
+        class="binary-block block-1"
+        role="button"
+        tabindex="0"
+        aria-label="숨겨진 메시지 열기"
+      >
+        <div class="binary-line">11101100 10010110 10110100</div>
+        <div class="binary-line">11101100 10000100 10011100</div>
+        <div class="binary-line">11101100 10011000 10100100</div>
+        <div class="binary-line">11101100 10000100 10111000</div>
+        <div class="binary-line">11101100 10011010 10010100</div>
+        <div class="binary-line">          00101100</div>
       </div>
 
-      <button
-        id="secret-zone"
-        class="secret-zone"
+      <div
+        class="binary-block block-2"
+        role="button"
+        tabindex="0"
         aria-label="숨겨진 메시지 열기"
-      ></button>
+      >
+        <div class="binary-line">11101010 10110000 10000000</div>
+        <div class="binary-line">11101100 10000011 10000001</div>
+        <div class="binary-line">11101100 10011101 10011000</div>
+      </div>
+
+      <div
+        class="binary-block block-3"
+        role="button"
+        tabindex="0"
+        aria-label="숨겨진 메시지 열기"
+      >
+        <div class="binary-line">11101100 10000100 10111000</div>
+        <div class="binary-line">11101010 10110011 10000100</div>
+      </div>
+
+      <div
+        class="binary-block block-4"
+        role="button"
+        tabindex="0"
+        aria-label="숨겨진 메시지 열기"
+      >
+        <div class="binary-line">11101011 10101001 10010100</div>
+        <div class="binary-line">11101100 10001011 10011100</div>
+        <div class="binary-line">11101011 10110010 10000100</div>
+        <div class="binary-line">11101100 10001010 10100100</div>
+        <div class="binary-line">11101100 10010111 10010000</div>
+      </div>
 
       <button
         id="face"
@@ -454,88 +482,152 @@
     </section>
   </main>
 
-  <div id="error-modal" aria-hidden="true">
-    <div class="error-window" role="dialog" aria-modal="true" aria-label="Error message">
-      <div class="error-titlebar">
-        <span>WELCOME.exe</span>
-        <button id="close-button" class="close-button" aria-label="닫기">×</button>
-      </div>
-
-      <div class="error-content">
-        <p>Error!</p>
-        <button id="ok-button">OK</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const enterButton = document.getElementById("enter-button");
+    const entrance = document.getElementById("entrance");
     const comic = document.getElementById("comic");
-    const binaryStage = document.getElementById("binary-stage");
+    const blackout = document.getElementById("blackout");
+    const choiceButtons = document.querySelectorAll(".choice-button");
 
-    const secretZone = document.getElementById("secret-zone");
-    const face = document.getElementById("face");
+    let storyHasStarted = false;
 
-    const errorModal = document.getElementById("error-modal");
-    const closeButton = document.getElementById("close-button");
-    const okButton = document.getElementById("ok-button");
+    function startStory(button) {
+      if (storyHasStarted) {
+        return;
+      }
 
-    enterButton.addEventListener("click", () => {
-      comic.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
+      storyHasStarted = true;
+      button.classList.add("chosen");
+
+      setTimeout(() => {
+        blackout.classList.add("active");
+      }, 420);
+
+      setTimeout(() => {
+        entrance.hidden = true;
+        comic.hidden = false;
+
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "auto"
+        });
+
+        blackout.classList.add("drop");
+        blackout.classList.remove("active");
+
+        requestAnimationFrame(() => {
+          blackout.classList.remove("drop");
+        });
+      }, 3000);
+    }
+
+    choiceButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        startStory(button);
       });
     });
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        binaryStage.classList.add("awake");
-        observer.disconnect();
-      }
+    /* 이진수 글자를 한 글자씩 분리해서 각각 흔들리게 만듦 */
+
+    function randomValue(maximum) {
+      return ((Math.random() * 2 - 1) * maximum).toFixed(2);
+    }
+
+    document.querySelectorAll(".binary-line").forEach((line, lineIndex) => {
+      const characters = Array.from(line.textContent);
+
+      line.textContent = "";
+      line.style.setProperty("--line-index", lineIndex);
+
+      characters.forEach((character) => {
+        const span = document.createElement("span");
+
+        span.className = "binary-char";
+        span.textContent = character === " " ? "\u00A0" : character;
+
+        span.style.setProperty("--jx1", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy1", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jx2", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy2", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jx3", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy3", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jx4", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy4", `${randomValue(0.8)}px`);
+
+        span.style.setProperty("--r1", `${randomValue(0.7)}deg`);
+        span.style.setProperty("--r2", `${randomValue(0.7)}deg`);
+        span.style.setProperty("--r3", `${randomValue(0.7)}deg`);
+        span.style.setProperty("--r4", `${randomValue(0.7)}deg`);
+
+        span.style.setProperty(
+          "--jitter-duration",
+          `${(0.42 + Math.random() * 0.7).toFixed(2)}s`
+        );
+
+        span.style.setProperty(
+          "--jitter-delay",
+          `${(-Math.random() * 1.2).toFixed(2)}s`
+        );
+
+        line.appendChild(span);
+      });
+    });
+
+    /* 스크롤로 각 이진수 블록에 도착했을 때만 나타남 */
+
+    const binaryBlocks = document.querySelectorAll(".binary-block");
+    const binaryStage = document.getElementById("binary-stage");
+
+    let binaryHasAppeared = false;
+
+    const binaryObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          binaryHasAppeared = true;
+          observer.unobserve(entry.target);
+        }
+      });
     }, {
       threshold: 0.25
     });
 
-    observer.observe(binaryStage);
+    binaryBlocks.forEach((block) => {
+      binaryObserver.observe(block);
+    });
+
+    /* 10초마다 짧은 RGB 글리치 */
 
     setInterval(() => {
-      if (binaryStage.classList.contains("awake")) {
-        binaryStage.classList.add("glitching");
-
-        setTimeout(() => {
-          binaryStage.classList.remove("glitching");
-        }, 280);
+      if (!binaryHasAppeared) {
+        return;
       }
+
+      binaryStage.classList.add("glitching");
+
+      setTimeout(() => {
+        binaryStage.classList.remove("glitching");
+      }, 280);
     }, 10000);
 
-    function openError() {
-      errorModal.classList.add("show");
-      errorModal.setAttribute("aria-hidden", "false");
-      closeButton.focus();
+    /* 이진수 또는 :D 클릭 시 별도 Error 페이지 이동 */
+
+    function openErrorPage() {
+      window.location.href = "error.html";
     }
 
-    function closeError() {
-      errorModal.classList.remove("show");
-      errorModal.setAttribute("aria-hidden", "true");
-    }
+    binaryBlocks.forEach((block) => {
+      block.addEventListener("click", openErrorPage);
 
-    secretZone.addEventListener("click", openError);
-    face.addEventListener("click", openError);
-
-    closeButton.addEventListener("click", closeError);
-    okButton.addEventListener("click", closeError);
-
-    errorModal.addEventListener("click", (event) => {
-      if (event.target === errorModal) {
-        closeError();
-      }
+      block.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openErrorPage();
+        }
+      });
     });
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeError();
-      }
-    });
+    document.getElementById("face").addEventListener("click", openErrorPage);
   </script>
 </body>
 </html>
