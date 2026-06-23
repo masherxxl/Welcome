@@ -14,6 +14,16 @@
   <meta property="og:image:alt" content="WELCOME — black and white hand" />
   <meta property="og:site_name" content="WELCOME" />
 
+  <script>
+    (function () {
+      const search = new URLSearchParams(window.location.search);
+
+      if (search.get("return") === "binary") {
+        document.documentElement.classList.add("returning-to-binary");
+      }
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -46,6 +56,29 @@
 
     button {
       font: inherit;
+    }
+
+    /*
+      이진2에서 돌아오는 동안
+      01이나 만화 첫 장면이 잠깐 보이지 않게 막는 장치
+    */
+
+    html.returning-to-binary #entrance,
+    html.returning-to-binary #comic {
+      visibility: hidden !important;
+    }
+
+    #return-curtain {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: #000000;
+      pointer-events: none;
+    }
+
+    html.returning-to-binary #return-curtain {
+      display: block;
     }
 
     /* 01 — 시작 화면 */
@@ -289,8 +322,6 @@
       }
     }
 
-    /* 10초마다 짧은 글리치 */
-
     #binary-stage.glitching .binary-block.revealed {
       color: #ffffff;
       filter:
@@ -410,6 +441,7 @@
   </section>
 
   <div id="blackout" aria-hidden="true"></div>
+  <div id="return-curtain" aria-hidden="true"></div>
 
   <main id="comic" hidden>
     <img src="0.png" alt="WELCOME comic part 1" />
@@ -522,16 +554,24 @@
 
       waitForComicImages(() => {
         requestAnimationFrame(() => {
-          binaryStage.scrollIntoView({
-            behavior: "auto",
-            block: "start"
-          });
+          const binaryTop =
+            binaryStage.getBoundingClientRect().top + window.scrollY;
 
-          history.replaceState(
-            null,
-            "",
-            `${window.location.pathname}#binary-stage`
-          );
+          window.scrollTo(0, binaryTop);
+
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              document.documentElement.classList.remove(
+                "returning-to-binary"
+              );
+
+              history.replaceState(
+                null,
+                "",
+                `${window.location.pathname}#binary-stage`
+              );
+            }, 70);
+          });
         });
       });
     }
