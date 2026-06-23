@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ARCHIVE NOTE</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&family=Noto+Sans+KR:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #000000;
+    }
+
+    body {
+      color: #ffffff;
+    }
+
+    .page-title {
+      position: fixed;
+      top: 24px;
+      left: 28px;
+      margin: 0;
+      color: #d8d8d8;
+      font-family: "Handjet", monospace;
+      font-size: clamp(1.35rem, 5vw, 2.3rem);
+      font-weight: 400;
+      letter-spacing: 0.13em;
+    }
+
+    .page-index {
+      position: fixed;
+      top: 31px;
+      right: 28px;
+      color: #777777;
+      font-family: "Handjet", monospace;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+    }
+
+    main {
+      display: grid;
+      min-height: 100svh;
+      padding: 100px 32px 92px;
+      place-items: center;
+    }
+
+    .archive-message {
+      width: min(100%, 660px);
+      margin: 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: clamp(1.05rem, 4.5vw, 1.65rem);
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      line-height: 1.9;
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 0.9s ease,
+        transform 0.9s ease;
+    }
+
+    .archive-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .return-button {
+      position: fixed;
+      bottom: 26px;
+      left: 28px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #d8d8d8;
+      cursor: pointer;
+      font-family: "Handjet", monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+    }
+
+    .return-button:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="page-title">ARCHIVE NOTE</h1>
+  <div class="page-index">ENTRY // 04</div>
+
+  <main>
+    <p id="archive-message" class="archive-message"></p>
+  </main>
+
+  <button id="return-button" class="return-button" type="button">
+    ← RETURN
+  </button>
+
+  <script>
+    /*
+      ===== 세계관 대사 수정은 여기 한 줄만 =====
+      아래 따옴표 안의 문장을 바꾸면 페이지 대사가 바뀜.
+    */
+    const archiveMessage =
+      "우리 같은 데이터도 살 수 있는 세계가 있더랍니다. 신께서 우리에게 하사하셨습니다.";
+
+    const messageElement = document.getElementById("archive-message");
+    messageElement.textContent = archiveMessage;
+
+    setTimeout(() => {
+      messageElement.classList.add("show");
+    }, 550);
+
+    function returnToBinaryStage() {
+      window.location.href = "index.html?return=binary#binary-stage";
+    }
+
+    document
+      .getElementById("return-button")
+      .addEventListener("click", returnToBinaryStage);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        returnToBinaryStage();
+      }
+    });
+  </script>
+</body>
+</html>
