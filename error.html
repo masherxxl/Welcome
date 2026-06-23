@@ -6,11 +6,21 @@
 
   <title>Error!</title>
 
+  <link
+    rel="preload"
+    href="./determination-sans-k2.ttf?v=4"
+    as="font"
+    type="font/ttf"
+    crossorigin
+  />
+
   <style>
     @font-face {
-      font-family: "Determination Sans K2";
-      src: url("determination-sans-k2.ttf") format("truetype");
-      font-display: swap;
+      font-family: "DeterminationSansK2";
+      src: url("./determination-sans-k2.ttf?v=4") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
     }
 
     * {
@@ -27,25 +37,40 @@
     body {
       overflow: hidden;
       color: #ffffff;
-      font-family: "Determination Sans K2", monospace;
+      opacity: 0;
+      font-family: "DeterminationSansK2", monospace;
+      transition: opacity 0.25s ease;
+    }
+
+    body.font-ready {
+      opacity: 1;
     }
 
     .error-title {
       position: fixed;
-      top: 26px;
+      top: 25px;
       left: 28px;
       z-index: 2;
       margin: 0;
-      padding-right: 0.12em;
-      color: #f4f4f4;
-      font-family: "Determination Sans K2", monospace;
-      font-size: clamp(1.9rem, 7vw, 3.15rem);
+      color: #f2f2f2;
+      font-family: "DeterminationSansK2", monospace;
+
+      /*
+        ===== Error! 글자 크기 수정 구역 =====
+        첫 숫자 = 최소 크기
+        가운데 숫자 = 화면 크기에 따라 바뀌는 크기
+        마지막 숫자 = 최대 크기
+      */
+      font-size: clamp(1.35rem, 4.8vw, 2.3rem);
+
       font-weight: 400;
-      letter-spacing: -0.09em;
-      text-shadow:
-        0 0 3px rgba(255, 255, 255, 0.9),
-        0 0 10px rgba(255, 255, 255, 0.42),
-        0 0 22px rgba(255, 255, 255, 0.16);
+      letter-spacing: -0.06em;
+
+      /*
+        Error!에는 글로우 없음
+      */
+      text-shadow: none;
+
       animation: title-appear 0.75s steps(3, end) both;
     }
 
@@ -79,16 +104,19 @@
       width: min(100%, 640px);
       margin: 0;
       color: #eeeeee;
-      font-family: "Determination Sans K2", monospace;
-      font-size: clamp(1.2rem, 5vw, 2rem);
+      font-family: "DeterminationSansK2", monospace;
+      font-size: clamp(1.15rem, 4.8vw, 1.9rem);
       font-weight: 400;
       letter-spacing: -0.05em;
       line-height: 1.75;
       text-align: center;
+
+      /*
+        본문 글자만 은은한 흰빛 글로우
+      */
       text-shadow:
-        0 0 3px rgba(255, 255, 255, 0.78),
-        0 0 11px rgba(255, 255, 255, 0.32),
-        0 0 22px rgba(255, 255, 255, 0.12);
+        0 0 3px rgba(255, 255, 255, 0.48),
+        0 0 10px rgba(255, 255, 255, 0.2);
     }
 
     .typed-char {
@@ -102,8 +130,8 @@
         filter: blur(4px);
         transform: translate(-2px, 2px);
         text-shadow:
-          -2px 0 rgba(255, 40, 40, 0.7),
-          2px 0 rgba(0, 220, 255, 0.7);
+          -2px 0 rgba(255, 40, 40, 0.55),
+          2px 0 rgba(0, 220, 255, 0.55);
       }
 
       30% {
@@ -150,18 +178,17 @@
 
     /*
       ===== 타이핑 속도 수정 구역 =====
-      숫자가 클수록 더 느려짐.
-      지금은 일부러 속도가 들쭉날쭉하게 설정되어 있음.
+      숫자가 커질수록 더 느려짐.
     */
     const typingSettings = {
-      startDelay: 900,
-      minimumDelay: 210,
-      maximumDelay: 430,
-      spaceExtraDelay: 180,
-      punctuationExtraDelay: 470,
-      strangePauseChance: 0.18,
-      strangePauseMinimum: 220,
-      strangePauseMaximum: 650
+      startDelay: 950,
+      minimumDelay: 220,
+      maximumDelay: 460,
+      spaceExtraDelay: 190,
+      punctuationExtraDelay: 520,
+      strangePauseChance: 0.2,
+      strangePauseMinimum: 230,
+      strangePauseMaximum: 680
     };
 
     const typedMessage = document.getElementById("typed-message");
@@ -220,7 +247,26 @@
       );
     }
 
-    setTimeout(typeNextCharacter, typingSettings.startDelay);
+    async function prepareFontAndStart() {
+      try {
+        await document.fonts.load(
+          '400 16px "DeterminationSansK2"'
+        );
+
+        await document.fonts.ready;
+      } catch (error) {
+        console.warn("Font loading failed.", error);
+      }
+
+      document.body.classList.add("font-ready");
+
+      setTimeout(
+        typeNextCharacter,
+        typingSettings.startDelay
+      );
+    }
+
+    prepareFontAndStart();
   </script>
 </body>
 </html>
