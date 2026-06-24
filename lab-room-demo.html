@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Room - 11101011</title>
 
   <style>
@@ -15,9 +15,8 @@
     }
 
     :root {
-      --ink: #f7f8ff;
-      --blue: #8da1ff;
-      --page: #000000;
+      --ink: #f8f8ff;
+      --blue: #8ea2ff;
     }
 
     * {
@@ -29,11 +28,8 @@
     body {
       margin: 0;
       min-height: 100%;
-      background: var(--page);
+      background: #000000;
       color: var(--ink);
-    }
-
-    body {
       font-family: "DeterminationK2", monospace;
       overflow-x: hidden;
     }
@@ -47,36 +43,45 @@
     }
 
     #app {
-      width: min(100%, 980px);
+      width: min(100%, 440px);
       margin: 0 auto;
-      padding: 16px 12px 24px;
+      padding: 17px 14px 26px;
     }
 
     .room-title {
-      margin: 0 0 18px;
-      color: #c8c8d4;
-      font-size: clamp(18px, 5vw, 34px);
+      margin: 0 0 16px;
+      color: #c6c6d1;
+      font-size: clamp(18px, 5.4vw, 28px);
       font-weight: 400;
-      letter-spacing: 0.04em;
       line-height: 1;
+      letter-spacing: 0.035em;
+    }
+
+    #game-shell {
+      width: 100%;
     }
 
     /*
-      연구실 배경
-      room-bg.png 파일을 사용
+      연구실 이미지 원본 크기: 772 x 764
+      파일명: room-bg.png
     */
     #room-stage {
       position: relative;
       width: 100%;
-      aspect-ratio: 1.47 / 1;
+      aspect-ratio: 772 / 764;
       overflow: hidden;
-      background:
-        #000000
-        url("./room-bg.png")
-        center center / cover
-        no-repeat;
+      background: #000000;
       image-rendering: pixelated;
-      image-rendering: crisp-edges;
+    }
+
+    #room-bg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      image-rendering: pixelated;
+      pointer-events: none;
+      user-select: none;
     }
 
     /*
@@ -85,32 +90,32 @@
     #player {
       position: absolute;
       left: 50%;
-      top: 77%;
-      z-index: 5;
+      top: 76%;
+      z-index: 4;
       width: 5.3%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
       pointer-events: none;
-      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.45));
     }
 
     #player::before {
       position: absolute;
       inset: 0;
       content: "";
-      border: 1px solid #11131d;
+      border: 1px solid #0d0e16;
       background:
         linear-gradient(
           to bottom,
           #ffffff 0 27%,
-          #d5daf4 27% 57%,
-          #8c95bc 57% 100%
+          #d8def9 27% 58%,
+          #8c96c1 58% 100%
         );
       clip-path: polygon(
         35% 0%,
         65% 0%,
-        73% 10%,
-        73% 28%,
+        74% 10%,
+        74% 28%,
         88% 42%,
         82% 57%,
         69% 57%,
@@ -123,8 +128,8 @@
         31% 57%,
         18% 57%,
         12% 42%,
-        27% 28%,
-        27% 10%
+        26% 28%,
+        26% 10%
       );
     }
 
@@ -135,7 +140,7 @@
       width: 20%;
       height: 9%;
       content: "";
-      background: #080913;
+      background: #05050a;
     }
 
     #player.walking {
@@ -148,19 +153,16 @@
       }
     }
 
-    /*
-      스크린 가까이 갔을 때만 나오는 힌트
-    */
     #nearby-hint {
       position: absolute;
       left: 50%;
-      bottom: 3.5%;
+      bottom: 4%;
       z-index: 6;
       padding: 5px 8px 4px;
-      border: 1px solid rgba(141, 161, 255, 0.8);
+      border: 1px solid rgba(142, 162, 255, 0.85);
       background: rgba(0, 0, 0, 0.9);
       color: #ffffff;
-      font-size: clamp(11px, 3vw, 16px);
+      font-size: clamp(10px, 2.9vw, 14px);
       line-height: 1;
       white-space: nowrap;
       transform: translateX(-50%);
@@ -174,21 +176,31 @@
     }
 
     /*
-      T1 큰 대화창
-      실제 이미지 비율: 2858 x 1651
-      파일명은 반드시 T1.png
+      시작할 때 조이스틱은 연구실 오른쪽 아래에 작게 있음
+    */
+    #stage-controller-anchor {
+      position: absolute;
+      right: 3.5%;
+      bottom: 3.5%;
+      z-index: 7;
+      width: 44%;
+      aspect-ratio: 2.18 / 1;
+    }
+
+    /*
+      T1 원본 크기: 2858 x 1651
+      파일명: T1.png
     */
     #main-dialog {
       position: relative;
       width: 100%;
       aspect-ratio: 2858 / 1651;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     /*
-      T0 행동창
-      실제 이미지 비율: 4716 x 2164
-      파일명은 반드시 T0.PNG
+      T0 원본 크기: 4716 x 2164
+      파일명: T0.PNG
     */
     #action-dialog {
       position: relative;
@@ -199,12 +211,12 @@
     .frame {
       position: absolute;
       inset: 0;
+      display: block;
       width: 100%;
       height: 100%;
       pointer-events: none;
       user-select: none;
       image-rendering: pixelated;
-      image-rendering: crisp-edges;
     }
 
     /*
@@ -214,26 +226,25 @@
       position: absolute;
       inset: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 26%;
-      gap: 3%;
-      padding: 13% 12% 15%;
+      grid-template-columns: minmax(0, 1fr) 27%;
+      gap: 2%;
+      padding: 13% 11% 14%;
     }
 
     #main-text {
       align-self: start;
-      color: #ffffff;
-      font-size: clamp(14px, 3.9vw, 26px);
-      line-height: 1.35;
-      letter-spacing: 0.02em;
       white-space: pre-wrap;
       word-break: keep-all;
+      font-size: clamp(13px, 3.8vw, 21px);
+      line-height: 1.28;
+      letter-spacing: 0.01em;
     }
 
     #choice-column {
       align-self: start;
       display: grid;
-      gap: 10%;
-      padding-top: 2%;
+      gap: 11%;
+      padding-top: 1%;
     }
 
     .yn-choice {
@@ -241,97 +252,87 @@
       background: transparent;
       color: #ffffff;
       padding: 0;
-      font-size: clamp(15px, 3.9vw, 26px);
-      line-height: 1.12;
+      font-size: clamp(13px, 3.8vw, 21px);
+      line-height: 1.1;
       text-align: left;
       cursor: pointer;
     }
 
     .yn-choice.active {
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.65);
       transform: translateX(2px);
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.75);
     }
 
     /*
-      T0 + 조이스틱은 모바일에서도 가로 배치
+      T0 왼쪽 + 조이스틱 오른쪽
     */
     #bottom-row {
       display: grid;
       grid-template-columns: minmax(0, 1.58fr) minmax(0, 1fr);
-      gap: 10px;
-      margin-top: 10px;
+      gap: 9px;
+      margin-top: 9px;
       align-items: stretch;
     }
 
-    /*
-      아직 조사 전일 때:
-      T0는 숨기고 작은 조이스틱만 우측에 둠
-    */
-    #bottom-row.idle {
-      grid-template-columns: 1fr;
-      justify-items: end;
+    #bottom-controller-slot {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
     }
 
-    #bottom-row.idle #controller {
-      width: min(58%, 260px);
-      aspect-ratio: 2.18 / 1;
-    }
-
-    /*
-      T0 글자
-    */
     #action-dialog .action-content {
       position: absolute;
       inset: 0;
       display: grid;
       align-content: start;
       gap: 3%;
-      padding: 14% 12% 15%;
+      padding: 13% 12% 13%;
     }
 
     .action-btn {
+      display: block;
       width: max-content;
       max-width: 100%;
       border: 0;
       background: transparent;
       color: #ffffff;
       padding: 0;
-      font-size: clamp(10px, 3.05vw, 22px);
-      line-height: 1.03;
+      font-size: clamp(8px, 2.62vw, 15px);
+      line-height: 1.05;
       text-align: left;
       white-space: nowrap;
       cursor: pointer;
     }
 
-    .action-btn:active,
-    .action-btn:focus-visible {
+    .action-btn:focus-visible,
+    .action-btn:active {
       outline: 0;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
       transform: translateX(2px);
+      text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
     }
 
     /*
       조이스틱 패널
     */
     #controller {
-      position: relative;
+      position: absolute;
+      inset: 0;
       min-width: 0;
       min-height: 0;
-      align-self: stretch;
       overflow: hidden;
-      border: 2px solid rgba(141, 161, 255, 0.85);
-      background: linear-gradient(#05050a, #000000);
+      border: 2px solid rgba(142, 162, 255, 0.86);
+      background: linear-gradient(#070710, #000000);
       box-shadow:
         inset 0 0 0 4px #000000,
-        inset 0 0 0 6px rgba(141, 161, 255, 0.24),
-        0 0 8px rgba(141, 161, 255, 0.18);
+        inset 0 0 0 6px rgba(142, 162, 255, 0.24),
+        0 0 8px rgba(142, 162, 255, 0.16);
     }
 
     #controller::before {
       position: absolute;
       inset: 6px;
       content: "";
-      border: 1px solid rgba(141, 161, 255, 0.35);
+      border: 1px solid rgba(142, 162, 255, 0.36);
       pointer-events: none;
     }
 
@@ -341,30 +342,30 @@
       display: grid;
       grid-template-columns: 56% 44%;
       align-items: center;
-      padding: 9% 8%;
+      padding: 8% 8%;
     }
 
     #joystick-base {
       position: relative;
       justify-self: start;
-      width: min(100%, 112px);
+      width: min(100%, 104px);
       aspect-ratio: 1;
-      border: 2px solid rgba(141, 161, 255, 0.8);
+      border: 2px solid rgba(142, 162, 255, 0.8);
       border-radius: 50%;
       background:
         radial-gradient(
           circle,
-          rgba(141, 161, 255, 0.08) 0 41%,
-          transparent 42%
+          rgba(142, 162, 255, 0.08) 0 42%,
+          transparent 43%
         ),
         radial-gradient(
           circle,
           #1d2133 0 59%,
-          #121522 60% 100%
+          #111420 60%
         );
       box-shadow:
-        inset 0 0 0 7px rgba(141, 161, 255, 0.05),
-        0 0 8px rgba(141, 161, 255, 0.15);
+        inset 0 0 0 6px rgba(142, 162, 255, 0.06),
+        0 0 7px rgba(142, 162, 255, 0.15);
       touch-action: none;
     }
 
@@ -374,14 +375,14 @@
       top: 50%;
       width: 43%;
       aspect-ratio: 1;
-      border: 2px solid #0a0a10;
+      border: 2px solid #090a10;
       border-radius: 50%;
       background:
         radial-gradient(
           circle at 36% 31%,
           #ffffff 0 23%,
-          #d9ddf5 24% 52%,
-          #9da7d8 53% 100%
+          #dde1f7 24% 52%,
+          #9ca7d9 53%
         );
       transform: translate(-50%, -50%);
       pointer-events: none;
@@ -392,37 +393,34 @@
       min-width: 0;
       justify-items: center;
       align-content: center;
-      gap: 13%;
+      gap: 14%;
     }
 
     #interact-button {
-      width: 82%;
-      max-width: 104px;
+      width: 83%;
+      max-width: 94px;
       border: 1px solid var(--blue);
       background: #05050a;
       color: #ffffff;
       padding: 9% 4% 7%;
-      font-size: clamp(11px, 3vw, 19px);
+      font-size: clamp(10px, 2.7vw, 16px);
       line-height: 0.95;
       cursor: pointer;
     }
 
     #interact-button .sub {
       display: block;
-      margin-top: 4px;
+      margin-top: 3px;
       font-size: 0.78em;
     }
 
     .controller-label {
-      color: #d9ddf4;
-      font-size: clamp(9px, 2.5vw, 15px);
+      color: #d7dcf7;
+      font-size: clamp(8px, 2.3vw, 13px);
       line-height: 1.05;
       text-align: center;
     }
 
-    /*
-      안을 자세히 들여다본다 -> no-room
-    */
     #cut-overlay {
       position: fixed;
       inset: 0;
@@ -449,28 +447,41 @@
     }
 
     /*
-      아이패드 및 넓은 화면
+      아이패드/가로 화면
     */
     @media (min-width: 720px) {
       #app {
-        padding: 22px 20px 30px;
+        width: min(92vw, 920px);
+        padding: 24px 22px 32px;
       }
 
       .room-title {
-        margin-bottom: 22px;
+        margin-bottom: 20px;
+        font-size: 32px;
       }
 
       #room-stage {
-        aspect-ratio: 1.6 / 1;
+        aspect-ratio: 772 / 650;
+      }
+
+      #stage-controller-anchor {
+        width: 32%;
+        right: 4%;
+        bottom: 4%;
       }
 
       #bottom-row {
         gap: 16px;
-        margin-top: 14px;
+        margin-top: 16px;
       }
 
-      .controller-inner {
-        padding: 8%;
+      .action-btn {
+        font-size: 21px;
+      }
+
+      #main-text,
+      .yn-choice {
+        font-size: 30px;
       }
 
       #joystick-base {
@@ -478,36 +489,22 @@
       }
     }
 
-    /*
-      아주 작은 모바일
-    */
-    @media (max-width: 370px) {
+    @media (max-width: 360px) {
       #app {
-        padding-inline: 9px;
-      }
-
-      #bottom-row {
-        gap: 7px;
+        padding-inline: 10px;
       }
 
       .action-btn {
-        font-size: 9px;
+        font-size: 8px;
       }
 
-      #main-text {
-        font-size: 13px;
-      }
-
+      #main-text,
       .yn-choice {
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .controller-inner {
         padding-inline: 6%;
-      }
-
-      #interact-button {
-        font-size: 10px;
       }
     }
   </style>
@@ -517,36 +514,60 @@
   <main id="app">
     <h1 class="room-title">Room- 11101011</h1>
 
-    <section id="room-stage" aria-label="미니 연구실">
-      <div id="player" aria-hidden="true"></div>
-      <div id="nearby-hint" aria-live="polite">스크린 · 조사 가능</div>
-    </section>
+    <section id="game-shell">
+      <section id="room-stage" aria-label="미니 연구실">
+        <img id="room-bg" src="./room-bg.png" alt="">
 
-    <!-- T1: 처음에는 숨김 -->
-    <section id="main-dialog" hidden aria-live="polite">
-      <img class="frame" src="./T1.png" alt="" />
-
-      <div class="dialog-content">
-        <div id="main-text"></div>
-
-        <div id="choice-column" hidden>
-          <button class="yn-choice active" id="choice-yes" type="button">• 네</button>
-          <button class="yn-choice" id="choice-no" type="button">• 아니오</button>
+        <div id="player" aria-hidden="true"></div>
+        <div id="nearby-hint" aria-live="polite">
+          스크린 · 조사 가능
         </div>
-      </div>
-    </section>
 
-    <section id="bottom-row" class="idle">
-      <!-- T0: 스크린 조사 시에만 표시 -->
-      <section id="action-dialog" aria-label="행동 선택" hidden>
-        <img class="frame" src="./T0.PNG" alt="" />
+        <div id="stage-controller-anchor" aria-label="이동 조작 패널"></div>
+      </section>
 
-        <div class="action-content">
-          <button class="action-btn" data-action="inspect" type="button">1. 확인한다</button>
-          <button class="action-btn" data-action="drop" type="button">2. 바닥으로 버린다.</button>
-          <button class="action-btn" data-action="peek" type="button">3. 안을 자세히 들여다본다.</button>
-          <button class="action-btn" data-action="back" type="button">4. 돌아간다</button>
+      <section id="main-dialog" hidden aria-live="polite">
+        <img class="frame" src="./T1.png" alt="">
+
+        <div class="dialog-content">
+          <div id="main-text"></div>
+
+          <div id="choice-column" hidden>
+            <button class="yn-choice active" id="choice-yes" type="button">
+              • 네
+            </button>
+
+            <button class="yn-choice" id="choice-no" type="button">
+              • 아니오
+            </button>
+          </div>
         </div>
+      </section>
+
+      <section id="bottom-row" hidden aria-label="행동 선택과 조작 패널">
+        <section id="action-dialog" aria-label="행동 선택">
+          <img class="frame" src="./T0.PNG" alt="">
+
+          <div class="action-content">
+            <button class="action-btn" data-action="inspect" type="button">
+              1. 확인한다
+            </button>
+
+            <button class="action-btn" data-action="drop" type="button">
+              2. 바닥으로 버린다.
+            </button>
+
+            <button class="action-btn" data-action="peek" type="button">
+              3. 안을 자세히 들여다본다.
+            </button>
+
+            <button class="action-btn" data-action="back" type="button">
+              4. 돌아간다
+            </button>
+          </div>
+        </section>
+
+        <div id="bottom-controller-slot"></div>
       </section>
 
       <section id="controller" aria-label="조작 패널">
@@ -562,7 +583,7 @@
             </button>
 
             <div class="controller-label">
-              이동<br />
+              이동<br>
               조이스틱
             </div>
           </div>
@@ -605,6 +626,10 @@
 
     const $ = (selector) => document.querySelector(selector);
 
+    const stageAnchor = $("#stage-controller-anchor");
+    const bottomSlot = $("#bottom-controller-slot");
+    const controller = $("#controller");
+
     const player = $("#player");
     const nearbyHint = $("#nearby-hint");
 
@@ -615,13 +640,14 @@
     const choiceNo = $("#choice-no");
 
     const bottomRow = $("#bottom-row");
-    const actionDialog = $("#action-dialog");
-    const actionButtons = [...document.querySelectorAll(".action-btn")];
-
     const interactButton = $("#interact-button");
     const joystickBase = $("#joystick-base");
     const joystickKnob = $("#joystick-knob");
     const cutOverlay = $("#cut-overlay");
+
+    const actionButtons = [
+      ...document.querySelectorAll(".action-btn")
+    ];
 
     const state = {
       mode: "free",
@@ -645,7 +671,8 @@
       y: 0
     };
 
-    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const clamp = (value, min, max) =>
+      Math.max(min, Math.min(max, value));
 
     const byId = (id) =>
       OBJECTS.find((item) => item.id === id) || null;
@@ -653,20 +680,24 @@
     const distance = (a, b, c, d) =>
       Math.hypot(a - c, b - d);
 
+    function moveController(target) {
+      target.append(controller);
+    }
+
     function updatePlayer() {
       player.style.left = `${state.playerX}%`;
       player.style.top = `${state.playerY}%`;
     }
 
     function nearestObject() {
-      const possible = OBJECTS.filter(
-        (item) => !state.removed.has(item.id)
-      );
+      let nearest = null;
+      let minimumDistance = Infinity;
 
-      let closest = null;
-      let closestDistance = Infinity;
+      for (const item of OBJECTS) {
+        if (state.removed.has(item.id)) {
+          continue;
+        }
 
-      for (const item of possible) {
         const currentDistance = distance(
           state.playerX,
           state.playerY,
@@ -674,22 +705,13 @@
           item.y
         );
 
-        if (currentDistance < closestDistance) {
-          closestDistance = currentDistance;
-          closest = item;
+        if (currentDistance < minimumDistance) {
+          minimumDistance = currentDistance;
+          nearest = item;
         }
       }
 
-      return closestDistance <= 12 ? closest : null;
-    }
-
-    function setDialogVisible(visible) {
-      mainDialog.hidden = !visible;
-    }
-
-    function setActionsVisible(visible) {
-      actionDialog.hidden = !visible;
-      bottomRow.classList.toggle("idle", !visible);
+      return minimumDistance <= 12 ? nearest : null;
     }
 
     function updateYN() {
@@ -708,43 +730,50 @@
       state.mode = "free";
       state.activeId = null;
 
+      mainDialog.hidden = true;
+      bottomRow.hidden = true;
       choiceColumn.hidden = true;
-      setDialogVisible(false);
-      setActionsVisible(false);
+
+      moveController(stageAnchor);
     }
 
     function openActionMenu(item) {
       state.mode = "action";
       state.activeId = item.id;
 
+      mainDialog.hidden = true;
       choiceColumn.hidden = true;
-      setDialogVisible(false);
-      setActionsVisible(true);
+      bottomRow.hidden = false;
+
+      moveController(bottomSlot);
     }
 
-    function setQuestion(item) {
+    function openQuestion(item) {
       state.mode = "question";
       state.activeId = item.id;
       state.selectedYN = "yes";
 
       mainText.textContent = "스크린을 확인하시겠습니까?";
-      choiceColumn.hidden = false;
 
+      choiceColumn.hidden = false;
+      mainDialog.hidden = false;
+      bottomRow.hidden = false;
+
+      moveController(bottomSlot);
       updateYN();
-      setDialogVisible(true);
-      setActionsVisible(true);
     }
 
-    function setMessage(text) {
+    function openMessage(text) {
       state.mode = "message";
 
       mainText.textContent =
         `${text}\n\n[A] 버튼 또는 대화창을 누르면 돌아갑니다.`;
 
       choiceColumn.hidden = true;
+      mainDialog.hidden = false;
+      bottomRow.hidden = false;
 
-      setDialogVisible(true);
-      setActionsVisible(true);
+      moveController(bottomSlot);
     }
 
     function chooseYN(value) {
@@ -760,7 +789,7 @@
       }
 
       if (value === "yes") {
-        setMessage(item.description);
+        openMessage(item.description);
       } else {
         openActionMenu(item);
       }
@@ -780,13 +809,13 @@
       }
 
       if (action === "inspect") {
-        setQuestion(item);
+        openQuestion(item);
         return;
       }
 
       if (action === "drop") {
         state.removed.add(item.id);
-        setMessage(`${item.label}을(를) 바닥으로 버렸다.`);
+        openMessage(`${item.label}을(를) 바닥으로 버렸다.`);
         return;
       }
 
@@ -837,7 +866,7 @@
       }
     }
 
-    function movementVector() {
+    function moveVector() {
       if (joystick.active) {
         return {
           x: joystick.x,
@@ -861,12 +890,11 @@
       };
     }
 
-    function setJoystickPosition(clientX, clientY) {
+    function setJoystick(clientX, clientY) {
       const rect = joystickBase.getBoundingClientRect();
 
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-
       const maxDistance = rect.width * 0.28;
 
       const dx = clientX - centerX;
@@ -886,8 +914,8 @@
         (dy / totalDistance) *
         (limitedDistance / maxDistance);
 
-      const knobX = joystick.x * (rect.width * 0.22);
-      const knobY = joystick.y * (rect.width * 0.22);
+      const knobX = joystick.x * rect.width * 0.22;
+      const knobY = joystick.y * rect.width * 0.22;
 
       joystickKnob.style.transform =
         `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
@@ -906,21 +934,13 @@
       joystick.active = true;
       joystickBase.setPointerCapture(event.pointerId);
 
-      setJoystickPosition(
-        event.clientX,
-        event.clientY
-      );
+      setJoystick(event.clientX, event.clientY);
     });
 
     joystickBase.addEventListener("pointermove", (event) => {
-      if (!joystick.active) {
-        return;
+      if (joystick.active) {
+        setJoystick(event.clientX, event.clientY);
       }
-
-      setJoystickPosition(
-        event.clientX,
-        event.clientY
-      );
     });
 
     joystickBase.addEventListener("pointerup", resetJoystick);
@@ -1064,15 +1084,15 @@
       lastTime = currentTime;
 
       if (state.mode === "free") {
-        const vector = movementVector();
+        const vector = moveVector();
 
-        const isMoving =
+        const moving =
           vector.x !== 0 ||
           vector.y !== 0;
 
-        player.classList.toggle("walking", isMoving);
+        player.classList.toggle("walking", moving);
 
-        if (isMoving) {
+        if (moving) {
           state.playerX = clamp(
             state.playerX + vector.x * 20 * deltaTime,
             7,
