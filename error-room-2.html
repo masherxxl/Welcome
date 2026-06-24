@@ -9,8 +9,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=11") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=11") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=12") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=12") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -41,7 +41,7 @@
       min-height: 100svh;
       padding: 24px;
       opacity: 1;
-      transition: opacity 0.42s ease;
+      transition: opacity 0.36s steps(3, end);
     }
 
     #room-content.leaving {
@@ -75,25 +75,62 @@
       letter-spacing: 0.015em;
       line-height: 1.58;
       white-space: pre-wrap;
+      transform-origin: left center;
       text-shadow:
         0 0 5px rgba(255, 255, 255, 0.82),
         0 0 16px rgba(255, 255, 255, 0.34);
     }
 
-    .typed-char {
-      display: inline-block;
-      animation: type-in 0.1s steps(2, end) both;
+    #error-message.type-tick {
+      animation: message-tick 0.08s steps(2, end) both;
     }
 
-    @keyframes type-in {
+    @keyframes message-tick {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      45% {
+        transform: translate(-1px, 1px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    .typed-char {
+      display: inline-block;
+      min-width: 0.01em;
+      transform-origin: center;
+      animation: type-pop 0.09s steps(2, end) both;
+    }
+
+    @keyframes type-pop {
       0% {
         opacity: 0;
-        transform: translateY(1px);
+        filter: brightness(1.6);
+        transform:
+          translate(var(--pop-x), var(--pop-y))
+          scale(var(--pop-scale));
+        text-shadow:
+          0 0 2px rgba(255, 255, 255, 0.5),
+          0 0 12px rgba(255, 255, 255, 0.3);
+      }
+
+      45% {
+        opacity: 1;
+        filter: brightness(1.45);
+        transform: translate(1px, 0) scale(1);
+        text-shadow:
+          0 0 4px rgba(255, 255, 255, 0.9),
+          0 0 14px rgba(255, 255, 255, 0.48);
       }
 
       100% {
         opacity: 1;
-        transform: translateY(0);
+        filter: brightness(1);
+        transform: translate(0, 0) scale(1);
       }
     }
 
@@ -127,7 +164,7 @@
       pointer-events: none;
       background: #000000;
       opacity: 0;
-      transition: opacity 0.16s steps(2, end);
+      transition: opacity 0.14s steps(2, end);
     }
 
     #screen-blackout.active {
@@ -153,21 +190,21 @@
 
   <script>
     /*
-      하단 문 도트 그림:
-      GitHub 맨 위 폴더에 그림을 올린 뒤 아래 "" 안에 파일명을 적어줘.
+      나중에 문 도트 그림을 넣을 때:
 
-      예:
       const errorDoorsFile = "error-doors.png";
+
+      처럼 파일명을 적어줘.
     */
 
     const errorDoorsFile = "";
 
     /*
-      타자 소리:
-      나중에 소리 파일을 올린 뒤 아래 "" 안에 파일명을 적어줘.
+      나중에 타자 소리를 넣을 때:
 
-      예:
       const textSoundFile = "error-type.ogg";
+
+      처럼 파일명을 적어줘.
     */
 
     const textSoundFile = "";
@@ -177,9 +214,13 @@
 
     const timing = {
       startDelay: 420,
-      typingDelay: 54,
-      punctuationDelay: 150,
-      fadeDuration: 420,
+      baseTypingDelay: 74,
+      randomTypingDelay: 18,
+      wordPause: 48,
+      punctuationPause: 190,
+      rhythmPauseEvery: 4,
+      rhythmPauseDuration: 54,
+      fadeDuration: 360,
       blackHold: 2000
     };
 
@@ -191,7 +232,7 @@
     let typeSound = null;
     let typingFinished = false;
     let isLeaving = false;
-    let index = 0;
+    let characterIndex = 0;
 
     if (errorDoorsFile) {
       doorArt.src = errorDoorsFile;
@@ -207,6 +248,10 @@
       typeSound.volume = textSoundVolume;
     }
 
+    function randomRange(minimum, maximum) {
+      return Math.random() * (maximum - minimum) + minimum;
+    }
+
     function playTextSound() {
       if (!typeSound) {
         return;
@@ -215,38 +260,90 @@
       const sound = typeSound.cloneNode();
 
       sound.volume = textSoundVolume;
-      sound.playbackRate = 0.96 + Math.random() * 0.08;
+      sound.playbackRate = randomRange(0.94, 1.06);
+
       sound.play().catch(() => {});
     }
 
-    function typeNext() {
-      const chars = Array.from(errorMessage);
+    function createTypedCharacter(character) {
+      const span = document.createElement("span");
 
-      if (index >= chars.length) {
+      span.className = "typed-char";
+      span.textContent = character === " " ? "\u00A0" : character;
+
+      span.style.setProperty(
+        "--pop-x",
+        `${Math.floor(randomRange(-2, 3))}px`
+      );
+
+      span.style.setProperty(
+        "--pop-y",
+        `${Math.floor(randomRange(-1, 2))}px`
+      );
+
+      span.style.setProperty(
+        "--pop-scale",
+        randomRange(1.02, 1.1).toFixed(2)
+      );
+
+      return span;
+    }
+
+    function triggerMessageTick() {
+      messageElement.classList.remove("type-tick");
+
+      void messageElement.offsetWidth;
+
+      messageElement.classList.add("type-tick");
+    }
+
+    function getNextDelay(character) {
+      let delay =
+        timing.baseTypingDelay +
+        Math.floor(
+          randomRange(0, timing.randomTypingDelay)
+        );
+
+      if (character === " ") {
+        delay += timing.wordPause;
+      }
+
+      if (/[.!?,]/.test(character)) {
+        delay += timing.punctuationPause;
+      }
+
+      if (
+        characterIndex > 0 &&
+        characterIndex % timing.rhythmPauseEvery === 0
+      ) {
+        delay += timing.rhythmPauseDuration;
+      }
+
+      return delay;
+    }
+
+    function typeNextCharacter() {
+      const characters = Array.from(errorMessage);
+
+      if (characterIndex >= characters.length) {
         typingFinished = true;
         return;
       }
 
-      const char = chars[index];
-      const span = document.createElement("span");
+      const character = characters[characterIndex];
 
-      span.className = "typed-char";
-      span.textContent = char === " " ? "\u00A0" : char;
+      messageElement.appendChild(
+        createTypedCharacter(character)
+      );
 
-      messageElement.appendChild(span);
+      triggerMessageTick();
       playTextSound();
 
-      index += 1;
-
-      const punctuation = /[.!?,]/.test(char);
+      characterIndex += 1;
 
       setTimeout(
-        typeNext,
-        timing.typingDelay + (
-          punctuation
-            ? timing.punctuationDelay
-            : 0
-        )
+        typeNextCharacter,
+        getNextDelay(character)
       );
     }
 
@@ -278,7 +375,10 @@
       }
     });
 
-    setTimeout(typeNext, timing.startDelay);
+    setTimeout(
+      typeNextCharacter,
+      timing.startDelay
+    );
   </script>
 </body>
 </html>
