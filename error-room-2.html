@@ -9,8 +9,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=12") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=12") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=13") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=13") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -30,7 +30,7 @@
     body {
       overflow: hidden;
       color: #ffffff;
-      font-family: "DeterminationK2", "Noto Sans KR", system-ui, sans-serif;
+      font-family: "DeterminationK2", "Noto Sans KR", -apple-system, system-ui, sans-serif;
       touch-action: manipulation;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
@@ -74,11 +74,11 @@
       font-weight: 400;
       letter-spacing: 0.015em;
       line-height: 1.58;
-      white-space: pre-wrap;
       transform-origin: left center;
       text-shadow:
         0 0 5px rgba(255, 255, 255, 0.82),
         0 0 16px rgba(255, 255, 255, 0.34);
+      white-space: pre-wrap;
     }
 
     #error-message.type-tick {
@@ -170,6 +170,15 @@
     #screen-blackout.active {
       opacity: 1;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      #room-content,
+      #error-message.type-tick,
+      .typed-char {
+        animation: none !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
   </style>
 </head>
 
@@ -189,40 +198,27 @@
   <div id="screen-blackout" aria-hidden="true"></div>
 
   <script>
-    /*
-      나중에 문 도트 그림을 넣을 때:
-
-      const errorDoorsFile = "error-doors.png";
-
-      처럼 파일명을 적어줘.
-    */
-
     const errorDoorsFile = "";
 
     /*
-      나중에 타자 소리를 넣을 때:
+      error.html과 완전히 같은 소리를 사용함.
+      GitHub 맨 위 폴더에 error-type-01.mp3를 올리면 됨.
 
-      const textSoundFile = "error-type.ogg";
-
-      처럼 파일명을 적어줘.
+      다른 소리도 섞고 싶으면 아래처럼 한 줄을 더 추가하면 됨.
+      "error-type-02.mp3",
     */
+    const textSoundFiles = [
+      "error-type-01.mp3"
+    ];
 
-    const textSoundFile = "";
-    const textSoundVolume = 0.18;
-
+    const textSoundVolume = 0.16;
     const errorMessage = "잘못된 방에 입장했습니다.";
 
-
-    // 글자 타이핑 속도
-    
     const timing = {
       startDelay: 420,
-      baseTypingDelay: 30,
-      randomTypingDelay: 10,
-      wordPause: 48,
-      punctuationPause: 190,
-      rhythmPauseEvery: 4,
-      rhythmPauseDuration: 54,
+      characterDelay: 60,
+      wordPause: 220,
+      punctuationPause: 250,
       fadeDuration: 360,
       blackHold: 2000
     };
@@ -232,7 +228,15 @@
     const doorArt = document.getElementById("door-art");
     const screenBlackout = document.getElementById("screen-blackout");
 
-    let typeSound = null;
+    const soundSources = textSoundFiles.map((fileName) => {
+      const audio = new Audio(fileName);
+
+      audio.preload = "auto";
+      audio.volume = textSoundVolume;
+
+      return audio;
+    });
+
     let typingFinished = false;
     let isLeaving = false;
     let characterIndex = 0;
@@ -245,25 +249,23 @@
       });
     }
 
-    if (textSoundFile) {
-      typeSound = new Audio(textSoundFile);
-      typeSound.preload = "auto";
-      typeSound.volume = textSoundVolume;
-    }
-
     function randomRange(minimum, maximum) {
       return Math.random() * (maximum - minimum) + minimum;
     }
 
     function playTextSound() {
-      if (!typeSound) {
+      if (!soundSources.length) {
         return;
       }
 
-      const sound = typeSound.cloneNode();
+      const source = soundSources[
+        Math.floor(Math.random() * soundSources.length)
+      ];
+
+      const sound = source.cloneNode();
 
       sound.volume = textSoundVolume;
-      sound.playbackRate = randomRange(0.94, 1.06);
+      sound.playbackRate = randomRange(0.98, 1.02);
 
       sound.play().catch(() => {});
     }
@@ -286,7 +288,7 @@
 
       span.style.setProperty(
         "--pop-scale",
-        randomRange(1.02, 1.1).toFixed(2)
+        randomRange(1.02, 1.10).toFixed(2)
       );
 
       return span;
@@ -301,11 +303,7 @@
     }
 
     function getNextDelay(character) {
-      let delay =
-        timing.baseTypingDelay +
-        Math.floor(
-          randomRange(0, timing.randomTypingDelay)
-        );
+      let delay = timing.characterDelay;
 
       if (character === " ") {
         delay += timing.wordPause;
@@ -313,13 +311,6 @@
 
       if (/[.!?,]/.test(character)) {
         delay += timing.punctuationPause;
-      }
-
-      if (
-        characterIndex > 0 &&
-        characterIndex % timing.rhythmPauseEvery === 0
-      ) {
-        delay += timing.rhythmPauseDuration;
       }
 
       return delay;
@@ -340,9 +331,21 @@
       );
 
       triggerMessageTick();
-      playTextSound();
+
+      /*
+        공백은 단어 멈춤 역할만 하고,
+        실제 글자가 뜰 때만 커스텀 비프가 재생됨.
+      */
+      if (character !== " ") {
+        playTextSound();
+      }
 
       characterIndex += 1;
+
+      if (characterIndex >= characters.length) {
+        typingFinished = true;
+        return;
+      }
 
       setTimeout(
         typeNextCharacter,
