@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Error!</title>
 
   <style>
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=2") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=2") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=13") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=13") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -28,26 +27,13 @@
       background: #000000;
     }
 
-    html,
-    body,
-    .error-title,
-    .message {
-      font-family: "DeterminationK2", "Noto Sans KR", -apple-system, system-ui, sans-serif !important;
-      font-synthesis: none;
-    }
-
     body {
       overflow: hidden;
       color: #ffffff;
+      font-family: "DeterminationK2", "Noto Sans KR", -apple-system, system-ui, sans-serif;
+      font-synthesis: none;
+      -webkit-tap-highlight-color: transparent;
     }
-
-    /* =========================================================
-       !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-       Error! 글자 크기 변경 구역
-
-       마지막 숫자 2.15rem을 줄이면 Error!가 작아짐
-       마지막 숫자 2.15rem을 늘리면 Error!가 커짐
-       ========================================================= */
 
     .error-title {
       position: fixed;
@@ -56,24 +42,10 @@
       z-index: 2;
       margin: 0;
       color: #f5f5ff;
-
       font-size: clamp(1.45rem, 5.5vw, 2.15rem);
-
       font-weight: 400;
-
-      /* ======================================================
-         !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-         Error! 자간 변경 구역
-
-         숫자가 커질수록 글자 사이가 넓어짐
-         ====================================================== */
       letter-spacing: 0.02em;
-
-      /* Error!은 원래부터 박혀 있던 것처럼: 효과 없음 */
-      text-shadow: none;
-      animation: none;
-      transform: none;
-      opacity: 1;
+      line-height: 1;
     }
 
     .message-area {
@@ -83,42 +55,51 @@
       place-items: center;
     }
 
-    /* =========================================================
-       !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-       중앙 메시지 글자 크기 변경 구역
-
-       마지막 숫자 2.45rem을 줄이면 작아짐
-       마지막 숫자 2.45rem을 늘리면 커짐
-       ========================================================= */
-
     .message {
       width: min(100%, 660px);
+      min-height: 1.7em;
       margin: 0;
       color: #f5f5ff;
-
       font-size: clamp(1.5rem, 6vw, 2.45rem);
-
       font-weight: 400;
+      letter-spacing: 0.06em;
       line-height: 1.7;
       text-align: center;
-      white-space: pre-wrap;
-
-      /* ======================================================
-         !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-         중앙 메시지 자간 변경 구역
-
-         숫자가 커질수록 글자 사이가 넓어짐
-         ====================================================== */
-      letter-spacing: 0.06em;
-
-      /* 본문에만 은은한 흰빛 글로우 */
       text-shadow:
         0 0 5px rgba(255, 255, 255, 0.72),
         0 0 15px rgba(255, 255, 255, 0.38);
+      white-space: pre-wrap;
+    }
+
+    .typed-char {
+      display: inline-block;
+      min-width: 0.01em;
+      transform-origin: center;
+      animation: text-tick 0.08s steps(2, end) both;
+    }
+
+    @keyframes text-tick {
+      0% {
+        opacity: 0;
+        filter: brightness(1.8);
+        transform: translate(0, 1px);
+      }
+
+      50% {
+        opacity: 1;
+        filter: brightness(1.35);
+        transform: translate(1px, 0);
+      }
+
+      100% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: translate(0, 0);
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      * {
+      .typed-char {
         animation: none !important;
       }
     }
@@ -129,53 +110,107 @@
   <h1 class="error-title">Error!</h1>
 
   <main class="message-area">
-    <p id="typed-message" class="message"></p>
+    <p id="typed-message" class="message" aria-live="polite"></p>
   </main>
 
   <script>
-    /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      이진1 방 대사 수정 구역
-
-      따옴표 안의 문장만 바꾸면 됨.
-      ========================================================
-    */
     const errorMessage = "잘못된 방에 입장하셨습니다.";
 
     /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      타이핑 속도 수정 구역
+      두 에러룸이 같은 소리를 쓰도록 파일 이름을 맞춰뒀어.
+      GitHub 맨 위 폴더에 error-type-01.mp3를 올리면 바로 재생됨.
 
-      숫자가 커질수록 한 글자씩 나오는 속도가 느려짐.
-      언더테일처럼 글자 하나당 일정한 간격으로
-      딱. 딱. 딱. 나타나는 방식
-      ========================================================
+      다른 소리도 섞고 싶으면 아래처럼 한 줄을 더 추가하면 됨.
+      "error-type-02.mp3",
     */
+    const textSoundFiles = [
+      "error-type-01.mp3"
+    ];
+
+    const textSoundVolume = 0.16;
+
     const typingSettings = {
       startDelay: 950,
-      characterDelay: 180
+      characterDelay: 72,
+      wordPause: 230,
+      punctuationPause: 260
     };
 
     const typedMessage = document.getElementById("typed-message");
-    const messageTextNode = document.createTextNode("");
+    const characters = Array.from(errorMessage);
 
-    typedMessage.appendChild(messageTextNode);
+    const soundSources = textSoundFiles.map((fileName) => {
+      const audio = new Audio(fileName);
+
+      audio.preload = "auto";
+      audio.volume = textSoundVolume;
+
+      return audio;
+    });
 
     let characterIndex = 0;
 
-    function typeNextCharacter() {
-      if (characterIndex >= errorMessage.length) {
+    function playTextSound() {
+      if (!soundSources.length) {
         return;
       }
 
-      messageTextNode.textContent += errorMessage[characterIndex];
+      const source = soundSources[
+        Math.floor(Math.random() * soundSources.length)
+      ];
+
+      const sound = source.cloneNode();
+
+      sound.volume = textSoundVolume;
+      sound.playbackRate = 0.98 + Math.random() * 0.04;
+
+      sound.play().catch(() => {});
+    }
+
+    function getNextDelay(character) {
+      let delay = typingSettings.characterDelay;
+
+      if (character === " ") {
+        delay += typingSettings.wordPause;
+      }
+
+      if (/[.!?,]/.test(character)) {
+        delay += typingSettings.punctuationPause;
+      }
+
+      return delay;
+    }
+
+    function typeNextCharacter() {
+      if (characterIndex >= characters.length) {
+        return;
+      }
+
+      const character = characters[characterIndex];
+      const characterElement = document.createElement("span");
+
+      characterElement.className = "typed-char";
+      characterElement.textContent = character === " " ? "\u00A0" : character;
+
+      typedMessage.appendChild(characterElement);
+
+      /*
+        공백은 단어 멈춤 역할만 하고,
+        실제 글자가 뜰 때만 커스텀 비프가 재생됨.
+      */
+      if (character !== " ") {
+        playTextSound();
+      }
+
       characterIndex += 1;
+
+      if (characterIndex >= characters.length) {
+        return;
+      }
 
       setTimeout(
         typeNextCharacter,
-        typingSettings.characterDelay
+        getNextDelay(character)
       );
     }
 
