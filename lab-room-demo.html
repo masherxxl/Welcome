@@ -52,9 +52,6 @@
       letter-spacing: .03em;
     }
 
-    /*
-      모든 글자 타이핑 / 버프 동기화 / 화면 반응형 모션
-    */
     .typed-target.typing {
       animation: text-screen-react .32s steps(2, end) infinite;
     }
@@ -140,8 +137,8 @@
     }
 
     /*
-      게임 본 화면
-      제목 아래에서 더 아래로 내림
+      게임 본 화면 위치
+      더 아래로 내리고 싶으면 여기 숫자를 키우면 됨
     */
     #room-stage {
       position: relative;
@@ -160,7 +157,17 @@
       object-fit: cover;
       object-position: 50% 49%;
       transform: scale(1.17);
-      image-rendering: pixelated;
+      @keyframes panel-text-response {
+      0% {
+        filter: brightness(.82);
+      }
+
+      45% {
+        filter: brightness(1.38);
+      }
+
+      100% {
+        filter: brightness(1 image-rendering: pixelated;
       pointer-events: none;
       user-select: none;
     }
@@ -229,10 +236,6 @@
       }
     }
 
-    /*
-      각 스크린 세모 문양 바로 위 확인 버튼
-      가까이 가면 서서히 나타남
-    */
     #confirm-button {
       position: absolute;
       z-index: 5;
@@ -270,9 +273,6 @@
       transform: translate(-50%, calc(-50% + 1px)) scale(.98);
     }
 
-    /*
-      T0/T1/조이스틱 고정 영역
-    */
     #ui-zone {
       position: relative;
       width: 100%;
@@ -287,9 +287,6 @@
       pointer-events: none;
     }
 
-    /*
-      T0: 질문 및 설명창
-    */
     #t0-panel {
       position: absolute;
       top: 24px;
@@ -362,9 +359,8 @@
     }
 
     /*
-      T1: 행동 선택창
-      선택지 텍스트를 대화창 기준으로 더 위에 배치
-    조이스틱 여깄다
+      T1 위치
+      더 위로 올리고 싶으면 bottom 숫자를 더 키우면 됨
     */
     #t1-panel {
       position: absolute;
@@ -417,7 +413,8 @@
     }
 
     /*
-      조이스틱
+      조이스틱 위치
+      T1과 같은 높이로 고정
     */
     #joystick-base {
       position: absolute;
@@ -1069,37 +1066,25 @@
       typeQuestion();
     }
 
- function openT1Actions() {
-  if (!state.activeId) {
-    return;
-  }
-
-  state.mode = "actions";
-
-  /*
-    버튼 사라짐... 네를 누르면 T0의 질문 문장은 남기고,
-    예 / 아니오 버튼만 사라집니다.
-  */
-  t0Choices.hidden = true;
-  stopTyping(t0Yes);
-  stopTyping(t0No);
-
-  /*
-    T0는 유지.
-    T1만 추가 표시.
-  */
-  t0Panel.hidden = false;
-  t1Panel.hidden = false;
-
-  typeActions();
-}
-    
+    function openT1Actions() {
       if (!state.activeId) {
         return;
       }
 
       state.mode = "actions";
 
+      /*
+        T0의 질문 문장은 남기고,
+        예 / 아니오 버튼만 숨깁니다.
+      */
+      t0Choices.hidden = true;
+      stopTyping(t0Yes);
+      stopTyping(t0No);
+
+      /*
+        T0는 그대로 유지하고,
+        T1만 추가 표시합니다.
+      */
       t0Panel.hidden = false;
       t1Panel.hidden = false;
 
