@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title></title>
+
+  <style>
+    @font-face {
+      font-family: "DeterminationK2";
+      src:
+        url("./DeterminationSansK2-FIX.woff2?v=11") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=11") format("woff");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #000000;
+    }
+
+    body {
+      overflow: hidden;
+      color: #ffffff;
+      font-family: "DeterminationK2", "Noto Sans KR", system-ui, sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #room-content {
+      position: relative;
+      min-height: 100svh;
+      padding: 24px;
+      opacity: 1;
+      transition: opacity 0.42s ease;
+    }
+
+    #room-content.leaving {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .error-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(1.1rem, 4.4vw, 1.65rem);
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      text-shadow:
+        0 0 4px rgba(255, 255, 255, 0.88),
+        0 0 13px rgba(255, 255, 255, 0.36);
+    }
+
+    .message-area {
+      margin-top: 38px;
+      max-width: min(88vw, 610px);
+    }
+
+    #error-message {
+      min-height: 1.6em;
+      margin: 0;
+      color: #f7f7f7;
+      font-size: clamp(1.28rem, 5.2vw, 2rem);
+      font-weight: 400;
+      letter-spacing: 0.015em;
+      line-height: 1.58;
+      white-space: pre-wrap;
+      text-shadow:
+        0 0 5px rgba(255, 255, 255, 0.82),
+        0 0 16px rgba(255, 255, 255, 0.34);
+    }
+
+    .typed-char {
+      display: inline-block;
+      animation: type-in 0.1s steps(2, end) both;
+    }
+
+    @keyframes type-in {
+      0% {
+        opacity: 0;
+        transform: translateY(1px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #door-art-wrap {
+      position: fixed;
+      right: 50%;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      width: min(86vw, 440px);
+      pointer-events: none;
+      transform: translateX(50%);
+    }
+
+    #door-art {
+      display: none;
+      width: 100%;
+      max-height: 36svh;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter:
+        drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
+    }
+
+    #door-art.loaded {
+      display: block;
+    }
+
+    #screen-blackout {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      background: #000000;
+      opacity: 0;
+      transition: opacity 0.16s steps(2, end);
+    }
+
+    #screen-blackout.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <main id="room-content">
+    <h1 class="error-title">Error!</h1>
+
+    <section class="message-area">
+      <p id="error-message" aria-live="polite"></p>
+    </section>
+
+    <div id="door-art-wrap" aria-hidden="true">
+      <img id="door-art" alt="" />
+    </div>
+  </main>
+
+  <div id="screen-blackout" aria-hidden="true"></div>
+
+  <script>
+    /*
+      하단 문 도트 그림:
+      GitHub 맨 위 폴더에 그림을 올린 뒤 아래 "" 안에 파일명을 적어줘.
+
+      예:
+      const errorDoorsFile = "error-doors.png";
+    */
+
+    const errorDoorsFile = "";
+
+    /*
+      타자 소리:
+      나중에 소리 파일을 올린 뒤 아래 "" 안에 파일명을 적어줘.
+
+      예:
+      const textSoundFile = "error-type.ogg";
+    */
+
+    const textSoundFile = "";
+    const textSoundVolume = 0.18;
+
+    const errorMessage = "잘못된 방에 입장했습니다.";
+
+    const timing = {
+      startDelay: 420,
+      typingDelay: 54,
+      punctuationDelay: 150,
+      fadeDuration: 420,
+      blackHold: 2000
+    };
+
+    const roomContent = document.getElementById("room-content");
+    const messageElement = document.getElementById("error-message");
+    const doorArt = document.getElementById("door-art");
+    const screenBlackout = document.getElementById("screen-blackout");
+
+    let typeSound = null;
+    let typingFinished = false;
+    let isLeaving = false;
+    let index = 0;
+
+    if (errorDoorsFile) {
+      doorArt.src = errorDoorsFile;
+
+      doorArt.addEventListener("load", () => {
+        doorArt.classList.add("loaded");
+      });
+    }
+
+    if (textSoundFile) {
+      typeSound = new Audio(textSoundFile);
+      typeSound.preload = "auto";
+      typeSound.volume = textSoundVolume;
+    }
+
+    function playTextSound() {
+      if (!typeSound) {
+        return;
+      }
+
+      const sound = typeSound.cloneNode();
+
+      sound.volume = textSoundVolume;
+      sound.playbackRate = 0.96 + Math.random() * 0.08;
+      sound.play().catch(() => {});
+    }
+
+    function typeNext() {
+      const chars = Array.from(errorMessage);
+
+      if (index >= chars.length) {
+        typingFinished = true;
+        return;
+      }
+
+      const char = chars[index];
+      const span = document.createElement("span");
+
+      span.className = "typed-char";
+      span.textContent = char === " " ? "\u00A0" : char;
+
+      messageElement.appendChild(span);
+      playTextSound();
+
+      index += 1;
+
+      const punctuation = /[.!?,]/.test(char);
+
+      setTimeout(
+        typeNext,
+        timing.typingDelay + (
+          punctuation
+            ? timing.punctuationDelay
+            : 0
+        )
+      );
+    }
+
+    function leaveRoom() {
+      if (!typingFinished || isLeaving) {
+        return;
+      }
+
+      isLeaving = true;
+      roomContent.classList.add("leaving");
+
+      setTimeout(() => {
+        screenBlackout.classList.add("active");
+      }, timing.fadeDuration);
+
+      setTimeout(() => {
+        window.location.replace(
+          "index.html?return=binary#binary-stage"
+        );
+      }, timing.fadeDuration + timing.blackHold);
+    }
+
+    document.addEventListener("pointerup", leaveRoom);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        leaveRoom();
+      }
+    });
+
+    setTimeout(typeNext, timing.startDelay);
+  </script>
+</body>
+</html>
