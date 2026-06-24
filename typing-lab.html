@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TYPE LAB</title>
+
+  <style>
+    @font-face {
+      font-family: "DeterminationK2";
+      src:
+        url("./DeterminationSansK2-FIX.woff2?v=12") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=12") format("woff");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #000000;
+    }
+
+    body {
+      color: #f5f5f5;
+      font-family: "DeterminationK2", "Noto Sans KR", system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    #app {
+      width: min(100%, 900px);
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .kicker {
+      margin: 0 0 6px;
+      color: #999999;
+      font-family: Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 6vw, 2.25rem);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.36);
+    }
+
+    button {
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      background: #000000;
+      color: #ffffff;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    button:active {
+      transform: translate(1px, 1px);
+    }
+
+    button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+
+    #sound-button {
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    #sound-button.on {
+      background: #ffffff;
+      color: #000000;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+    }
+
+    #effect-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .effect-button {
+      min-height: 42px;
+      padding: 8px 10px;
+      color: #d7d7d7;
+      font-size: 0.83rem;
+      line-height: 1.25;
+      text-align: left;
+    }
+
+    .effect-button.active {
+      background: #ffffff;
+      color: #000000;
+      box-shadow: 0 0 13px rgba(255, 255, 255, 0.26);
+    }
+
+    .preview {
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      background: #050505;
+    }
+
+    .preview-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 84px;
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    #effect-title {
+      margin: 0 0 7px;
+      font-size: 1.08rem;
+      font-weight: 400;
+      letter-spacing: 0.045em;
+    }
+
+    #effect-description {
+      margin: 0;
+      color: #a9a9a9;
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .controls {
+      display: flex;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .controls button {
+      min-width: 40px;
+      height: 38px;
+      font-size: 0.95rem;
+    }
+
+    #stage {
+      position: relative;
+      display: grid;
+      min-height: 310px;
+      padding: 28px 20px;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(
+          circle at 50% 48%,
+          rgba(255, 255, 255, 0.045),
+          transparent 48%
+        ),
+        #000000;
+    }
+
+    #stage.screen-hit {
+      animation: screen-hit 0.1s steps(2, end) both;
+    }
+
+    @keyframes screen-hit {
+      0% {
+        filter: brightness(1);
+        box-shadow: inset 0 0 0 rgba(255, 255, 255, 0);
+      }
+
+      45% {
+        filter: brightness(1.24);
+        box-shadow: inset 0 0 35px rgba(255, 255, 255, 0.16);
+      }
+
+      100% {
+        filter: brightness(1);
+        box-shadow: inset 0 0 0 rgba(255, 255, 255, 0);
+      }
+    }
+
+    .line {
+      position: relative;
+      max-width: 100%;
+      color: #f7f7f7;
+      font-size: clamp(1.28rem, 5.7vw, 2.2rem);
+      font-weight: 400;
+      letter-spacing: 0.035em;
+      line-height: 1.55;
+      text-align: center;
+      white-space: pre-wrap;
+      text-shadow:
+        0 0 5px rgba(255, 255, 255, 0.8),
+        0 0 16px rgba(255, 255, 255, 0.28);
+    }
+
+    .char {
+      display: inline-block;
+      min-width: 0.01em;
+      white-space: pre;
+      transform-origin: center;
+    }
+
+    .pixel-pop {
+      animation: pixel-pop 0.11s steps(2, end) both;
+    }
+
+    @keyframes pixel-pop {
+      0% {
+        opacity: 0;
+        filter: brightness(1.8);
+        transform: translate(var(--px), var(--py)) scale(1.12);
+      }
+
+      55% {
+        opacity: 1;
+        filter: brightness(1.4);
+        transform: translate(1px, 0) scale(1);
+      }
+
+      100% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: translate(0, 0) scale(1);
+      }
+    }
+
+    .shake-in {
+      animation: shake-in 0.14s steps(2, end) both;
+    }
+
+    @keyframes shake-in {
+      0% {
+        opacity: 0;
+        transform: translate(var(--sx), var(--sy));
+      }
+
+      45% {
+        opacity: 1;
+        transform: translate(calc(var(--sx) * -0.45), 0);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+    }
+
+    .corrupt {
+      color: #d5d5d5;
+      filter: blur(0.7px);
+      text-shadow:
+        -1px 0 rgba(255, 255, 255, 0.6),
+        1px 0 rgba(255, 255, 255, 0.28);
+    }
+
+    .settle {
+      animation: settle 0.12s steps(2, end) both;
+    }
+
+    @keyframes settle {
+      0% {
+        filter: brightness(2.2);
+        transform: translate(-1px, 0);
+      }
+
+      100% {
+        filter: brightness(1);
+        transform: translate(0, 0);
+      }
+    }
+
+    .tremble {
+      animation: tremble var(--duration) steps(2, end) var(--delay) infinite;
+    }
+
+    @keyframes tremble {
+      0%,
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      25% {
+        transform: translate(var(--x1), var(--y1)) rotate(var(--r1));
+      }
+
+      55% {
+        transform: translate(var(--x2), var(--y2)) rotate(var(--r2));
+      }
+
+      75% {
+        transform: translate(var(--x3), var(--y3)) rotate(var(--r3));
+      }
+    }
+
+    .severe {
+      color: #ffffff;
+      text-shadow:
+        -2px 0 rgba(255, 255, 255, 0.62),
+        2px 0 rgba(255, 255, 255, 0.5),
+        0 0 13px rgba(255, 255, 255, 0.75);
+      animation: severe 0.09s steps(2, end) infinite;
+    }
+
+    @keyframes severe {
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      35% {
+        transform: translate(-2px, 1px) scale(1.05);
+      }
+
+      70% {
+        transform: translate(2px, -1px) scale(0.97);
+      }
+    }
+
+    .glow {
+      animation: glow 0.7s steps(2, end) infinite;
+    }
+
+    @keyframes glow {
+      0%,
+      100% {
+        filter: brightness(1);
+        text-shadow:
+          0 0 4px rgba(255, 255, 255, 0.7),
+          0 0 12px rgba(255, 255, 255, 0.28);
+      }
+
+      50% {
+        filter: brightness(2.4);
+        text-shadow:
+          0 0 8px rgba(255, 255, 255, 1),
+          0 0 26px rgba(255, 255, 255, 0.85),
+          0 0 45px rgba(255, 255, 255, 0.48);
+      }
+    }
+
+    .pulse {
+      animation: pulse 0.7s steps(2, end) infinite;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.22);
+      }
+    }
+
+    .forward {
+      position: relative;
+      z-index: 2;
+      animation: forward 0.42s steps(3, end) both;
+    }
+
+    @keyframes forward {
+      0% {
+        filter: brightness(1);
+        transform: scale(1);
+      }
+
+      48% {
+        filter: brightness(2.2);
+        transform: translateY(-2px) scale(1.52);
+        text-shadow:
+          0 0 11px rgba(255, 255, 255, 0.9),
+          0 0 28px rgba(255, 255, 255, 0.62);
+      }
+
+      100% {
+        filter: brightness(1);
+        transform: scale(1);
+      }
+    }
+
+    .stretch {
+      animation: stretch 0.28s steps(3, end) both;
+    }
+
+    @keyframes stretch {
+      0% {
+        transform: scaleX(1);
+      }
+
+      45% {
+        filter: brightness(1.8);
+        transform: scaleX(2.35);
+      }
+
+      100% {
+        filter: brightness(1);
+        transform: scaleX(1);
+      }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 0.65em;
+      margin-left: 2px;
+      animation: blink 0.62s steps(2, end) infinite;
+    }
+
+    @keyframes blink {
+      0%,
+      45% {
+        opacity: 1;
+      }
+
+      46%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .ghost-box {
+      position: relative;
+      width: min(100%, 660px);
+      min-height: 84px;
+    }
+
+    .ghost-line,
+    .real-line {
+      position: absolute;
+      inset: 0;
+      text-align: center;
+    }
+
+    .ghost-line {
+      opacity: 0.22;
+      filter: blur(1px);
+      transform: translate(-5px, 2px);
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.42);
+    }
+
+    .real-line {
+      position: relative;
+    }
+
+    .subtitle-stack {
+      width: min(100%, 700px);
+      text-align: left;
+    }
+
+    .subtitle {
+      margin: 0 0 14px;
+      padding-left: 12px;
+      border-left: 2px solid rgba(255, 255, 255, 0.75);
+      font-size: clamp(1rem, 4.4vw, 1.58rem);
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: subtitle-in 0.25s steps(3, end) forwards;
+    }
+
+    @keyframes subtitle-in {
+      0% {
+        opacity: 0;
+        filter: blur(2px);
+        transform: translateY(14px);
+      }
+
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    .crt-line {
+      animation: crt-off 0.3s steps(3, end) forwards;
+    }
+
+    .crt-beam {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 1px;
+      opacity: 0;
+      background: #ffffff;
+      box-shadow:
+        0 0 6px #ffffff,
+        0 0 22px rgba(255, 255, 255, 0.72);
+      transform: translate(-50%, -50%);
+      animation: crt-beam 0.3s steps(3, end) forwards;
+    }
+
+    @keyframes crt-off {
+      0% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: scaleY(1);
+      }
+
+      58% {
+        opacity: 1;
+        filter: brightness(2.5);
+        transform: scaleY(0.07);
+      }
+
+      100% {
+        opacity: 0;
+        filter: brightness(1);
+        transform: scaleY(0.01);
+      }
+    }
+
+    @keyframes crt-beam {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+
+      45% {
+        width: 70%;
+        opacity: 1;
+      }
+
+      100% {
+        width: 95%;
+        opacity: 0;
+      }
+    }
+
+    .push-away {
+      animation: push-away 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes push-away {
+      0% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(0);
+      }
+
+      100% {
+        opacity: 0;
+        filter: blur(3px);
+        transform: translateX(-125vw);
+      }
+    }
+
+    .strike {
+      position: relative;
+      opacity: 0.5;
+    }
+
+    .strike::after {
+      position: absolute;
+      top: 54%;
+      left: -2px;
+      width: calc(100% + 4px);
+      height: 1px;
+      content: "";
+      background: #ffffff;
+    }
+
+    .hint {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      margin: 0;
+      color: #777777;
+      font-family: Arial, sans-serif;
+      font-size: 0.72rem;
+    }
+
+    @media (min-width: 700px) {
+      #effect-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="app">
+    <header>
+      <div>
+        <p class="kicker">WELCOME // TEXT MOTION PREVIEW</p>
+        <h1>TYPE LAB</h1>
+      </div>
+
+      <button id="sound-button" type="button">타자음 OFF</button>
+    </header>
+
+    <section id="effect-list" aria-label="타자기 연출 목록"></section>
+
+    <section class="preview">
+      <div class="preview-top">
+        <div>
+          <h2 id="effect-title"></h2>
+          <p id="effect-description"></p>
+        </div>
+
+        <div class="controls">
+          <button id="previous" type="button">◀</button>
+          <button id="replay" type="button">↻</button>
+          <button id="next" type="button">▶</button>
+        </div>
+      </div>
+
+      <div id="stage"></div>
+    </section>
+  </main>
+
+  <script>
+    const SAMPLE = "잘못된 방에 입장했습니다.";
+    const NOISE = "01#?*+%/=-";
+
+    const effects = [
+      ["steady", "01 · 일정한 속도", "글자마다 같은 간격으로 출력."],
+      ["random", "02 · 불규칙 타이핑", "글자마다 랜덤한 짧은 텀."],
+      ["punctuation", "03 · 문장부호 멈춤", "마침표와 쉼표에서 더 오래 멈춤."],
+      ["word", "04 · 단어 멈춤", "공백마다 호흡처럼 잠깐 멈춤."],
+      ["accelerate", "05 · 점점 빨라짐", "처음은 느리고 끝으로 갈수록 빨라짐."],
+      ["decelerate", "06 · 점점 느려짐", "처음은 빠르고 끝으로 갈수록 느려짐."],
+      ["slowfast", "07 · 느리다 급가속", "중반부터 갑자기 쏟아지는 타이핑."],
+      ["pixel", "08 · 픽셀 팝", "글자마다 1px 튀며 박히는 방식."],
+      ["shake", "09 · 흔들리며 등장", "글자마다 아주 짧게 떨리고 고정."],
+      ["corrupt", "10 · 깨짐 → 정상", "깨진 기호가 먼저 보인 뒤 글자로 고정."],
+      ["question", "11 · ???? → 문장", "물음표 덩어리가 문장으로 복구됨."],
+      ["scramble", "12 · 랜덤 스크램블", "랜덤 기호가 바뀌다 순서대로 해독됨."],
+      ["missing", "13 · 누락 → 복구", "일부 글자가 비었다가 뒤늦게 복구됨."],
+      ["ghost", "14 · 잔상 타이핑", "흐린 잔상이 먼저 나오고 실제 글자가 따라옴."],
+      ["unique", "15 · 글자별 독립 떨림", "완성 뒤 각 글자가 독립적으로 미세 떨림."],
+      ["severe", "16 · 특정 글자 심한 떨림", "특정 글자 하나만 유난히 불안정함."],
+      ["glow", "17 · 특정 단어 글로우", "한 단어만 반복해서 밝게 빛남."],
+      ["scale", "18 · 특정 단어 확대", "한 단어만 호흡하듯 커졌다 작아짐."],
+      ["forward", "19 · 한 글자 앞으로 튀기", "특정 글자 하나가 확 튀어나옴."],
+      ["stretch", "20 · 한 글자 가로 늘어남", "특정 글자가 옆으로 찢어지듯 늘어남."],
+      ["crt", "21 · CRT 종료", "문장이 한 줄 신호로 압축되어 꺼짐."],
+      ["subtitle", "22 · 자막식 한 줄 등장", "대사가 한 줄씩 아래로 쌓임."],
+      ["cursor", "23 · 깜빡이는 커서", "커서가 마지막 글자 뒤에서 깜빡임."],
+      ["delete", "24 · 커서 삭제", "타이핑 뒤 커서가 글자를 지움."],
+      ["correction", "25 · 타이핑 중 수정", "오타를 지우고 바로 고쳐 씀."],
+      ["replace", "26 · 문장 교체", "앞 문장을 지우고 다른 문장을 출력."],
+      ["push", "27 · 대사 밀려나감", "문장이 화면 밖으로 밀려나감."],
+      ["react", "28 · 화면 반응형", "글자마다 화면 자체가 미세 반응."],
+      ["sound", "29 · 글자마다 비프 동기화", "글자 타이밍에 맞춘 짧은 전자음."],
+    ].map(([id, title, description]) => ({ id, title, description }));
+
+    const stage = document.getElementById("stage");
+    const list = document.getElementById("effect-list");
+    const title = document.getElementById("effect-title");
+    const description = document.getElementById("effect-description");
+    const soundButton = document.getElementById("sound-button");
+
+    let current = 0;
+    let token = 0;
+    let soundEnabled = false;
+    let audioContext = null;
+
+    function sleep(time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    function alive(id) {
+      return token === id;
+    }
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function noise() {
+      return NOISE[Math.floor(Math.random() * NOISE.length)];
+    }
+
+    function line(className = "") {
+      const element = document.createElement("div");
+      element.className = `line ${className}`.trim();
+      stage.appendChild(element);
+      return element;
+    }
+
+    function character(value, className = "") {
+      const span = document.createElement("span");
+
+      span.className = `char ${className}`.trim();
+      span.textContent = value === " " ? "\u00A0" : value;
+
+      span.style.setProperty("--px", `${Math.floor(random(-2, 3))}px`);
+      span.style.setProperty("--py", `${Math.floor(random(-1, 2))}px`);
+      span.style.setProperty("--sx", `${Math.floor(random(-2, 3))}px`);
+      span.style.setProperty("--sy", `${Math.floor(random(-1, 2))}px`);
+
+      span.style.setProperty("--x1", `${random(-0.9, 0.9).toFixed(2)}px`);
+      span.style.setProperty("--y1", `${random(-0.9, 0.9).toFixed(2)}px`);
+      span.style.setProperty("--x2", `${random(-0.9, 0.9).toFixed(2)}px`);
+      span.style.setProperty("--y2", `${random(-0.9, 0.9).toFixed(2)}px`);
+      span.style.setProperty("--x3", `${random(-0.9, 0.9).toFixed(2)}px`);
+      span.style.setProperty("--y3", `${random(-0.9, 0.9).toFixed(2)}px`);
+
+      span.style.setProperty("--r1", `${random(-0.6, 0.6).toFixed(2)}deg`);
+      span.style.setProperty("--r2", `${random(-0.6, 0.6).toFixed(2)}deg`);
+      span.style.setProperty("--r3", `${random(-0.6, 0.6).toFixed(2)}deg`);
+
+      span.style.setProperty("--duration", `${random(0.42, 1.05).toFixed(2)}s`);
+      span.style.setProperty("--delay", `${random(-0.9, 0).toFixed(2)}s`);
+
+      return span;
+    }
+
+    function hitScreen() {
+      stage.classList.remove("screen-hit");
+      void stage.offsetWidth;
+      stage.classList.add("screen-hit");
+    }
+
+    async function enableAudio() {
+      if (!audioContext) {
+        audioContext = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
+      }
+
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
+    }
+
+    function beep() {
+      if (!soundEnabled || !audioContext) {
+        return;
+      }
+
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const now = audioContext.currentTime;
+
+      oscillator.type = "square";
+      oscillator.frequency.setValueAtTime(random(520, 820), now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.035, now + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      oscillator.start(now);
+      oscillator.stop(now + 0.045);
+    }
+
+    async function typeText(target, text, options, id) {
+      const settings = {
+        delay: 70,
+        randomDelay: 0,
+        punctuationPause: 0,
+        wordPause: 0,
+        classFor: () => "",
+        onChar: () => {},
+        ...options,
+      };
+
+      const chars = Array.from(text);
+
+      for (let index = 0; index < chars.length; index += 1) {
+        if (!alive(id)) {
+          return false;
+        }
+
+        const char = chars[index];
+        const span = character(char, settings.classFor(char, index));
+
+        target.appendChild(span);
+        settings.onChar(char, index, span);
+        beep();
+
+        let delay = typeof settings.delay === "function"
+          ? settings.delay(index, chars.length, char)
+          : settings.delay;
+
+        delay += random(0, settings.randomDelay);
+
+        if (char === " ") {
+          delay += settings.wordPause;
+        }
+
+        if (/[.!?,]/.test(char)) {
+          delay += settings.punctuationPause;
+        }
+
+        await sleep(delay);
+      }
+
+      return true;
+    }
+
+    async function steady(id) {
+      await typeText(line(), SAMPLE, { delay: 74 }, id);
+    }
+
+    async function randomType(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 42,
+        randomDelay: 110,
+      }, id);
+    }
+
+    async function punctuation(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 48,
+        punctuationPause: 420,
+      }, id);
+    }
+
+    async function wordPause(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 55,
+        wordPause: 300,
+      }, id);
+    }
+
+    async function accelerate(id) {
+      await typeText(line(), SAMPLE, {
+        delay: (index, total) => 170 - (
+          index / Math.max(total - 1, 1)
+        ) * 138,
+      }, id);
+    }
+
+    async function decelerate(id) {
+      await typeText(line(), SAMPLE, {
+        delay: (index, total) => 28 + (
+          index / Math.max(total - 1, 1)
+        ) * 154,
+      }, id);
+    }
+
+    async function slowFast(id) {
+      await typeText(line(), SAMPLE, {
+        delay: (index, total) => (
+          index < total * 0.52 ? 148 : 24
+        ),
+      }, id);
+    }
+
+    async function pixel(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 62,
+        classFor: () => "pixel-pop",
+      }, id);
+    }
+
+    async function shake(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 66,
+        classFor: () => "shake-in",
+      }, id);
+    }
+
+    async function corrupt(id) {
+      const target = line();
+
+      for (const realChar of Array.from(SAMPLE)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        const span = character(noise(), "corrupt");
+        target.appendChild(span);
+        beep();
+
+        await sleep(56);
+
+        if (!alive(id)) {
+          return;
+        }
+
+        span.textContent = realChar === " " ? "\u00A0" : realChar;
+        span.className = "char settle";
+
+        await sleep(48);
+      }
+    }
+
+    async function question(id) {
+      const target = line();
+      const chars = Array.from(SAMPLE);
+      const output = chars.map((char) => char === " " ? " " : "?");
+
+      target.textContent = output.join("");
+
+      await sleep(520);
+
+      for (let index = 0; index < chars.length; index += 1) {
+        if (!alive(id)) {
+          return;
+        }
+
+        output[index] = chars[index];
+        target.textContent = output.join("");
+        beep();
+
+        await sleep(92);
+      }
+    }
+
+    async function scramble(id) {
+      const target = line();
+      const chars = Array.from(SAMPLE);
+      const output = chars.map((char) => char === " " ? " " : noise());
+
+      target.textContent = output.join("");
+
+      for (let index = 0; index < chars.length; index += 1) {
+        if (!alive(id)) {
+          return;
+        }
+
+        if (chars[index] === " ") {
+          output[index] = " ";
+          continue;
+        }
+
+        for (let count = 0; count < 3; count += 1) {
+          output[index] = noise();
+          target.textContent = output.join("");
+          await sleep(28);
+        }
+
+        output[index] = chars[index];
+        target.textContent = output.join("");
+        beep();
+
+        await sleep(65);
+      }
+    }
+
+    async function missing(id) {
+      const target = line();
+      const chars = Array.from(SAMPLE);
+      const missingIndexes = new Set([2, 5, 9, 13]);
+      const blanks = [];
+
+      for (let index = 0; index < chars.length; index += 1) {
+        if (!alive(id)) {
+          return;
+        }
+
+        if (
+          missingIndexes.has(index) &&
+          chars[index] !== " "
+        ) {
+          const blank = character(" ", "corrupt");
+          blank.style.opacity = "0.15";
+          target.appendChild(blank);
+          blanks.push([blank, chars[index]]);
+        } else {
+          target.appendChild(character(chars[index], "pixel-pop"));
+          beep();
+        }
+
+        await sleep(60);
+      }
+
+      await sleep(360);
+
+      for (const [blank, realChar] of blanks) {
+        if (!alive(id)) {
+          return;
+        }
+
+        blank.textContent = realChar;
+        blank.style.opacity = "1";
+        blank.className = "char settle";
+
+        beep();
+        await sleep(110);
+      }
+    }
+
+    async function ghost(id) {
+      const box = document.createElement("div");
+      const ghostLine = document.createElement("div");
+      const realLine = document.createElement("div");
+
+      box.className = "ghost-box";
+      ghostLine.className = "line ghost-line";
+      realLine.className = "line real-line";
+
+      box.append(ghostLine, realLine);
+      stage.appendChild(box);
+
+      for (const char of Array.from(SAMPLE)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        ghostLine.appendChild(character(char));
+        await sleep(34);
+
+        if (!alive(id)) {
+          return;
+        }
+
+        realLine.appendChild(character(char, "pixel-pop"));
+        beep();
+
+        await sleep(58);
+      }
+    }
+
+    async function unique(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 62,
+        classFor: () => "tremble",
+      }, id);
+    }
+
+    async function severe(id) {
+      const targetIndex = Array.from(SAMPLE).indexOf("입");
+
+      await typeText(line(), SAMPLE, {
+        delay: 64,
+        classFor: (char, index) => (
+          index === targetIndex ? "severe" : ""
+        ),
+      }, id);
+    }
+
+    async function glow(id) {
+      const targetIndex = Array.from(SAMPLE).indexOf("방");
+
+      await typeText(line(), SAMPLE, {
+        delay: 64,
+        classFor: (char, index) => (
+          index === targetIndex ? "glow" : ""
+        ),
+      }, id);
+    }
+
+    async function scale(id) {
+      const start = SAMPLE.indexOf("입장");
+
+      await typeText(line(), SAMPLE, {
+        delay: 64,
+        classFor: (char, index) => (
+          index === start || index === start + 1
+            ? "pulse"
+            : ""
+        ),
+      }, id);
+    }
+
+    async function forward(id) {
+      const targetIndex = Array.from(SAMPLE).indexOf("입");
+
+      await typeText(line(), SAMPLE, {
+        delay: 66,
+        classFor: (char, index) => (
+          index === targetIndex ? "forward" : ""
+        ),
+      }, id);
+    }
+
+    async function stretch(id) {
+      const targetIndex = Array.from(SAMPLE).indexOf("방");
+
+      await typeText(line(), SAMPLE, {
+        delay: 66,
+        classFor: (char, index) => (
+          index === targetIndex ? "stretch" : ""
+        ),
+      }, id);
+    }
+
+    async function crt(id) {
+      const target = line();
+
+      await typeText(target, SAMPLE, { delay: 62 }, id);
+
+      if (!alive(id)) {
+        return;
+      }
+
+      await sleep(540);
+
+      if (!alive(id)) {
+        return;
+      }
+
+      target.classList.add("crt-line");
+
+      const beam = document.createElement("div");
+      beam.className = "crt-beam";
+      stage.appendChild(beam);
+    }
+
+    async function subtitle(id) {
+      const stack = document.createElement("div");
+
+      stack.className = "subtitle-stack";
+      stage.appendChild(stack);
+
+      const lines = [
+        "...여긴 왜 들어온 거야?",
+        "거기 서서... 뭘 보고 있는 거야?",
+        "왜 계속...",
+      ];
+
+      for (const text of lines) {
+        if (!alive(id)) {
+          return;
+        }
+
+        const subtitle = document.createElement("p");
+
+        subtitle.className = "subtitle";
+        subtitle.textContent = text;
+
+        stack.appendChild(subtitle);
+        beep();
+
+        await sleep(760);
+      }
+    }
+
+    async function cursor(id) {
+      const target = line();
+      const cursor = document.createElement("span");
+
+      cursor.className = "cursor";
+      cursor.textContent = "▮";
+      target.appendChild(cursor);
+
+      for (const char of Array.from(SAMPLE)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.insertBefore(
+          character(char, "pixel-pop"),
+          cursor
+        );
+
+        beep();
+        await sleep(68);
+      }
+    }
+
+    async function deleteText(id) {
+      const target = line();
+      const cursor = document.createElement("span");
+
+      cursor.className = "cursor";
+      cursor.textContent = "▮";
+      target.appendChild(cursor);
+
+      for (const char of Array.from(SAMPLE)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.insertBefore(
+          character(char, "pixel-pop"),
+          cursor
+        );
+
+        beep();
+        await sleep(60);
+      }
+
+      await sleep(550);
+
+      while (target.childNodes.length > 1) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.removeChild(
+          target.childNodes[target.childNodes.length - 2]
+        );
+
+        beep();
+        await sleep(46);
+      }
+    }
+
+    async function correction(id) {
+      const target = line();
+      const cursor = document.createElement("span");
+      const wrong = "잘못된 방에 입장했습니가.";
+
+      cursor.className = "cursor";
+      cursor.textContent = "▮";
+      target.appendChild(cursor);
+
+      for (const char of Array.from(wrong)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.insertBefore(
+          character(char, "pixel-pop"),
+          cursor
+        );
+
+        beep();
+        await sleep(60);
+      }
+
+      await sleep(400);
+
+      for (let count = 0; count < 2; count += 1) {
+        if (!alive(id)) {
+          return;
+        }
+
+        const wrongChar = target.childNodes[
+          target.childNodes.length - 2
+        ];
+
+        wrongChar.classList.add("strike");
+
+        await sleep(90);
+
+        target.removeChild(wrongChar);
+        beep();
+
+        await sleep(55);
+      }
+
+      for (const char of Array.from("다.")) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.insertBefore(
+          character(char, "pixel-pop"),
+          cursor
+        );
+
+        beep();
+        await sleep(80);
+      }
+    }
+
+    async function replace(id) {
+      const target = line();
+      const cursor = document.createElement("span");
+      const first = "여긴 안전한 방입니다.";
+
+      cursor.className = "cursor";
+      cursor.textContent = "▮";
+      target.appendChild(cursor);
+
+      for (const char of Array.from(first)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.insertBefore(character(char), cursor);
+        beep();
+
+        await sleep(70);
+      }
+
+      await sleep(500);
+
+      while (target.childNodes.length > 1) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.removeChild(
+          target.childNodes[target.childNodes.length - 2]
+        );
+
+        beep();
+        await sleep(38);
+      }
+
+      await sleep(180);
+
+      for (const char of Array.from(SAMPLE)) {
+        if (!alive(id)) {
+          return;
+        }
+
+        target.insertBefore(
+          character(char, "pixel-pop"),
+          cursor
+        );
+
+        beep();
+        await sleep(60);
+      }
+    }
+
+    async function push(id) {
+      const first = line();
+
+      await typeText(
+        first,
+        "여긴 안전한 방입니다.",
+        { delay: 66 },
+        id
+      );
+
+      if (!alive(id)) {
+        return;
+      }
+
+      await sleep(470);
+
+      first.classList.add("push-away");
+
+      await sleep(440);
+
+      if (!alive(id)) {
+        return;
+      }
+
+      stage.innerHTML = "";
+
+      await typeText(
+        line(),
+        SAMPLE,
+        {
+          delay: 64,
+          classFor: () => "pixel-pop",
+        },
+        id
+      );
+    }
+
+    async function react(id) {
+      await typeText(line(), SAMPLE, {
+        delay: 72,
+        classFor: () => "pixel-pop",
+        onChar: () => hitScreen(),
+      }, id);
+    }
+
+    async function sound(id) {
+      const hint = document.createElement("p");
+
+      hint.className = "hint";
+      hint.textContent = "글자마다 짧은 전자음";
+      stage.appendChild(hint);
+
+      await typeText(line(), SAMPLE, {
+        delay: 74,
+        classFor: () => "pixel-pop",
+      }, id);
+    }
+
+    const runners = {
+      steady,
+      random: randomType,
+      punctuation,
+      word: wordPause,
+      accelerate,
+      decelerate,
+      slowfast: slowFast,
+      pixel,
+      shake,
+      corrupt,
+      question,
+      scramble,
+      missing,
+      ghost,
+      unique,
+      severe,
+      glow,
+      scale,
+      forward,
+      stretch,
+      crt,
+      subtitle,
+      cursor,
+      delete: deleteText,
+      correction,
+      replace,
+      push,
+      react,
+      sound,
+    };
+
+    function updateSoundButton() {
+      soundButton.textContent = soundEnabled
+        ? "타자음 ON"
+        : "타자음 OFF";
+
+      soundButton.classList.toggle("on", soundEnabled);
+    }
+
+    function updateActiveButton() {
+      document.querySelectorAll(".effect-button").forEach(
+        (button, index) => {
+          button.classList.toggle(
+            "active",
+            index === current
+          );
+        }
+      );
+    }
+
+    async function selectEffect(index) {
+      current = (
+        index + effects.length
+      ) % effects.length;
+
+      token += 1;
+
+      const id = token;
+      const effect = effects[current];
+
+      if (effect.id === "sound") {
+        soundEnabled = true;
+        enableAudio();
+        updateSoundButton();
+      }
+
+      stage.innerHTML = "";
+      title.textContent = effect.title;
+      description.textContent = effect.description;
+
+      updateActiveButton();
+
+      await sleep(45);
+
+      if (!alive(id)) {
+        return;
+      }
+
+      runners[effect.id](id);
+    }
+
+    effects.forEach((effect, index) => {
+      const button = document.createElement("button");
+
+      button.className = "effect-button";
+      button.type = "button";
+      button.textContent = effect.title;
+
+      button.addEventListener("click", () => {
+        selectEffect(index);
+      });
+
+      list.appendChild(button);
+    });
+
+    soundButton.addEventListener("click", async () => {
+      soundEnabled = !soundEnabled;
+
+      if (soundEnabled) {
+        await enableAudio();
+      }
+
+      updateSoundButton();
+    });
+
+    document.getElementById("previous").addEventListener(
+      "click",
+      () => selectEffect(current - 1)
+    );
+
+    document.getElementById("replay").addEventListener(
+      "click",
+      () => selectEffect(current)
+    );
+
+    document.getElementById("next").addEventListener(
+      "click",
+      () => selectEffect(current + 1)
+    );
+
+    updateSoundButton();
+    selectEffect(0);
+  </script>
+</body>
+</html>
