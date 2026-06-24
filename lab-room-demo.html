@@ -14,10 +14,6 @@
       font-display: swap;
     }
 
-    :root {
-      --ink: #f8f8ff;
-    }
-
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -25,12 +21,12 @@
 
     html,
     body {
-      margin: 0;
       min-height: 100%;
-      background: #000000;
-      color: var(--ink);
-      font-family: "DeterminationK2", monospace;
+      margin: 0;
       overflow-x: hidden;
+      background: #000;
+      color: #fff;
+      font-family: "DeterminationK2", monospace;
     }
 
     button {
@@ -44,7 +40,7 @@
     #app {
       width: min(100%, 520px);
       margin: 0 auto;
-      padding: 18px 14px 34px;
+      padding: 18px 14px 42px;
     }
 
     .room-title {
@@ -53,18 +49,19 @@
       font-size: clamp(18px, 5.2vw, 30px);
       font-weight: 400;
       line-height: 1;
-      letter-spacing: 0.03em;
+      letter-spacing: .03em;
     }
 
     /*
-      연구실 배경
+      게임 본 화면: 제목 아래에서 조금 더 내려오도록 배치
     */
     #room-stage {
       position: relative;
       width: 100%;
       aspect-ratio: 1.52 / 1;
+      margin-top: 28px;
       overflow: hidden;
-      background: #000000;
+      background: #000;
     }
 
     #room-bg {
@@ -89,14 +86,11 @@
 
     .removed-cover {
       position: absolute;
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      background: #040407;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255,255,255,.58);
+      background: #050507;
+      box-shadow: 0 0 8px rgba(255,255,255,.12);
     }
 
-    /*
-      플레이어
-    */
     #player {
       position: absolute;
       left: 50%;
@@ -105,7 +99,7 @@
       width: 5.5%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
-      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.6));
       pointer-events: none;
     }
 
@@ -114,32 +108,16 @@
       inset: 0;
       content: "";
       border: 1px solid #0b0c14;
-      background:
-        linear-gradient(
-          to bottom,
-          #ffffff 0 27%,
-          #d9def8 27% 58%,
-          #8a94c0 58% 100%
-        );
+      background: linear-gradient(
+        to bottom,
+        #fff 0 27%,
+        #d9def8 27% 58%,
+        #8a94c0 58% 100%
+      );
       clip-path: polygon(
-        35% 0%,
-        65% 0%,
-        74% 10%,
-        74% 28%,
-        88% 42%,
-        82% 57%,
-        69% 57%,
-        69% 100%,
-        56% 100%,
-        56% 73%,
-        44% 73%,
-        44% 100%,
-        31% 100%,
-        31% 57%,
-        18% 57%,
-        12% 42%,
-        26% 28%,
-        26% 10%
+        35% 0%, 65% 0%, 74% 10%, 74% 28%, 88% 42%, 82% 57%,
+        69% 57%, 69% 100%, 56% 100%, 56% 73%, 44% 73%, 44% 100%,
+        31% 100%, 31% 57%, 18% 57%, 12% 42%, 26% 28%, 26% 10%
       );
     }
 
@@ -154,7 +132,7 @@
     }
 
     #player.walking {
-      animation: player-bob 0.15s steps(2, end) infinite;
+      animation: player-bob .15s steps(2,end) infinite;
     }
 
     @keyframes player-bob {
@@ -164,23 +142,21 @@
     }
 
     /*
-      오브젝트 주변 확인 버튼
+      오브젝트 오른쪽에 나타나는 확인 버튼
     */
     #confirm-button {
       position: absolute;
       z-index: 5;
-      min-width: 48px;
-      padding: 6px 10px 5px;
-      border: 2px solid #ffffff;
-      background: #000000;
-      color: #ffffff;
-      font-size: clamp(12px, 3.2vw, 18px);
+      min-width: 78px;
+      padding: 10px 16px 9px;
+      border: 3px solid #fff;
+      background: #000;
+      color: #fff;
+      font-size: clamp(15px, 3.9vw, 22px);
       line-height: 1;
-      letter-spacing: 0.04em;
+      letter-spacing: .04em;
       transform: translate(-50%, -50%);
-      box-shadow:
-        0 0 0 2px #000000,
-        0 0 8px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 3px #000, 0 0 10px rgba(255,255,255,.34);
       cursor: pointer;
     }
 
@@ -189,27 +165,14 @@
     }
 
     /*
-      UI 위치 고정 영역
-      대화창과 조이스틱은 이 안에서 절대 이동하지 않음
+      T0/T1/조이스틱은 절대 위치가 고정.
+      숨기거나 나타나기만 하며 서로 이동하지 않음.
     */
     #ui-zone {
       position: relative;
       width: 100%;
-      height: clamp(310px, 86vw, 455px);
-      margin-top: 18px;
-    }
-
-    /*
-      T0 = 상단 질문창
-      스크린을 확인하시겠습니까? / 네 / 아니오
-    */
-    #t0-panel {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      aspect-ratio: 4355 / 1774;
-      overflow: hidden;
+      height: clamp(340px, 92vw, 500px);
+      margin-top: 26px;
     }
 
     .frame-crop {
@@ -217,6 +180,19 @@
       inset: 0;
       overflow: hidden;
       pointer-events: none;
+    }
+
+    /*
+      T0: 질문 및 설명창
+      이전보다 아래 배치
+    */
+    #t0-panel {
+      position: absolute;
+      top: 24px;
+      left: 0;
+      width: 100%;
+      aspect-ratio: 4355 / 1774;
+      overflow: hidden;
     }
 
     #t0-panel .frame-crop img {
@@ -236,15 +212,23 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) 24%;
       gap: 3%;
-      padding: 16% 9% 13% 8%;
+      padding: 10.5% 8% 13% 7%;
+    }
+
+    #t0-panel.is-message .content {
+      grid-template-columns: 1fr;
+      padding-right: 8%;
     }
 
     #t0-text {
       align-self: start;
-      color: #ffffff;
-      font-size: clamp(15px, 4.15vw, 27px);
-      line-height: 1.25;
-      letter-spacing: 0.01em;
+      color: #fff;
+
+      /* 여기에요 여기!!! T0 질문/설명 글자 크기는 이 font-size를 바꾸면 됩니다. */
+      font-size: clamp(17px, 4.55vw, 29px);
+
+      line-height: 1.18;
+      letter-spacing: .01em;
       white-space: pre-wrap;
       word-break: keep-all;
     }
@@ -260,9 +244,9 @@
       width: max-content;
       border: 0;
       background: transparent;
-      color: #ffffff;
+      color: #fff;
       padding: 0;
-      font-size: clamp(15px, 4.15vw, 27px);
+      font-size: clamp(16px, 4.25vw, 26px);
       line-height: 1.1;
       text-align: left;
       cursor: pointer;
@@ -270,17 +254,18 @@
 
     .t0-choice.active {
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.78);
+      text-shadow: 0 0 5px rgba(255,255,255,.78);
     }
 
     /*
-      T1 = 하단 왼쪽 행동 선택창
+      T1: 행동 선택창
+      조금 더 위로, 더 넓게.
     */
     #t1-panel {
       position: absolute;
       left: 0;
-      bottom: 0;
-      width: 60%;
+      bottom: 28px;
+      width: 64%;
       aspect-ratio: 2470 / 1271;
       overflow: hidden;
     }
@@ -301,8 +286,8 @@
       inset: 0;
       display: grid;
       align-content: start;
-      gap: 5.2%;
-      padding: 13% 10% 11%;
+      gap: 5.4%;
+      padding: 13% 9% 11%;
     }
 
     .t1-action {
@@ -310,10 +295,10 @@
       max-width: 100%;
       border: 0;
       background: transparent;
-      color: #ffffff;
+      color: #fff;
       padding: 0;
-      font-size: clamp(15px, 4.8vw, 30px);
-      line-height: 1.02;
+      font-size: clamp(12px, 3.65vw, 22px);
+      line-height: 1.04;
       text-align: left;
       white-space: nowrap;
       cursor: pointer;
@@ -323,48 +308,47 @@
     .t1-action:focus-visible {
       outline: 0;
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.78);
+      text-shadow: 0 0 5px rgba(255,255,255,.78);
     }
 
     /*
-      조이스틱
-      사각 박스 없음
-      흰 라인 + 검정 내부
+      조이스틱: 사각 박스 없음, 흰 라인 + 검정 내부.
+      T1과 함께 아주 조금 위로, 크기는 조금 축소.
     */
     #joystick-base {
       position: absolute;
-      right: 2.5%;
-      bottom: 0;
-      width: 34%;
-      max-width: 178px;
-      min-width: 126px;
+      right: 3%;
+      bottom: 28px;
+      width: 30%;
+      min-width: 108px;
+      max-width: 156px;
       aspect-ratio: 1;
-      border: 3px solid #ffffff;
+      border: 3px solid #fff;
       border-radius: 50%;
-      background: #000000;
+      background: #000;
       box-shadow:
-        0 0 0 5px #000000,
-        0 0 0 7px rgba(255, 255, 255, 0.16),
-        0 0 9px rgba(255, 255, 255, 0.2);
+        0 0 0 5px #000,
+        0 0 0 7px rgba(255,255,255,.16),
+        0 0 9px rgba(255,255,255,.2);
       touch-action: none;
     }
 
-    #joystick-base::before {
+    #joystick-base::before,
+    #joystick-base::after {
       position: absolute;
-      inset: 13%;
       content: "";
-      border: 2px solid rgba(255, 255, 255, 0.85);
       border-radius: 50%;
       pointer-events: none;
     }
 
+    #joystick-base::before {
+      inset: 13%;
+      border: 2px solid rgba(255,255,255,.85);
+    }
+
     #joystick-base::after {
-      position: absolute;
       inset: 28%;
-      content: "";
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
-      pointer-events: none;
+      border: 2px solid rgba(255,255,255,.5);
     }
 
     #joystick-knob {
@@ -373,12 +357,12 @@
       top: 50%;
       width: 35%;
       aspect-ratio: 1;
-      border: 3px solid #ffffff;
+      border: 3px solid #fff;
       border-radius: 50%;
-      background: #000000;
+      background: #000;
       transform: translate(-50%, -50%);
+      box-shadow: 0 0 7px rgba(255,255,255,.3);
       pointer-events: none;
-      box-shadow: 0 0 7px rgba(255, 255, 255, 0.3);
     }
 
     #cut-overlay {
@@ -387,21 +371,21 @@
       z-index: 20;
       opacity: 0;
       pointer-events: none;
-      background: #000000;
+      background: #000;
     }
 
     #cut-overlay.active {
       opacity: 1;
-      animation: cut 0.22s steps(2, end) both;
+      animation: cut .22s steps(2,end) both;
     }
 
     @keyframes cut {
       30% {
-        background: #ffffff;
+        background: #fff;
       }
 
       100% {
-        background: #000000;
+        background: #000;
         opacity: 1;
       }
     }
@@ -417,12 +401,12 @@
       }
 
       #ui-zone {
-        height: min(64vw, 615px);
+        height: min(68vw, 650px);
       }
 
       #joystick-base {
-        min-width: 158px;
-        width: 32%;
+        width: 29%;
+        min-width: 146px;
       }
     }
 
@@ -432,25 +416,28 @@
       }
 
       #ui-zone {
-        height: 310px;
+        height: 340px;
       }
 
       #t1-panel {
-        width: 61%;
+        width: 64%;
       }
 
       #joystick-base {
-        min-width: 112px;
-        width: 33%;
+        width: 30%;
+        min-width: 102px;
       }
 
       .t1-action {
-        font-size: 14px;
+        font-size: 12px;
       }
 
-      #t0-text,
+      #t0-text {
+        font-size: 16px;
+      }
+
       .t0-choice {
-        font-size: 14px;
+        font-size: 15px;
       }
     }
   </style>
@@ -477,13 +464,8 @@
           <div id="t0-text">스크린을 확인하시겠습니까?</div>
 
           <div id="t0-choices">
-            <button class="t0-choice active" id="t0-yes" type="button">
-              • 네
-            </button>
-
-            <button class="t0-choice" id="t0-no" type="button">
-              • 아니오
-            </button>
+            <button class="t0-choice active" id="t0-yes" type="button">• 네</button>
+            <button class="t0-choice" id="t0-no" type="button">• 아니오</button>
           </div>
         </div>
       </section>
@@ -494,21 +476,10 @@
         </div>
 
         <div class="content">
-          <button class="t1-action" data-action="inspect" type="button">
-            1. 조사한다
-          </button>
-
-          <button class="t1-action" data-action="drop" type="button">
-            2. 바닥으로 버린다.
-          </button>
-
-          <button class="t1-action" data-action="peek" type="button">
-            3. 안을 자세히 들여다 본다.
-          </button>
-
-          <button class="t1-action" data-action="quit" type="button">
-            4. 관둔다
-          </button>
+          <button class="t1-action" data-action="inspect" type="button">1. 조사한다</button>
+          <button class="t1-action" data-action="drop" type="button">2. 바닥으로 버린다.</button>
+          <button class="t1-action" data-action="peek" type="button">3. 안을 자세히 들여다 본다.</button>
+          <button class="t1-action" data-action="quit" type="button">4. 관둔다</button>
         </div>
       </section>
 
@@ -528,8 +499,8 @@
         id: "screen01",
         x: 16,
         y: 55,
-        buttonX: 16,
-        buttonY: 42,
+        buttonX: 29,
+        buttonY: 47,
         coverX: 10,
         coverY: 28,
         coverW: 12,
@@ -541,8 +512,8 @@
         id: "screen02",
         x: 50,
         y: 55,
-        buttonX: 50,
-        buttonY: 42,
+        buttonX: 63,
+        buttonY: 47,
         coverX: 44,
         coverY: 28,
         coverW: 12,
@@ -554,8 +525,8 @@
         id: "screen03",
         x: 84,
         y: 55,
-        buttonX: 84,
-        buttonY: 42,
+        buttonX: 89,
+        buttonY: 47,
         coverX: 78,
         coverY: 28,
         coverW: 12,
@@ -570,21 +541,16 @@
     const player = $("#player");
     const confirmButton = $("#confirm-button");
     const stageEffects = $("#stage-effects");
-
     const t0Panel = $("#t0-panel");
     const t1Panel = $("#t1-panel");
     const t0Text = $("#t0-text");
     const t0Choices = $("#t0-choices");
     const t0Yes = $("#t0-yes");
     const t0No = $("#t0-no");
-
     const joystickBase = $("#joystick-base");
     const joystickKnob = $("#joystick-knob");
     const cutOverlay = $("#cut-overlay");
-
-    const actionButtons = [
-      ...document.querySelectorAll(".t1-action")
-    ];
+    const actionButtons = [...document.querySelectorAll(".t1-action")];
 
     const state = {
       mode: "free",
@@ -631,15 +597,15 @@
           continue;
         }
 
-        const currentDistance = distance(
+        const current = distance(
           state.playerX,
           state.playerY,
           item.x,
           item.y
         );
 
-        if (currentDistance < shortest) {
-          shortest = currentDistance;
+        if (current < shortest) {
+          shortest = current;
           nearest = item;
         }
       }
@@ -701,6 +667,7 @@
 
       t0Panel.hidden = true;
       t1Panel.hidden = true;
+      t0Panel.classList.remove("is-message");
 
       t0Choices.hidden = false;
       t0Text.textContent = "스크린을 확인하시겠습니까?";
@@ -713,12 +680,11 @@
       state.activeId = item.id;
       state.selectedQuestion = "yes";
 
+      t0Panel.classList.remove("is-message");
       t0Text.textContent = "스크린을 확인하시겠습니까?";
-
       t0Choices.hidden = false;
       t0Panel.hidden = false;
       t1Panel.hidden = true;
-
       confirmButton.hidden = true;
 
       updateQuestionSelection();
@@ -730,11 +696,6 @@
       }
 
       state.mode = "actions";
-
-      /*
-        T0는 유지하고,
-        T1만 추가 표시
-      */
       t0Panel.hidden = false;
       t1Panel.hidden = false;
     }
@@ -743,14 +704,11 @@
       state.mode = "message";
 
       /*
-        설명은 반드시 T0 안에 표시
+        선택지 결과 설명은 반드시 T0에 표시
       */
       t0Text.textContent = text;
+      t0Panel.classList.add("is-message");
       t0Choices.hidden = true;
-
-      /*
-        T1은 화면에 유지
-      */
       t0Panel.hidden = false;
       t1Panel.hidden = false;
     }
@@ -786,9 +744,7 @@
 
       if (action === "drop") {
         state.removed.add(item.id);
-
         renderRemoved();
-
         showMessage("스크린을 바닥으로 버렸다.");
         return;
       }
@@ -809,7 +765,7 @@
       }
     }
 
-    function currentMoveVector() {
+    function moveVector() {
       if (joystick.active) {
         return {
           x: joystick.x,
@@ -835,11 +791,9 @@
 
     function setJoystick(clientX, clientY) {
       const rect = joystickBase.getBoundingClientRect();
-
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-
-      const maxRadius = rect.width * 0.28;
+      const maxRadius = rect.width * .28;
 
       const dx = clientX - centerX;
       const dy = clientY - centerY;
@@ -855,8 +809,8 @@
         (dy / length) *
         (limited / maxRadius);
 
-      const knobX = joystick.x * rect.width * 0.22;
-      const knobY = joystick.y * rect.width * 0.22;
+      const knobX = joystick.x * rect.width * .22;
+      const knobY = joystick.y * rect.width * .22;
 
       joystickKnob.style.transform =
         `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
@@ -866,9 +820,7 @@
       joystick.active = false;
       joystick.x = 0;
       joystick.y = 0;
-
-      joystickKnob.style.transform =
-        "translate(-50%, -50%)";
+      joystickKnob.style.transform = "translate(-50%, -50%)";
     }
 
     confirmButton.addEventListener("click", () => {
@@ -895,9 +847,7 @@
 
     joystickBase.addEventListener("pointerdown", (event) => {
       joystick.active = true;
-
       joystickBase.setPointerCapture(event.pointerId);
-
       setJoystick(event.clientX, event.clientY);
     });
 
@@ -911,8 +861,7 @@
     joystickBase.addEventListener("pointercancel", resetJoystick);
 
     /*
-      설명문을 본 뒤
-      아무 화면이나 터치하면 평상시로 복귀
+      설명을 읽은 뒤에는 아무 화면이나 터치하면 평상시로 복귀
     */
     document.addEventListener("pointerdown", () => {
       if (state.mode === "message") {
@@ -923,7 +872,7 @@
     document.addEventListener("keydown", (event) => {
       const key = event.key.toLowerCase();
 
-      const controlledKeys = [
+      const controlled = [
         "arrowup",
         "arrowdown",
         "arrowleft",
@@ -941,7 +890,7 @@
         "escape"
       ];
 
-      if (controlledKeys.includes(key)) {
+      if (controlled.includes(key)) {
         event.preventDefault();
       }
 
@@ -1023,14 +972,13 @@
     function loop(now) {
       const delta = Math.min(
         (now - lastTime) / 1000,
-        0.05
+        .05
       );
 
       lastTime = now;
 
       if (state.mode === "free") {
-        const vector = currentMoveVector();
-
+        const vector = moveVector();
         const moving =
           vector.x !== 0 ||
           vector.y !== 0;
@@ -1039,13 +987,13 @@
 
         if (moving) {
           state.playerX = clamp(
-            state.playerX + vector.x * 32 * delta,
+            state.playerX + vector.x * 42 * delta,
             7,
             93
           );
 
           state.playerY = clamp(
-            state.playerY + vector.y * 32 * delta,
+            state.playerY + vector.y * 42 * delta,
             46,
             88
           );
