@@ -9,8 +9,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=14") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=14") format("woff");
+        url("./DeterminationSansK2-FIX.woff2?v=15") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=15") format("woff");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -86,13 +86,14 @@
         0 0 10px rgba(255, 255, 255, 0.13);
     }
 
+    /*
+      ??? 글자는 지웠지만, 아래 빈 높이로 원래 대사 위치는 그대로 유지함.
+    */
     #speaker {
+      height: clamp(0.98rem, 4vw, 1.35rem);
       margin: 0 0 9px;
-      color: #ffffff;
-      font-size: clamp(0.98rem, 4vw, 1.35rem);
-      letter-spacing: 0.08em;
       line-height: 1;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.42);
+      visibility: hidden;
     }
 
     #dialogue-text {
@@ -100,9 +101,9 @@
       margin: 0;
       padding-right: 12px;
       color: #f5f5f5;
-      font-size: clamp(1.12rem, 4.85vw, 1.78rem);
+      font-size: clamp(1.22rem, 5.05vw, 1.88rem);
       font-weight: 400;
-      letter-spacing: 0.035em;
+      letter-spacing: 0.05em;
       line-height: 1.5;
       text-shadow:
         0 0 4px rgba(255, 255, 255, 0.74),
@@ -110,25 +111,54 @@
       white-space: pre-wrap;
     }
 
+    /*
+      부드러운 페이드 대신 짧게 잘리며 끊겨 사라지는 퇴장 연출.
+    */
     #dialogue-text.fading {
-      animation: dialogue-out 0.26s steps(3, end) both;
+      animation: dialogue-out 0.17s steps(4, end) both;
     }
 
     @keyframes dialogue-out {
       0% {
         opacity: 1;
-        filter: blur(0);
+        filter: brightness(1);
+        transform: translateX(0);
+        clip-path: inset(0);
+      }
+
+      24% {
+        opacity: 0.88;
+        filter: brightness(1.45);
+        transform: translateX(-1px);
+        clip-path: inset(0 0 43% 0);
+      }
+
+      50% {
+        opacity: 0.56;
+        filter: brightness(1.1);
+        transform: translateX(2px);
+        clip-path: inset(47% 0 0 0);
+      }
+
+      74% {
+        opacity: 0.24;
+        filter: brightness(1.75);
+        transform: translateX(-3px);
+        clip-path: inset(12% 0 28% 0);
       }
 
       100% {
         opacity: 0;
-        filter: blur(1px);
+        filter: brightness(1);
+        transform: translateX(4px);
+        clip-path: inset(0 0 100% 0);
       }
     }
 
     .typed-char {
       display: inline-block;
       min-width: 0.01em;
+      transform-origin: center;
       animation: text-tick 0.08s steps(2, end) both;
     }
 
@@ -149,6 +179,33 @@
         opacity: 1;
         filter: brightness(1);
         transform: translate(0, 0);
+      }
+    }
+
+    /* 글자마다 서로 다른 아주 작은 독립 떨림. */
+    .tremble-char {
+      display: inline-block;
+      min-width: 0.01em;
+      transform-origin: center;
+      animation: char-tremble var(--tremble-duration) steps(2, end) var(--tremble-delay) infinite;
+    }
+
+    @keyframes char-tremble {
+      0%,
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      26% {
+        transform: translate(var(--x1), var(--y1)) rotate(var(--r1));
+      }
+
+      56% {
+        transform: translate(var(--x2), var(--y2)) rotate(var(--r2));
+      }
+
+      78% {
+        transform: translate(var(--x3), var(--y3)) rotate(var(--r3));
       }
     }
 
@@ -216,8 +273,8 @@
       <img id="object-art" alt="" />
     </div>
 
-    <section id="dialogue-panel" aria-label="???의 대화">
-      <p id="speaker">???</p>
+    <section id="dialogue-panel" aria-label="대화">
+      <p id="speaker" aria-hidden="true">&nbsp;</p>
       <p id="dialogue-text" aria-live="polite"></p>
       <p id="advance-mark" aria-hidden="true">▼</p>
     </section>
@@ -251,12 +308,37 @@
     const timing = {
       openingDelay: 420,
       characterDelay: 57,
-      wordPause: 150,
-      punctuationPause: 150,
-      messageFadeDuration: 260,
+
+      // 공백마다 생기는 기본 단어 멈춤. 기존보다 0.1초 느리게 조정함.
+      wordPause: 250,
+
+      // 마침표·쉼표·물음표 뒤 기본 멈춤도 같은 결로 조금 늘림.
+      punctuationPause: 250,
+
+      // 텍스트가 뚝뚝 끊기며 사라지는 시간.
+      messageFadeDuration: 170,
+
+      // 사라진 뒤 다음 대사가 시작되기 전 빈 시간.
       nextMessageDelay: 740
     };
 
+    /*
+      ["텍스트", 숫자]에서 숫자는 그 텍스트가 전부 적힌 뒤 추가로 멈출 시간(ms)이야.
+
+      100  = 0.1초
+      300  = 0.3초
+      500  = 0.5초
+      1000 = 1초
+
+      예시:
+      ["저기,", 500],
+      [" 창문 쪽에.", 0]
+
+      위처럼 나누면 "저기,"가 다 적힌 다음 0.5초 쉬고,
+      그 뒤에 " 창문 쪽에."가 이어서 적혀.
+
+      한 줄을 화면에서 줄바꿈하고 싶으면 문장 안에 \n을 넣으면 돼.
+    */
     const dialogueLines = [
       {
         segments: [
@@ -446,12 +528,75 @@
     }
 
     function createCharacter(character) {
-      const span = document.createElement("span");
+      if (character === "\n") {
+        return document.createElement("br");
+      }
 
-      span.className = "typed-char";
-      span.textContent = character === " " ? "\u00A0" : character;
+      const outer = document.createElement("span");
+      const inner = document.createElement("span");
 
-      return span;
+      outer.className = "typed-char";
+      inner.className = "tremble-char";
+      inner.textContent = character === " " ? "\u00A0" : character;
+
+      inner.style.setProperty(
+        "--tremble-duration",
+        `${randomRange(0.56, 1.12).toFixed(2)}s`
+      );
+
+      inner.style.setProperty(
+        "--tremble-delay",
+        `${randomRange(-0.95, 0).toFixed(2)}s`
+      );
+
+      inner.style.setProperty(
+        "--x1",
+        `${randomRange(-0.58, 0.58).toFixed(2)}px`
+      );
+
+      inner.style.setProperty(
+        "--y1",
+        `${randomRange(-0.52, 0.52).toFixed(2)}px`
+      );
+
+      inner.style.setProperty(
+        "--x2",
+        `${randomRange(-0.58, 0.58).toFixed(2)}px`
+      );
+
+      inner.style.setProperty(
+        "--y2",
+        `${randomRange(-0.52, 0.52).toFixed(2)}px`
+      );
+
+      inner.style.setProperty(
+        "--x3",
+        `${randomRange(-0.58, 0.58).toFixed(2)}px`
+      );
+
+      inner.style.setProperty(
+        "--y3",
+        `${randomRange(-0.52, 0.52).toFixed(2)}px`
+      );
+
+      inner.style.setProperty(
+        "--r1",
+        `${randomRange(-0.36, 0.36).toFixed(2)}deg`
+      );
+
+      inner.style.setProperty(
+        "--r2",
+        `${randomRange(-0.36, 0.36).toFixed(2)}deg`
+      );
+
+      inner.style.setProperty(
+        "--r3",
+        `${randomRange(-0.36, 0.36).toFixed(2)}deg`
+      );
+
+      outer.appendChild(inner);
+
+      return outer;
     }
 
     function wait(time) {
