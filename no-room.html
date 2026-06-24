@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title></title>
+
+  <style>
+    @font-face {
+      font-family: "DeterminationK2";
+      src:
+        url("./DeterminationSansK2-FIX.woff2?v=14") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=14") format("woff");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #000000;
+    }
+
+    body {
+      overflow: hidden;
+      color: #ffffff;
+      font-family: "DeterminationK2", "Noto Sans KR", system-ui, sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #room {
+      position: relative;
+      min-height: 100svh;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    #object-stage {
+      position: fixed;
+      inset: 7svh 0 30svh;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    #object-art {
+      display: none;
+      width: min(45vw, 250px);
+      max-width: 72vw;
+      max-height: min(38svh, 340px);
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      transform-origin: center;
+      filter:
+        drop-shadow(0 0 2px rgba(255, 255, 255, 0.52))
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.16));
+      will-change: transform;
+    }
+
+    #object-art.loaded {
+      display: block;
+    }
+
+    #dialogue-panel {
+      position: fixed;
+      right: clamp(14px, 4vw, 34px);
+      bottom: max(16px, env(safe-area-inset-bottom));
+      left: clamp(14px, 4vw, 34px);
+      z-index: 4;
+      min-height: 172px;
+      padding: 17px 19px 22px;
+      border: 2px solid #ffffff;
+      background: #000000;
+      box-shadow:
+        0 0 0 2px #000000,
+        0 0 10px rgba(255, 255, 255, 0.13);
+    }
+
+    #speaker {
+      margin: 0 0 9px;
+      color: #ffffff;
+      font-size: clamp(0.98rem, 4vw, 1.35rem);
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.42);
+    }
+
+    #dialogue-text {
+      min-height: 3.3em;
+      margin: 0;
+      padding-right: 12px;
+      color: #f5f5f5;
+      font-size: clamp(1.12rem, 4.85vw, 1.78rem);
+      font-weight: 400;
+      letter-spacing: 0.035em;
+      line-height: 1.5;
+      text-shadow:
+        0 0 4px rgba(255, 255, 255, 0.74),
+        0 0 14px rgba(255, 255, 255, 0.22);
+      white-space: pre-wrap;
+    }
+
+    #dialogue-text.fading {
+      animation: dialogue-out 0.26s steps(3, end) both;
+    }
+
+    @keyframes dialogue-out {
+      0% {
+        opacity: 1;
+        filter: blur(0);
+      }
+
+      100% {
+        opacity: 0;
+        filter: blur(1px);
+      }
+    }
+
+    .typed-char {
+      display: inline-block;
+      min-width: 0.01em;
+      animation: text-tick 0.08s steps(2, end) both;
+    }
+
+    @keyframes text-tick {
+      0% {
+        opacity: 0;
+        filter: brightness(1.7);
+        transform: translate(0, 1px);
+      }
+
+      50% {
+        opacity: 1;
+        filter: brightness(1.3);
+        transform: translate(1px, 0);
+      }
+
+      100% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: translate(0, 0);
+      }
+    }
+
+    #advance-mark {
+      position: absolute;
+      right: 16px;
+      bottom: 10px;
+      margin: 0;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      font-size: 0.76rem;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #advance-mark.ready {
+      animation: advance-blink 0.76s steps(2, end) infinite;
+    }
+
+    @keyframes advance-blink {
+      0%,
+      46% {
+        opacity: 1;
+      }
+
+      47%,
+      100% {
+        opacity: 0.18;
+      }
+    }
+
+    #black-lock {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      background: #000000;
+      opacity: 0;
+    }
+
+    body.trapped #black-lock {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.trapped #dialogue-panel,
+    body.trapped #object-stage {
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="room">
+    <div id="object-stage" aria-hidden="true">
+      <img id="object-art" alt="" />
+    </div>
+
+    <section id="dialogue-panel" aria-label="???의 대화">
+      <p id="speaker">???</p>
+      <p id="dialogue-text" aria-live="polite"></p>
+      <p id="advance-mark" aria-hidden="true">▼</p>
+    </section>
+  </main>
+
+  <div id="black-lock" aria-hidden="true"></div>
+
+  <script>
+    /*
+      중앙 도트 오브젝트를 나중에 올릴 때만 파일명을 적어줘.
+
+      예시:
+      const objectImageFile = "no-object.png";
+
+      지금은 빈칸이라 이미지가 없어도 깨진 그림 아이콘이 뜨지 않음.
+    */
+    const objectImageFile = "";
+
+    /*
+      현재 GitHub 맨 위 폴더에 올린 대사음 파일.
+      여러 개를 올린 뒤 아래에 이름을 더 적으면,
+      글자마다 그중 하나가 랜덤으로 선택됨.
+    */
+    const textSoundFiles = [
+      "It.mp3"
+    ];
+
+    const textSoundVolume = 0.14;
+    const trapSessionKey = "welcome_no_room_trapped";
+
+    const timing = {
+      openingDelay: 420,
+      characterDelay: 57,
+      wordPause: 150,
+      punctuationPause: 150,
+      messageFadeDuration: 260,
+      nextMessageDelay: 740
+    };
+
+    const dialogueLines = [
+      {
+        segments: [
+          ["...", 0]
+        ]
+      },
+      {
+        segments: [
+          ["...저기 봐,", 0]
+        ]
+      },
+      {
+        segments: [
+          ["또 왔어.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["저기,", 500],
+          [" 창문 쪽에.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["아까부터...같은 곳에 서서,", 300],
+          ["\n이곳만 뚫어지게 바라보고 있어.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["...저거,", 500],
+          [" 한 번도 안 깜빡였어.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["...도대체 저게 뭔지,", 100],
+          [" 알 길이 없단 말이야.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["어제는 내가 출근하기 전부터 있었거든.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["그냥...", 500],
+          [" 여길 보고만 있었어.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["아무것도 안 하고.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["진짜 아무것도.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["내가 컵을 세 번 엎지른 거.", 100],
+          ["\n점심을 안 먹은 거.", 100],
+          ["\n넬슨과의 약속을 못 지킨 거.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["전부 봤겠지.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["...하하.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["근데", 100],
+          [" 이상하지 않아?", 0]
+        ]
+      },
+      {
+        segments: [
+          ["저건...", 300],
+          [" 우리가 보고 있다는 걸 모르는 것 같아.", 0]
+        ]
+      },
+      {
+        beginApproach: true,
+        segments: [
+          ["아니면.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["우리가 저걸 보고 있다는 걸,\n아예 신경도 안 쓰는 거겠지.", 0]
+        ]
+      },
+      {
+        segments: [
+          ["...", 200],
+          ["정말로 기괴하네.", 0]
+        ]
+      },
+      {
+        leadDelay: 500,
+        segments: [
+          ["안 그래?", 0]
+        ]
+      }
+    ];
+
+    const objectArt = document.getElementById("object-art");
+    const dialogueText = document.getElementById("dialogue-text");
+    const dialoguePanel = document.getElementById("dialogue-panel");
+    const advanceMark = document.getElementById("advance-mark");
+
+    const soundSources = textSoundFiles.map((fileName) => {
+      const audio = new Audio(fileName);
+
+      audio.preload = "auto";
+      audio.volume = textSoundVolume;
+
+      return audio;
+    });
+
+    let lineIndex = 0;
+    let lineFinished = false;
+    let changingLine = false;
+    let trapped = false;
+    let objectApproachStarted = false;
+    let objectScale = 1;
+    let objectFrame = 0;
+    let objectTimer = null;
+
+    function hasTrap() {
+      try {
+        return sessionStorage.getItem(trapSessionKey) === "1";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function saveTrap() {
+      try {
+        sessionStorage.setItem(trapSessionKey, "1");
+      } catch (error) {
+        /* 저장소를 쓸 수 없는 환경에서는 현재 화면만 검정으로 유지 */
+      }
+    }
+
+    function randomRange(minimum, maximum) {
+      return Math.random() * (maximum - minimum) + minimum;
+    }
+
+    function playTextSound() {
+      if (!soundSources.length) {
+        return;
+      }
+
+      const source = soundSources[
+        Math.floor(Math.random() * soundSources.length)
+      ];
+
+      const sound = source.cloneNode();
+
+      sound.volume = textSoundVolume;
+      sound.playbackRate = randomRange(0.98, 1.02);
+      sound.play().catch(() => {});
+    }
+
+    function getCharacterDelay(character) {
+      let delay = timing.characterDelay;
+
+      if (character === " ") {
+        delay += timing.wordPause;
+      }
+
+      if (/[.!?,]/.test(character)) {
+        delay += timing.punctuationPause;
+      }
+
+      return delay;
+    }
+
+    function createCharacter(character) {
+      const span = document.createElement("span");
+
+      span.className = "typed-char";
+      span.textContent = character === " " ? "\u00A0" : character;
+
+      return span;
+    }
+
+    function wait(time) {
+      return new Promise((resolve) => {
+        setTimeout(resolve, time);
+      });
+    }
+
+    async function typeText(text) {
+      const characters = Array.from(text);
+
+      for (const character of characters) {
+        if (trapped) {
+          return;
+        }
+
+        dialogueText.appendChild(createCharacter(character));
+
+        if (character !== " " && character !== "\n") {
+          playTextSound();
+        }
+
+        await wait(getCharacterDelay(character));
+      }
+    }
+
+    function showAdvance() {
+      advanceMark.classList.add("ready");
+    }
+
+    function hideAdvance() {
+      advanceMark.classList.remove("ready");
+    }
+
+    function applyObjectTransform() {
+      const xPattern = [0, 0, 1, -1, 0, 1, 0, -1];
+      const yPattern = [0, 1, 0, 0, -1, 0, 1, 0];
+      const x = xPattern[objectFrame % xPattern.length];
+      const y = yPattern[objectFrame % yPattern.length];
+
+      objectArt.style.transform =
+        `translate(${x}px, ${y}px) scale(${objectScale.toFixed(3)})`;
+    }
+
+    function beginObjectApproach() {
+      if (objectApproachStarted) {
+        return;
+      }
+
+      objectApproachStarted = true;
+      applyObjectTransform();
+
+      objectTimer = setInterval(() => {
+        objectFrame += 1;
+        objectScale = Math.min(1.82, objectScale + 0.026);
+        applyObjectTransform();
+      }, 108);
+    }
+
+    async function showLine(index) {
+      if (trapped) {
+        return;
+      }
+
+      const line = dialogueLines[index];
+
+      lineFinished = false;
+      changingLine = false;
+      hideAdvance();
+
+      dialogueText.classList.remove("fading");
+      dialogueText.textContent = "";
+
+      if (line.beginApproach) {
+        beginObjectApproach();
+      }
+
+      if (line.leadDelay) {
+        await wait(line.leadDelay);
+      }
+
+      for (const [segment, pauseAfter] of line.segments) {
+        await typeText(segment);
+
+        if (pauseAfter) {
+          await wait(pauseAfter);
+        }
+      }
+
+      if (trapped) {
+        return;
+      }
+
+      lineFinished = true;
+      showAdvance();
+    }
+
+    async function advanceDialogue() {
+      if (trapped || !lineFinished || changingLine) {
+        return;
+      }
+
+      if (lineIndex >= dialogueLines.length - 1) {
+        lockInBlack();
+        return;
+      }
+
+      changingLine = true;
+      lineFinished = false;
+      hideAdvance();
+      dialogueText.classList.add("fading");
+
+      await wait(timing.messageFadeDuration);
+      await wait(timing.nextMessageDelay);
+
+      lineIndex += 1;
+      showLine(lineIndex);
+    }
+
+    function lockInBlack() {
+      if (trapped) {
+        return;
+      }
+
+      trapped = true;
+      saveTrap();
+
+      if (objectTimer) {
+        clearInterval(objectTimer);
+      }
+
+      document.body.classList.add("trapped");
+    }
+
+    if (objectImageFile) {
+      objectArt.src = objectImageFile;
+
+      objectArt.addEventListener("load", () => {
+        objectArt.classList.add("loaded");
+        applyObjectTransform();
+      });
+    }
+
+    dialoguePanel.addEventListener("pointerup", (event) => {
+      event.preventDefault();
+      advanceDialogue();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        advanceDialogue();
+      }
+    });
+
+    if (hasTrap()) {
+      trapped = true;
+      document.body.classList.add("trapped");
+    } else {
+      history.replaceState(null, "", window.location.href);
+
+      setTimeout(() => {
+        showLine(lineIndex);
+      }, timing.openingDelay);
+    }
+  </script>
+</body>
+</html>
