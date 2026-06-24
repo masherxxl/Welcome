@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAB // DEMO</title>
+  <style>
+    @font-face {
+      font-family: "DeterminationK2";
+      src: url("./DeterminationSansK2-FIX.woff2?v=15") format("woff2"), url("./DeterminationSansK2-FIX.woff?v=15") format("woff");
+      font-display: swap;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; background: #000; }
+    body { color: #f4f4f4; font-family: "DeterminationK2", system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+
+    #boot, #cut, #ellipsis {
+      position: fixed;
+      inset: 0;
+    }
+
+    #boot {
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: #000;
+      transition: opacity .24s steps(3, end), visibility .24s steps(3, end);
+    }
+
+    #boot.out { opacity: 0; visibility: hidden; }
+
+    .boot-card {
+      width: min(100%, 420px);
+      padding: 28px 24px 24px;
+      border: 2px solid #f3f3f3;
+      background: #060606;
+      text-align: center;
+      box-shadow: 0 0 0 3px #000, 0 0 20px rgba(255,255,255,.12);
+    }
+
+    .boot-card p { margin: 0; color: #aaa; font-size: .86rem; letter-spacing: .12em; }
+    .boot-card h1 { margin: 12px 0 18px; font-size: clamp(1.55rem, 7vw, 2.4rem); font-weight: 400; letter-spacing: .08em; }
+    .boot-card .copy { line-height: 1.55; letter-spacing: .04em; }
+
+    .btn {
+      border: 2px solid #eee;
+      background: #050505;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: .06em;
+    }
+
+    .btn:active { background: #fff; color: #000; }
+
+    #start { margin-top: 21px; min-width: 180px; padding: 12px 16px; font-size: 1.06rem; }
+
+    #ellipsis {
+      z-index: 25;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 2rem;
+      letter-spacing: .3em;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #ellipsis.show { animation: dots .7s steps(3, end) both; }
+    @keyframes dots { 0%{opacity:0} 24%,72%{opacity:1} 100%{opacity:0} }
+
+    #app {
+      width: min(100%, 900px);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: 18px 14px 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .45s steps(4, end);
+    }
+
+    #app.live { opacity: 1; pointer-events: auto; }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 9px;
+      color: #aaa;
+      font-size: clamp(.72rem, 3.2vw, .94rem);
+      letter-spacing: .08em;
+    }
+
+    .topline strong { color: #fff; font-weight: 400; }
+
+    #stage {
+      position: relative;
+      overflow: hidden;
+      border: 3px solid #eee;
+      background: #050505;
+      box-shadow: 0 0 0 3px #000, 0 0 30px rgba(255,255,255,.1);
+    }
+
+    canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+
+    #hint {
+      position: absolute;
+      top: 7%;
+      left: 50%;
+      display: none;
+      padding: 7px 10px;
+      border: 1px solid #eee;
+      background: #000;
+      color: #fff;
+      font-size: clamp(.72rem, 2.6vw, .96rem);
+      letter-spacing: .06em;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    #hint.show { display: block; }
+
+    #controls {
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: 42px 42px;
+      gap: 6px;
+      justify-content: center;
+      margin: 14px auto 0;
+      touch-action: none;
+    }
+
+    .move { padding: 0; font-size: 1.1rem; }
+    .up { grid-column: 2; grid-row: 1; }
+    .left { grid-column: 1; grid-row: 2; }
+    .down { grid-column: 2; grid-row: 2; }
+    .right { grid-column: 3; grid-row: 2; }
+
+    #interact {
+      display: block;
+      width: min(100%, 180px);
+      min-height: 44px;
+      margin: 12px auto 0;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      padding: 18px;
+    }
+
+    .overlay.open { display: grid; }
+
+    #dialogue { align-items: end; pointer-events: none; }
+
+    .dialogue-box, .menu-box {
+      width: min(100%, 680px);
+      margin: 0 auto;
+      padding: 16px 17px;
+      border: 2px solid #eee;
+      background: #000;
+      box-shadow: 0 0 0 3px #000, 0 0 18px rgba(255,255,255,.12);
+      pointer-events: auto;
+    }
+
+    .speaker { margin: 0 0 7px; color: #aaa; font-size: .88rem; letter-spacing: .12em; }
+    .dialogue-copy { margin: 0; font-size: clamp(1rem, 4.5vw, 1.42rem); letter-spacing: .045em; line-height: 1.55; white-space: pre-wrap; }
+    .close { float: right; margin-top: 12px; padding: 7px 10px; font-size: .82rem; }
+
+    #menu { place-items: center; background: rgba(0,0,0,.68); }
+    .menu-box { width: min(100%, 410px); }
+    .menu-box small { color: #aaa; letter-spacing: .1em; }
+    .menu-box h2 { margin: 8px 0 18px; font-size: 1.5rem; font-weight: 400; letter-spacing: .06em; }
+    .menu-box .btn { display: block; width: 100%; min-height: 44px; margin: 8px 0; padding: 10px; text-align: left; }
+    .menu-box .danger { border-style: dashed; }
+
+    #cut {
+      z-index: 90;
+      display: none;
+      overflow: hidden;
+      background: #000;
+      pointer-events: none;
+    }
+
+    #cut.open { display: block; }
+    #cut i { position: absolute; left: -5%; width: 110%; height: 5px; background: #fff; opacity: 0; }
+    #cut i:nth-child(1) { top: 28%; }
+    #cut i:nth-child(2) { top: 53%; height: 10px; }
+    #cut i:nth-child(3) { top: 71%; height: 3px; }
+    #cut.open i:nth-child(1) { animation: slice-a .18s steps(2,end) both; }
+    #cut.open i:nth-child(2) { animation: slice-b .2s steps(2,end) .04s both; }
+    #cut.open i:nth-child(3) { animation: slice-a .17s steps(2,end) .08s both; }
+    #cut b { position: absolute; top: 50%; left: 50%; color: #fff; font-weight: 400; letter-spacing: .18em; transform: translate(-50%,-50%); animation: error .26s steps(2,end) both; }
+
+    @keyframes slice-a { 0%{opacity:0;transform:translateX(-110%)} 40%{opacity:1;transform:translateX(2%)} 100%{opacity:0;transform:translateX(112%)} }
+    @keyframes slice-b { 0%{opacity:0;transform:translateX(110%)} 40%{opacity:1;transform:translateX(-2%)} 100%{opacity:0;transform:translateX(-112%)} }
+    @keyframes error { 0%{opacity:0;clip-path:inset(0 0 58% 0);transform:translate(-55%,-48%)} 45%{opacity:1;clip-path:inset(46% 0 0 0);transform:translate(-47%,-51%)} 100%{opacity:0;clip-path:inset(0 0 100% 0)} }
+
+    #note {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      left: 16px;
+      z-index: 100;
+      display: none;
+      max-width: 600px;
+      margin: auto;
+      padding: 12px 14px;
+      border: 1px solid #aaa;
+      background: #000;
+      color: #ddd;
+      font-size: .86rem;
+      line-height: 1.45;
+      letter-spacing: .04em;
+      text-align: center;
+    }
+
+    #note.show { display: block; }
+
+    @media (min-width: 720px) {
+      #controls, #interact { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <section id="boot">
+    <div class="boot-card">
+      <p>TEST BUILD // ENTRY 04</p>
+      <h1>연구실 상호작용 데모</h1>
+      <p class="copy">이동 · 근접 상호작용 · 선택지 · 오브젝트 폐기 · 오류 전환을 미리 시험합니다.</p>
+      <button id="start" class="btn" type="button">실험 시작</button>
+    </div>
+  </section>
+
+  <div id="ellipsis" aria-hidden="true">...</div>
+
+  <main id="app">
+    <p class="topline"><span><strong>LAB // 04</strong> · interaction prototype</span><span>이동: 방향키 / WASD · 상호작용: E</span></p>
+    <section id="stage">
+      <canvas id="game" width="800" height="450" aria-label="연구실 데모"></canvas>
+      <p id="hint">[ E ] 상호작용</p>
+    </section>
+
+    <div id="controls" aria-label="이동 버튼">
+      <button class="btn move up" data-move="up" type="button">▲</button>
+      <button class="btn move left" data-move="left" type="button">◀</button>
+      <button class="btn move down" data-move="down" type="button">▼</button>
+      <button class="btn move right" data-move="right" type="button">▶</button>
+    </div>
+    <button id="interact" class="btn" type="button">상호작용</button>
+  </main>
+
+  <section id="dialogue" class="overlay" aria-live="polite">
+    <div class="dialogue-box">
+      <p id="speaker" class="speaker">기록</p>
+      <p id="dialogue-copy" class="dialogue-copy"></p>
+      <button id="close-dialogue" class="btn close" type="button">닫기</button>
+    </div>
+  </section>
+
+  <section id="menu" class="overlay" aria-label="상호작용 메뉴">
+    <div class="menu-box">
+      <small>INTERACTION MENU</small>
+      <h2 id="object-name">벽면 오브젝트</h2>
+      <button id="inspect" class="btn" type="button">1. 확인한다</button>
+      <button id="discard" class="btn" type="button">2. 바닥으로 버린다</button>
+      <button id="peer" class="btn danger" type="button">3. 안을 자세히 들여다본다</button>
+      <button id="cancel" class="btn" type="button">돌아간다</button>
+    </div>
+  </section>
+
+  <section id="cut" aria-hidden="true"><i></i><i></i><i></i><b>SIGNAL LOST</b></section>
+  <p id="note"></p>
+
+  <script>
+    /*
+      true = 이 파일 안에서 오류 연출만 시험.
+      false = "안을 자세히 들여다본다" 뒤 실제 no-room.html로 이동.
+    */
+    const DEMO_ONLY = true;
+    const NO_ROOM_URL = "no-room.html";
+
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const hint = document.getElementById("hint");
+    const app = document.getElementById("app");
+    const boot = document.getElementById("boot");
+    const ellipsis = document.getElementById("ellipsis");
+    const dialogue = document.getElementById("dialogue");
+    const menu = document.getElementById("menu");
+    const cut = document.getElementById("cut");
+    const note = document.getElementById("note");
+
+    const player = { x: 402, y: 334, speed: 175 };
+    const keys = new Set();
+    let lastTime = 0;
+    let activeId = null;
+    let nearestId = null;
+    let started = false;
+
+    const objects = {
+      a: {
+        id: "a", name: "벽면 오브젝트 01", x: 175, y: 105, dropped: false,
+        text: "금속 테두리 안쪽에 비정상적으로 매끈한 원형 흔적이 있다.\n\n기록에는 이것이 ‘관측 도구’였다고만 적혀 있다. 무엇을 관측했는지는 지워져 있다."
+      },
+      b: {
+        id: "b", name: "벽면 오브젝트 02", x: 360, y: 101, dropped: false,
+        text: "투명한 상자 안에 무언가가 접힌 채 놓여 있다.\n\n상자의 표면에는 손가락 자국이 너무 많이 남아 있다. 안쪽에서 바깥을 눌렀던 흔적처럼 보인다."
+      }
+    };
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function distance(a) {
+      return Math.hypot(player.x - a.x, player.y - a.y);
+    }
+
+    function modalOpen() {
+      return dialogue.classList.contains("open") || menu.classList.contains("open") || cut.classList.contains("open");
+    }
+
+    function updateNearest() {
+      let pick = null;
+      let best = Infinity;
+
+      Object.values(objects).forEach(object => {
+        if (object.dropped) return;
+
+        const d = distance(object);
+
+        if (d < 84 && d < best) {
+          pick = object.id;
+          best = d;
+        }
+      });
+
+      nearestId = pick;
+      hint.classList.toggle("show", Boolean(pick));
+    }
+
+    function move(dx, dy, dt) {
+      player.x = Math.max(28, Math.min(772, player.x + dx * player.speed * dt));
+      player.y = Math.max(53, Math.min(414, player.y + dy * player.speed * dt));
+      updateNearest();
+    }
+
+    function drawRoom() {
+      ctx.clearRect(0, 0, 800, 450);
+
+      ctx.fillStyle = "#181818";
+      ctx.fillRect(0, 0, 800, 220);
+
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 220, 800, 230);
+
+      ctx.strokeStyle = "rgba(255,255,255,.10)";
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x < 800; x += 64) {
+        ctx.beginPath();
+        ctx.moveTo(x, 220);
+        ctx.lineTo(x, 450);
+        ctx.stroke();
+      }
+
+      for (let y = 220; y < 450; y += 48) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(800, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#aaa";
+      ctx.font = "12px DeterminationK2, sans-serif";
+      ctx.fillText("ARCHIVE LAB / OBSERVATION UNIT", 38, 34);
+
+      ctx.fillStyle = "#030303";
+      ctx.strokeStyle = "#aaa";
+      ctx.lineWidth = 4;
+      ctx.fillRect(605, 38, 150, 114);
+      ctx.strokeRect(605, 38, 150, 114);
+
+      ctx.beginPath();
+      ctx.moveTo(680, 38);
+      ctx.lineTo(680, 152);
+      ctx.moveTo(605, 95);
+      ctx.lineTo(755, 95);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,.08)";
+      ctx.fillRect(625, 59, 48, 23);
+
+      ctx.fillStyle = "#1a1a1a";
+      ctx.strokeStyle = "#bbb";
+      ctx.lineWidth = 3;
+      ctx.fillRect(560, 305, 190, 51);
+      ctx.strokeRect(560, 305, 190, 51);
+
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(582, 281, 39, 24);
+      ctx.strokeRect(582, 281, 39, 24);
+
+      ctx.fillStyle = "#777";
+      ctx.fillRect(320, 369, 4, 40);
+      ctx.fillRect(324, 405, 80, 4);
+
+      drawObject(objects.a);
+      drawObject(objects.b);
+      drawPlayer();
+
+      ctx.fillStyle = "#999";
+      ctx.font = "11px DeterminationK2, sans-serif";
+      ctx.fillText("SIGNAL: STABLE", 684, 431);
+    }
+
+    function drawObject(object) {
+      if (object.dropped) {
+        ctx.save();
+        ctx.translate(object.id === "a" ? 194 : 376, object.id === "a" ? 346 : 371);
+        ctx.rotate(object.id === "a" ? .38 : -.32);
+
+        ctx.fillStyle = "#1a1a1a";
+        ctx.strokeStyle = "#aaa";
+        ctx.lineWidth = 2;
+        ctx.fillRect(-15, -9, 30, 18);
+        ctx.strokeRect(-15, -9, 30, 18);
+
+        ctx.restore();
+        return;
+      }
+
+      const near = nearestId === object.id;
+
+      ctx.save();
+      ctx.translate(object.x, object.y);
+      ctx.fillStyle = "#101010";
+      ctx.strokeStyle = near ? "#fff" : "#ddd";
+      ctx.lineWidth = near ? 4 : 3;
+      ctx.fillRect(-35, -30, 70, 62);
+      ctx.strokeRect(-35, -30, 70, 62);
+
+      ctx.strokeStyle = "#f4f4f4";
+      ctx.lineWidth = 3;
+
+      if (object.id === "a") {
+        ctx.beginPath();
+        ctx.arc(0, -3, 17, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ddd";
+        ctx.font = "11px DeterminationK2, sans-serif";
+        ctx.fillText("01", 18, 25);
+      } else {
+        ctx.save();
+        ctx.rotate(Math.PI / 4);
+        ctx.strokeRect(-15, -15, 30, 30);
+        ctx.restore();
+
+        ctx.fillStyle = "#ddd";
+        ctx.font = "11px DeterminationK2, sans-serif";
+        ctx.fillText("02", 18, 25);
+      }
+
+      ctx.restore();
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.translate(player.x, player.y);
+
+      ctx.fillStyle = "#eee";
+      ctx.fillRect(-11, -21, 22, 30);
+
+      ctx.fillStyle = "#888";
+      ctx.fillRect(-11, 2, 22, 7);
+
+      ctx.fillStyle = "#f8f8f8";
+      ctx.fillRect(-6, -28, 12, 8);
+
+      ctx.fillStyle = "#000";
+      ctx.fillRect(-6, -5, 12, 2);
+
+      ctx.restore();
+    }
+
+    function showDialogue(name, text) {
+      document.getElementById("speaker").textContent = name;
+      document.getElementById("dialogue-copy").textContent = text;
+      dialogue.classList.add("open");
+    }
+
+    function closeDialogue() {
+      dialogue.classList.remove("open");
+    }
+
+    function openMenu(id) {
+      if (!id || objects[id].dropped) return;
+
+      activeId = id;
+      document.getElementById("object-name").textContent = objects[id].name;
+      menu.classList.add("open");
+    }
+
+    function closeMenu() {
+      menu.classList.remove("open");
+      activeId = null;
+    }
+
+    function interact() {
+      if (!started || modalOpen()) return;
+
+      if (nearestId) {
+        openMenu(nearestId);
+      } else {
+        showDialogue("연구실", "가까이에 상호작용할 수 있는 물건이 없다.");
+      }
+    }
+
+    function inspect() {
+      const object = objects[activeId];
+      if (!object) return;
+
+      closeMenu();
+      showDialogue(object.name, object.text);
+    }
+
+    function discard() {
+      const object = objects[activeId];
+      if (!object) return;
+
+      object.dropped = true;
+      closeMenu();
+      updateNearest();
+
+      showDialogue(
+        object.name,
+        "바닥으로 떨어뜨렸다.\n\n금속이 바닥을 스치는 소리가 너무 오래 남는다."
+      );
+    }
+
+    async function peer() {
+      closeMenu();
+      cut.classList.add("open");
+
+      await wait(430);
+
+      if (!DEMO_ONLY) {
+        location.replace(NO_ROOM_URL);
+        return;
+      }
+
+      cut.classList.remove("open");
+      note.textContent = "DEMO MODE — 실제 이진4 연결 시 이 지점에서 no-room.html로 즉시 이동합니다.";
+      note.classList.add("show");
+
+      setTimeout(() => {
+        note.classList.remove("show");
+        showDialogue("오류", "신호가 끊겼다.\n\n실전에서는 여기서 공허방으로 연결된다.");
+      }, 1050);
+    }
+
+    function loop(time) {
+      const dt = Math.min(.035, (time - lastTime) / 1000 || 0);
+      lastTime = time;
+
+      if (started && !modalOpen()) {
+        let dx = 0;
+        let dy = 0;
+
+        if (keys.has("ArrowUp") || keys.has("w")) dy -= 1;
+        if (keys.has("ArrowDown") || keys.has("s")) dy += 1;
+        if (keys.has("ArrowLeft") || keys.has("a")) dx -= 1;
+        if (keys.has("ArrowRight") || keys.has("d")) dx += 1;
+
+        if (dx || dy) {
+          const length = Math.hypot(dx, dy);
+          move(dx / length, dy / length, dt);
+        }
+      }
+
+      drawRoom();
+      requestAnimationFrame(loop);
+    }
+
+    document.getElementById("start").addEventListener("click", () => {
+      boot.classList.add("out");
+      ellipsis.classList.add("show");
+
+      setTimeout(() => {
+        started = true;
+        app.classList.add("live");
+        updateNearest();
+      }, 650);
+    });
+
+    document.getElementById("close-dialogue").addEventListener("click", closeDialogue);
+    document.getElementById("cancel").addEventListener("click", closeMenu);
+    document.getElementById("inspect").addEventListener("click", inspect);
+    document.getElementById("discard").addEventListener("click", discard);
+    document.getElementById("peer").addEventListener("click", peer);
+    document.getElementById("interact").addEventListener("click", interact);
+
+    document.addEventListener("keydown", event => {
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(key)) {
+        event.preventDefault();
+        keys.add(key);
+      }
+
+      if ((key === "e" || key === "Enter") && started) {
+        event.preventDefault();
+        interact();
+      }
+
+      if (key === "Escape") {
+        closeMenu();
+        closeDialogue();
+      }
+    });
+
+    document.addEventListener("keyup", event => {
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+      keys.delete(key);
+    });
+
+    document.querySelectorAll("[data-move]").forEach(button => {
+      let timer;
+
+      const step = () => {
+        const direction = button.dataset.move;
+        const unit = 16 / player.speed;
+
+        if (direction === "up") move(0, -1, unit);
+        if (direction === "down") move(0, 1, unit);
+        if (direction === "left") move(-1, 0, unit);
+        if (direction === "right") move(1, 0, unit);
+      };
+
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        step();
+        timer = setInterval(step, 90);
+      });
+
+      ["pointerup", "pointercancel", "pointerleave"].forEach(type => {
+        button.addEventListener(type, () => clearInterval(timer));
+      });
+    });
+
+    canvas.addEventListener("click", () => {
+      if (!started || modalOpen()) return;
+      if (nearestId) openMenu(nearestId);
+    });
+
+    updateNearest();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
