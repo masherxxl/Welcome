@@ -58,7 +58,6 @@
 
     /*
       언더테일식 타이핑:
-      부드러운 파도 모션 제거.
       글자는 딱딱하게 찍히고,
       일부 글자만 아주 짧게 잔떨림/글로우.
     */
@@ -128,7 +127,6 @@
     }
 
     /*
-      화면 반응형 모션.
       새 글자가 찍힐 때 대화창이 아주 짧게 반응.
     */
     .screen-react {
@@ -246,7 +244,9 @@
     }
 
     /*
-      스크린의 세모 문양 바로 위 확인 버튼
+      스크린의 세모 문양 바로 위 확인 버튼.
+      가까이 가면 부드럽게 나타나고,
+      멀어지면 같은 속도로 스르르 사라집니다.
     */
     #confirm-button {
       position: absolute;
@@ -266,10 +266,13 @@
       box-shadow:
         0 0 0 3px #000,
         0 0 10px rgba(255,255,255,.3);
+
       transition:
         opacity .34s ease,
         transform .34s cubic-bezier(.2,.8,.25,1),
-        filter .34s ease;
+        filter .34s ease,
+        visibility 0s linear .34s;
+
       cursor: pointer;
     }
 
@@ -279,6 +282,12 @@
       pointer-events: auto;
       filter: brightness(1);
       transform: translate(-50%, -50%) scale(1);
+
+      transition:
+        opacity .34s ease,
+        transform .34s cubic-bezier(.2,.8,.25,1),
+        filter .34s ease,
+        visibility 0s linear 0s;
     }
 
     #confirm-button:active {
@@ -424,7 +433,7 @@
       padding: 0;
 
       /* 여기에요 여기!!! T1 선택지 글자 크기 */
-      font-size: clamp(12px, 3.35vw, 28px);
+      font-size: clamp(13px, 3.75vw, 30px);
 
       line-height: 1.04;
       text-align: left;
@@ -573,7 +582,7 @@
       }
 
       .t1-action {
-        font-size: 12px;
+        font-size: 13px;
       }
 
       #t0-text {
@@ -820,10 +829,6 @@
 
           span.className = "typed-char";
 
-          /*
-            불규칙하게 한두 글자만 잔떨림/글로우.
-            숫자를 올리면 효과가 더 자주 생깁니다.
-          */
           const roll = Math.random();
 
           if (roll > .88) {
@@ -1115,10 +1120,6 @@
 
       state.mode = "actions";
 
-      /*
-        예 / 아니오 버튼은 여기서 즉시 사라짐.
-        T0 질문 문장만 남기고 T1 선택지가 나타남.
-      */
       t0Choices.hidden = true;
       stopTyping(t0Yes);
       stopTyping(t0No);
