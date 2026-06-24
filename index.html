@@ -15,7 +15,18 @@
 
   <script>
     (function () {
-      if (new URLSearchParams(location.search).get("return") === "binary") {
+      const params = new URLSearchParams(location.search);
+
+      /* 마지막 암전 뒤, 같은 탭에서는 첫 화면으로 돌아오지 않게 함. */
+      try {
+        if (sessionStorage.getItem("welcome_no_room_trapped") === "1") {
+          document.documentElement.classList.add("no-room-locked");
+          location.replace("no-room.html");
+          return;
+        }
+      } catch (error) {}
+
+      if (params.get("return") === "binary") {
         document.documentElement.classList.add("returning-to-binary");
       }
     })();
@@ -26,763 +37,533 @@
   <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
-    @font-face {
-      font-family: "Computer Says No";
-      src: url("computer-says-no.woff2") format("woff2");
-      font-display: swap;
-    }
+    @font-face { font-family:"Computer Says No"; src:url("computer-says-no.woff2") format("woff2"); font-display:swap; }
+    @font-face { font-family:"DeterminationK2"; src:url("./DeterminationSansK2-FIX.woff2?v=11") format("woff2"),url("./DeterminationSansK2-FIX.woff?v=11") format("woff"); font-display:swap; }
 
-    @font-face {
-      font-family: "DeterminationK2";
-      src:
-        url("./DeterminationSansK2-FIX.woff2?v=11") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=11") format("woff");
-      font-display: swap;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing:border-box; }
 
     html,
     body {
-      margin: 0;
-      background: #000000;
+      margin:0;
+      background:#000;
     }
 
     body {
-      overflow-x: hidden;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
+      overflow-x:hidden;
+      color:#fff;
+      font-family:Arial,sans-serif;
     }
 
-    button {
-      font: inherit;
-    }
+    button { font:inherit; }
 
     html.returning-to-binary #entrance,
     html.returning-to-binary #comic {
-      visibility: hidden !important;
+      visibility:hidden!important;
+    }
+
+    html.no-room-locked body {
+      visibility:hidden;
+      background:#000;
     }
 
     #return-curtain {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 999;
-      background: #000000;
-      pointer-events: none;
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:999;
+      background:#000;
+      pointer-events:none;
     }
 
     html.returning-to-binary #return-curtain {
-      display: block;
+      display:block;
     }
 
     #entrance {
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      padding: 32px;
-      overflow: hidden;
-      background: #000000;
-      text-align: center;
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      padding:32px;
+      overflow:hidden;
+      background:#000;
+      text-align:center;
     }
 
     #entrance[hidden],
     #comic[hidden] {
-      display: none !important;
+      display:none!important;
     }
 
     .entrance-content {
-      width: min(100%, 500px);
+      width:min(100%,500px);
     }
 
     .question {
-      position: relative;
-      display: inline-block;
-      margin: 0;
-      color: #f5f5f5;
-      font-family: "DeterminationK2", sans-serif;
-      font-size: clamp(1.56rem, 6vw, 2.62rem);
-      font-weight: 400;
-      letter-spacing: 0.065em;
-      line-height: 1.42;
-      transform-origin: center;
-      text-shadow:
-        0 0 4px rgba(255, 255, 255, 0.88),
-        0 0 13px rgba(255, 255, 255, 0.42);
+      position:relative;
+      display:inline-block;
+      margin:0;
+      color:#f5f5f5;
+      font-family:"DeterminationK2",sans-serif;
+      font-size:clamp(1.56rem,6vw,2.62rem);
+      font-weight:400;
+      letter-spacing:.065em;
+      line-height:1.42;
+      transform-origin:center;
+      text-shadow:0 0 4px rgba(255,255,255,.88),0 0 13px rgba(255,255,255,.42);
     }
 
     .question::after {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 1px;
-      opacity: 0;
-      content: "";
-      background: #ffffff;
-      box-shadow:
-        0 0 4px #ffffff,
-        0 0 12px rgba(255, 255, 255, 0.95),
-        0 0 28px rgba(255, 255, 255, 0.62);
-      pointer-events: none;
-      transform: translate(-50%, -50%);
+      content:"";
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:0;
+      height:1px;
+      opacity:0;
+      background:#fff;
+      box-shadow:0 0 4px #fff,0 0 12px rgba(255,255,255,.95),0 0 28px rgba(255,255,255,.62);
+      transform:translate(-50%,-50%);
+      pointer-events:none;
     }
 
     #entrance.connection-arrived .question {
-      animation: connection-question 0.3s steps(2, end) both;
+      animation:connection-question .3s steps(2,end) both;
     }
 
     #entrance.connection-arrived .choice-label {
-      animation: connection-label 0.26s steps(2, end) both;
+      animation:connection-label .26s steps(2,end) both;
     }
 
     @keyframes connection-question {
-      0% {
-        opacity: 0.82;
-        transform: translate(-1px, 1px);
-      }
-
-      35% {
-        opacity: 1;
-        transform: translate(1px, 0);
-      }
-
-      70% {
-        transform: translate(-1px, 0);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translate(0);
-      }
+      0% { opacity:.82; transform:translate(-1px,1px); }
+      35% { opacity:1; transform:translate(1px,0); }
+      70% { transform:translate(-1px,0); }
+      100% { opacity:1; transform:translate(0); }
     }
 
     @keyframes connection-label {
-      0% {
-        opacity: 0.76;
-        transform: translate(1px, 0);
-      }
-
-      50% {
-        opacity: 1;
-        transform: translate(-1px, 0);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translate(0);
-      }
+      0% { opacity:.76; transform:translate(1px,0); }
+      50% { opacity:1; transform:translate(-1px,0); }
+      100% { opacity:1; transform:translate(0); }
     }
 
     #entrance.idle-glitch .question {
-      animation: idle-question 0.14s steps(2, end) both;
+      animation:idle-question .14s steps(2,end) both;
     }
 
     #entrance.idle-glitch .choice-label {
-      animation: idle-label 0.12s steps(2, end) both;
+      animation:idle-label .12s steps(2,end) both;
     }
 
     @keyframes idle-question {
-      0%,
-      100% {
-        filter: brightness(1);
-        transform: translate(0);
-        clip-path: inset(0);
-      }
-
-      35% {
-        filter: brightness(1.8);
-        transform: translate(-1px);
-        clip-path: inset(0 0 52% 0);
-      }
-
-      70% {
-        filter: brightness(1.25);
-        transform: translate(1px);
-        clip-path: inset(48% 0 0);
-      }
+      0%,100% { filter:brightness(1); transform:translate(0); clip-path:inset(0); }
+      35% { filter:brightness(1.8); transform:translate(-1px); clip-path:inset(0 0 52% 0); }
+      70% { filter:brightness(1.25); transform:translate(1px); clip-path:inset(48% 0 0); }
     }
 
     @keyframes idle-label {
-      0%,
-      100% {
-        transform: translate(0);
-        clip-path: inset(0);
-      }
-
-      45% {
-        transform: translate(-1px);
-        clip-path: inset(0 0 54% 0);
-      }
-
-      75% {
-        transform: translate(1px);
-        clip-path: inset(46% 0 0);
-      }
+      0%,100% { transform:translate(0); clip-path:inset(0); }
+      45% { transform:translate(-1px); clip-path:inset(0 0 54% 0); }
+      75% { transform:translate(1px); clip-path:inset(46% 0 0); }
     }
 
     .choice-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 22px;
-      margin-top: 32px;
+      display:flex;
+      justify-content:center;
+      gap:22px;
+      margin-top:32px;
     }
 
     .choice-button {
-      position: relative;
-      min-width: 92px;
-      padding: 12px 20px;
-      border: 0;
-      overflow: visible;
-      background: #ffffff;
-      color: #ffffff;
-      cursor: pointer;
-      font-family: "DeterminationK2", sans-serif;
-      font-size: clamp(1.15rem, 4.5vw, 1.55rem);
-      letter-spacing: 0.08em;
-      transform-origin: center;
-      clip-path: polygon(
-        0 6px,
-        6px 6px,
-        6px 0,
-        calc(100% - 6px) 0,
-        calc(100% - 6px) 6px,
-        100% 6px,
-        100% calc(100% - 6px),
-        calc(100% - 6px) calc(100% - 6px),
-        calc(100% - 6px) 100%,
-        6px 100%,
-        6px calc(100% - 6px),
-        0 calc(100% - 6px)
-      );
-      filter:
-        drop-shadow(0 0 3px rgba(255, 255, 255, 0.84))
-        drop-shadow(0 0 10px rgba(255, 255, 255, 0.22));
+      position:relative;
+      min-width:92px;
+      padding:12px 20px;
+      border:0;
+      overflow:visible;
+      background:#fff;
+      color:#fff;
+      cursor:pointer;
+      font-family:"DeterminationK2",sans-serif;
+      font-size:clamp(1.15rem,4.5vw,1.55rem);
+      letter-spacing:.08em;
+      transform-origin:center;
+      clip-path:polygon(0 6px,6px 6px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 6px),0 calc(100% - 6px));
+      filter:drop-shadow(0 0 3px rgba(255,255,255,.84)) drop-shadow(0 0 10px rgba(255,255,255,.22));
     }
 
     .choice-button::before {
-      position: absolute;
-      inset: 2px;
-      z-index: 0;
-      content: "";
-      background: #000000;
-      clip-path: polygon(
-        0 5px,
-        5px 5px,
-        5px 0,
-        calc(100% - 5px) 0,
-        calc(100% - 5px) 5px,
-        100% 5px,
-        100% calc(100% - 5px),
-        calc(100% - 5px) calc(100% - 5px),
-        calc(100% - 5px) 100%,
-        5px 100%,
-        5px calc(100% - 5px),
-        0 calc(100% - 5px)
-      );
+      content:"";
+      position:absolute;
+      inset:2px;
+      z-index:0;
+      background:#000;
+      clip-path:polygon(0 5px,5px 5px,5px 0,calc(100% - 5px) 0,calc(100% - 5px) 5px,100% 5px,100% calc(100% - 5px),calc(100% - 5px) calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,5px calc(100% - 5px),0 calc(100% - 5px));
     }
 
     .choice-button::after {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      content: "";
-      opacity: 0;
-      background: #ffffff;
-      pointer-events: none;
-      clip-path: polygon(
-        0 42%,
-        100% 42%,
-        100% 49%,
-        0 49%
-      );
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:2;
+      opacity:0;
+      background:#fff;
+      clip-path:polygon(0 42%,100% 42%,100% 49%,0 49%);
+      pointer-events:none;
     }
 
     .choice-label {
-      position: relative;
-      z-index: 3;
-      display: inline-block;
-      pointer-events: none;
-      text-shadow:
-        0 0 4px rgba(255, 255, 255, 0.9),
-        0 0 11px rgba(255, 255, 255, 0.34);
+      position:relative;
+      z-index:3;
+      display:inline-block;
+      pointer-events:none;
+      text-shadow:0 0 4px rgba(255,255,255,.9),0 0 11px rgba(255,255,255,.34);
     }
 
     .choice-button:hover:not(:disabled) {
-      filter:
-        drop-shadow(0 0 5px rgba(255, 255, 255, 0.96))
-        drop-shadow(0 0 16px rgba(255, 255, 255, 0.4));
+      filter:drop-shadow(0 0 5px rgba(255,255,255,.96)) drop-shadow(0 0 16px rgba(255,255,255,.4));
     }
 
     .choice-button.disintegrating {
-      pointer-events: none;
-      animation:
-        button-jitter 0.08s steps(2, end),
-        button-cut 0.28s steps(2, end) 0.08s forwards;
+      pointer-events:none;
+      animation:button-jitter .08s steps(2,end),button-cut .28s steps(2,end) .08s forwards;
     }
 
     .choice-button.disintegrating::before {
-      animation: inner-cut 0.24s steps(2, end) 0.08s forwards;
+      animation:inner-cut .24s steps(2,end) .08s forwards;
     }
 
     .choice-button.disintegrating::after {
-      animation: static-snap 0.16s steps(2, end) 0.08s forwards;
+      animation:static-snap .16s steps(2,end) .08s forwards;
     }
 
     .choice-button.disintegrating .choice-label {
-      animation: label-shred 0.3s steps(3, end) 0.08s forwards;
+      animation:label-shred .3s steps(3,end) .08s forwards;
     }
 
     @keyframes button-jitter {
-      0%,
-      100% {
-        transform: translate(0);
-      }
-
-      33% {
-        transform: translate(-1px, 1px);
-      }
-
-      66% {
-        transform: translate(1px, 0);
-      }
+      0%,100% { transform:translate(0); }
+      33% { transform:translate(-1px,1px); }
+      66% { transform:translate(1px,0); }
     }
 
     @keyframes button-cut {
-      0% {
-        background: #ffffff;
-      }
-
-      45% {
-        background: #ffffff;
-        filter:
-          drop-shadow(-2px 0 0 rgba(255, 255, 255, 0.72))
-          drop-shadow(2px 0 0 rgba(255, 255, 255, 0.72));
-      }
-
-      100% {
-        background: transparent;
-        filter: none;
-      }
+      0% { background:#fff; filter:drop-shadow(0 0 4px rgba(255,255,255,.9)) drop-shadow(0 0 12px rgba(255,255,255,.36)); }
+      45% { background:#fff; filter:drop-shadow(-2px 0 0 rgba(255,255,255,.72)) drop-shadow(2px 0 0 rgba(255,255,255,.72)); }
+      100% { background:transparent; filter:none; }
     }
 
     @keyframes inner-cut {
-      0% {
-        opacity: 1;
-        transform: translate(0);
-      }
-
-      48% {
-        opacity: 0.55;
-        transform: translate(-3px, 1px) scaleX(1.1);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(7px, -1px) scaleX(0.18);
-      }
+      0% { opacity:1; transform:translate(0); }
+      48% { opacity:.55; transform:translate(-3px,1px) scaleX(1.1); }
+      100% { opacity:0; transform:translate(7px,-1px) scaleX(.18); }
     }
 
     @keyframes static-snap {
-      0% {
-        opacity: 0;
-      }
-
-      25% {
-        opacity: 1;
-        transform: translate(-4px);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(9px);
-      }
+      0% { opacity:0; transform:translate(0); }
+      25% { opacity:1; transform:translate(-4px,0); }
+      100% { opacity:0; transform:translate(9px,0); }
     }
 
     @keyframes label-shred {
-      0% {
-        opacity: 1;
-        transform: translate(0);
-      }
-
-      28% {
-        opacity: 1;
-        transform: translate(-2px);
-        clip-path: inset(0 0 46% 0);
-      }
-
-      58% {
-        opacity: 0.72;
-        transform: translate(5px, -1px);
-        clip-path: inset(46% 0 0);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(-12px, 2px);
-        clip-path: inset(0 0 100% 0);
-      }
+      0% { opacity:1; transform:translate(0); }
+      28% { opacity:1; transform:translate(-2px,0); clip-path:inset(0 0 46% 0); }
+      58% { opacity:.72; transform:translate(5px,-1px); clip-path:inset(46% 0 0); }
+      100% { opacity:0; transform:translate(-12px,2px); clip-path:inset(0 0 100% 0); }
     }
 
     .static-fragment {
-      position: absolute;
-      z-index: 4;
-      top: var(--top);
-      left: var(--left);
-      width: var(--width);
-      height: var(--height);
-      opacity: 0;
-      background: #ffffff;
-      box-shadow:
-        0 0 3px rgba(255, 255, 255, 0.9),
-        0 0 8px rgba(255, 255, 255, 0.32);
-      pointer-events: none;
+      position:absolute;
+      z-index:4;
+      top:var(--top);
+      left:var(--left);
+      width:var(--width);
+      height:var(--height);
+      opacity:0;
+      background:#fff;
+      box-shadow:0 0 3px rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.32);
+      pointer-events:none;
     }
 
     .choice-button.disintegrating .static-fragment {
-      animation: fragment 0.46s steps(3, end) forwards;
-      animation-delay: var(--delay);
+      animation:fragment .46s steps(3,end) forwards;
+      animation-delay:var(--delay);
     }
 
     @keyframes fragment {
-      0% {
-        opacity: 1;
-        transform: translate(0) scaleX(1);
-      }
-
-      35% {
-        opacity: 1;
-        transform: translate(
-          calc(var(--dx) * 0.28),
-          calc(var(--dy) * 0.28)
-        ) scaleX(1.35);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(var(--dx), var(--dy)) scaleX(var(--stretch));
-      }
+      0% { opacity:1; transform:translate(0) scaleX(1); }
+      35% { opacity:1; transform:translate(calc(var(--dx) * .28),calc(var(--dy) * .28)) scaleX(1.35); }
+      100% { opacity:0; transform:translate(var(--dx),var(--dy)) scaleX(var(--stretch)); }
     }
 
     #entrance.transitioning .question {
-      animation: tv-off 0.2s steps(3, end) forwards;
+      animation:tv-off .2s steps(3,end) forwards;
     }
 
     #entrance.transitioning .question::after {
-      animation: tv-line 0.2s steps(3, end) forwards;
+      animation:tv-line .2s steps(3,end) forwards;
     }
 
     @keyframes tv-off {
-      0% {
-        opacity: 1;
-        filter: brightness(1);
-        transform: scaleX(1) scaleY(1);
-      }
-
-      28% {
-        opacity: 1;
-        filter: brightness(2.4);
-        transform: scaleX(1.01) scaleY(0.68);
-        text-shadow:
-          0 0 6px #ffffff,
-          0 0 18px rgba(255, 255, 255, 0.9),
-          0 0 36px rgba(255, 255, 255, 0.58);
-      }
-
-      62% {
-        opacity: 1;
-        filter: brightness(3.4);
-        transform: scaleX(1.06) scaleY(0.07);
-        text-shadow:
-          0 0 8px #ffffff,
-          0 0 24px rgba(255, 255, 255, 0.98),
-          0 0 48px rgba(255, 255, 255, 0.74);
-      }
-
-      100% {
-        opacity: 0;
-        filter: brightness(1);
-        transform: scaleX(1.22) scaleY(0.01);
-      }
+      0% { opacity:1; filter:brightness(1); transform:scaleX(1) scaleY(1); }
+      28% { opacity:1; filter:brightness(2.4); transform:scaleX(1.01) scaleY(.68); text-shadow:0 0 6px #fff,0 0 18px rgba(255,255,255,.9),0 0 36px rgba(255,255,255,.58); }
+      62% { opacity:1; filter:brightness(3.4); transform:scaleX(1.06) scaleY(.07); text-shadow:0 0 8px #fff,0 0 24px rgba(255,255,255,.98),0 0 48px rgba(255,255,255,.74); }
+      100% { opacity:0; filter:brightness(1); transform:scaleX(1.22) scaleY(.01); }
     }
 
     @keyframes tv-line {
-      0% {
-        width: 0;
-        opacity: 0;
-      }
+      0% { width:0; opacity:0; }
+      42% { width:56%; opacity:1; }
+      72% { width:112%; opacity:1; }
+      100% { width:136%; opacity:0; }
+    }
 
-      42% {
-        width: 56%;
-        opacity: 1;
-      }
+    /* 아니오 전용: 2프레임만 보이고, 바로 검정으로 끊김. */
+    #entrance.no-cut-frame-1 .entrance-content {
+      filter:brightness(1.7) contrast(1.4);
+      transform:translate(-3px,1px);
+      clip-path:polygon(0 0,100% 0,100% 17%,72% 17%,72% 25%,100% 25%,100% 47%,38% 47%,38% 56%,100% 56%,100% 100%,0 100%,0 76%,24% 76%,24% 68%,0 68%);
+    }
 
-      72% {
-        width: 112%;
-        opacity: 1;
-      }
+    #entrance.no-cut-frame-1::before,
+    #entrance.no-cut-frame-1::after,
+    #entrance.no-cut-frame-2::before,
+    #entrance.no-cut-frame-2::after {
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:8;
+      pointer-events:none;
+    }
 
-      100% {
-        width: 136%;
-        opacity: 0;
-      }
+    #entrance.no-cut-frame-1::before {
+      background:
+        linear-gradient(90deg,transparent 0 12%,#fff 12% 21%,transparent 21% 100%) 0 37%/100% 2px no-repeat,
+        linear-gradient(90deg,transparent 0 67%,#fff 67% 85%,transparent 85% 100%) 0 53%/100% 3px no-repeat,
+        linear-gradient(90deg,transparent 0 35%,#fff 35% 48%,transparent 48% 100%) 0 66%/100% 1px no-repeat;
+      opacity:.92;
+      transform:translate(2px,-1px);
+    }
+
+    #entrance.no-cut-frame-1::after {
+      background:
+        linear-gradient(#000,#000) 0 23%/100% 8px no-repeat,
+        linear-gradient(#000,#000) 0 55%/100% 11px no-repeat,
+        linear-gradient(#000,#000) 0 73%/100% 5px no-repeat;
+    }
+
+    #entrance.no-cut-frame-2 .entrance-content {
+      filter:brightness(2.25) contrast(1.75);
+      transform:translate(4px,-2px);
+      clip-path:polygon(0 0,100% 0,100% 31%,18% 31%,18% 40%,100% 40%,100% 63%,61% 63%,61% 74%,100% 74%,100% 100%,0 100%,0 52%,42% 52%,42% 43%,0 43%);
+    }
+
+    #entrance.no-cut-frame-2::before {
+      background:
+        linear-gradient(90deg,transparent 0 54%,#fff 54% 76%,transparent 76% 100%) 0 28%/100% 2px no-repeat,
+        linear-gradient(90deg,transparent 0 8%,#fff 8% 31%,transparent 31% 100%) 0 62%/100% 2px no-repeat;
+      opacity:.96;
+      transform:translate(-3px,1px);
+    }
+
+    #entrance.no-cut-frame-2::after {
+      background:
+        linear-gradient(#000,#000) 0 11%/100% 6px no-repeat,
+        linear-gradient(#000,#000) 0 49%/100% 12px no-repeat,
+        linear-gradient(#000,#000) 0 83%/100% 7px no-repeat;
+    }
+
+    #blackout.no-hard-cut {
+      transition:none!important;
     }
 
     #blackout {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      pointer-events: none;
-      background: #000000;
-      opacity: 0;
-      transition: opacity 0.18s steps(2, end);
+      position:fixed;
+      inset:0;
+      z-index:100;
+      pointer-events:none;
+      background:#000;
+      opacity:0;
+      transition:opacity .18s steps(2,end);
     }
 
     #blackout.active {
-      pointer-events: auto;
-      opacity: 1;
+      pointer-events:auto;
+      opacity:1;
     }
 
     #blackout.drop {
-      transition: none !important;
+      transition:none!important;
     }
 
     #comic {
-      overflow: hidden;
-      background: #000000;
+      overflow:hidden;
+      background:#000;
     }
 
     #comic > img {
-      display: block;
-      width: auto;
-      max-width: 100%;
-      height: auto;
-      margin: 0 auto;
-      transform-origin: center top;
-      will-change: opacity, filter, transform;
+      display:block;
+      width:auto;
+      max-width:100%;
+      height:auto;
+      margin:0 auto;
+      transform-origin:center top;
+      will-change:opacity,filter,transform;
     }
 
     #comic.comic-focus-in > img {
-      animation: comic-focus 1.05s cubic-bezier(0.16, 0.78, 0.25, 1) both;
+      animation:comic-focus 1.05s cubic-bezier(.16,.78,.25,1) both;
     }
 
     @keyframes comic-focus {
-      0% {
-        opacity: 0;
-        filter: blur(18px);
-        transform: scale(1.018);
-      }
-
-      38% {
-        opacity: 0.72;
-        filter: blur(9px);
-        transform: scale(1.01);
-      }
-
-      72% {
-        opacity: 0.96;
-        filter: blur(2px);
-        transform: scale(1.002);
-      }
-
-      100% {
-        opacity: 1;
-        filter: blur(0);
-        transform: scale(1);
-      }
+      0% { opacity:0; filter:blur(18px); transform:scale(1.018); }
+      38% { opacity:.72; filter:blur(9px); transform:scale(1.01); }
+      72% { opacity:.96; filter:blur(2px); transform:scale(1.002); }
+      100% { opacity:1; filter:blur(0); transform:scale(1); }
     }
 
     #binary-stage {
-      position: relative;
-      isolation: isolate;
-      width: min(100%, 505px);
-      aspect-ratio: 505 / 1650;
-      margin: 0 auto;
-      overflow: hidden;
-      background: #000000;
+      position:relative;
+      isolation:isolate;
+      width:min(100%,505px);
+      aspect-ratio:505/1650;
+      margin:0 auto;
+      overflow:hidden;
+      background:#000;
     }
 
     .binary-block {
-      position: absolute;
-      left: 0;
-      z-index: 2;
-      width: 100%;
-      color: #d8d8d8;
-      cursor: pointer;
-      font-family: "Handjet", monospace;
-      font-size: clamp(16px, 4.55vw, 23px);
-      line-height: 1.78;
-      text-align: center;
-      text-shadow: 0 0 1px rgba(255, 255, 255, 0.25);
-      user-select: none;
+      position:absolute;
+      left:0;
+      z-index:2;
+      width:100%;
+      color:#d8d8d8;
+      cursor:pointer;
+      font-family:"Handjet",monospace;
+      font-size:clamp(16px,4.55vw,23px);
+      font-weight:400;
+      line-height:1.78;
+      text-align:center;
+      text-shadow:0 0 1px rgba(255,255,255,.25);
+      user-select:none;
     }
 
     .binary-block:focus-visible {
-      outline: 1px solid #ffffff;
-      outline-offset: 4px;
+      outline:1px solid #fff;
+      outline-offset:4px;
     }
 
-    .block-1 { top: 50%; }
-    .block-2 { top: 66.5%; }
-    .block-3 { top: 74.2%; }
-    .block-4 { top: 81%; }
+    .block-1 { top:50%; }
+    .block-2 { top:66.5%; }
+    .block-3 { top:74.2%; }
+    .block-4 { top:81%; }
 
     .binary-line {
-      display: block;
-      opacity: 0;
-      transform: translateY(5px);
-      white-space: pre;
+      display:block;
+      opacity:0;
+      transform:translateY(5px);
+      white-space:pre;
     }
 
     .binary-block.revealed .binary-line {
-      animation: line-reveal 0.55s ease forwards;
-      animation-delay: calc(var(--line) * 0.14s);
+      animation:line-reveal .55s ease forwards;
+      animation-delay:calc(var(--line) * .14s);
     }
 
     @keyframes line-reveal {
-      0% {
-        opacity: 0;
-        filter: blur(3px);
-        transform: translateY(5px);
-      }
-
-      100% {
-        opacity: 1;
-        filter: blur(0);
-        transform: translateY(0);
-      }
+      0% { opacity:0; filter:blur(3px); transform:translateY(5px); }
+      100% { opacity:1; filter:blur(0); transform:translateY(0); }
     }
 
     .binary-char {
-      display: inline-block;
-      min-width: 0.01em;
-      transform-origin: center;
-      animation: char-tremble var(--duration) steps(2, end) var(--delay) infinite;
+      display:inline-block;
+      min-width:.01em;
+      transform-origin:center;
+      animation:char-tremble var(--duration) steps(2,end) var(--delay) infinite;
     }
 
     @keyframes char-tremble {
-      0%,
-      100% {
-        transform: translate(0) rotate(0);
-      }
-
-      18% {
-        transform: translate(var(--x1), var(--y1)) rotate(var(--r1));
-      }
-
-      39% {
-        transform: translate(var(--x2), var(--y2)) rotate(var(--r2));
-      }
-
-      63% {
-        transform: translate(var(--x3), var(--y3)) rotate(var(--r3));
-      }
-
-      82% {
-        transform: translate(var(--x4), var(--y4)) rotate(var(--r4));
-      }
+      0%,100% { transform:translate(0) rotate(0); }
+      18% { transform:translate(var(--x1),var(--y1)) rotate(var(--r1)); }
+      39% { transform:translate(var(--x2),var(--y2)) rotate(var(--r2)); }
+      63% { transform:translate(var(--x3),var(--y3)) rotate(var(--r3)); }
+      82% { transform:translate(var(--x4),var(--y4)) rotate(var(--r4)); }
     }
 
     #binary-stage.glitching .binary-block.revealed {
-      color: #ffffff;
-      filter:
-        drop-shadow(-2px 0 rgba(255, 55, 55, 0.85))
-        drop-shadow(2px 0 rgba(0, 225, 255, 0.85));
+      color:#fff;
+      filter:drop-shadow(-2px 0 rgba(255,55,55,.85)) drop-shadow(2px 0 rgba(0,225,255,.85));
     }
 
     #binary-stage.glitching .binary-block.revealed .binary-line:nth-child(odd) {
-      margin-left: -4px;
+      margin-left:-4px;
     }
 
     #binary-stage.glitching .binary-block.revealed .binary-line:nth-child(even) {
-      margin-left: 3px;
+      margin-left:3px;
     }
 
     .face {
-      position: absolute;
-      top: 95.5%;
-      left: 50%;
-      z-index: 5;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: #eeeeee;
-      cursor: pointer;
-      font-family: "Computer Says No", monospace;
-      font-size: clamp(24px, 6vw, 31px);
-      line-height: 1;
-      transform: translateX(-50%);
-      user-select: none;
+      position:absolute;
+      top:95.5%;
+      left:50%;
+      z-index:5;
+      margin:0;
+      padding:0;
+      border:0;
+      background:transparent;
+      color:#eee;
+      cursor:pointer;
+      font-family:"Computer Says No",monospace;
+      font-size:clamp(24px,6vw,31px);
+      line-height:1;
+      transform:translateX(-50%);
+      user-select:none;
     }
 
     .face::before,
     .face::after {
-      position: absolute;
-      inset: 0;
-      content: attr(data-face);
-      pointer-events: none;
+      content:attr(data-face);
+      position:absolute;
+      inset:0;
+      pointer-events:none;
     }
 
     .face::before {
-      color: #00ff45;
-      opacity: 0.68;
-      transform: translate(-2px, 2px);
-      animation: face-glitch 1.8s steps(2, end) infinite;
+      color:#00ff45;
+      opacity:.68;
+      transform:translate(-2px,2px);
+      animation:face-glitch 1.8s steps(2,end) infinite;
     }
 
     .face::after {
-      color: #ff3030;
-      opacity: 0.62;
-      transform: translate(2px, -1px);
-      animation: face-glitch 2.5s steps(2, end) infinite reverse;
+      color:#ff3030;
+      opacity:.62;
+      transform:translate(2px,-1px);
+      animation:face-glitch 2.5s steps(2,end) infinite reverse;
     }
 
     @keyframes face-glitch {
-      0%,
-      86%,
-      100% {
-        clip-path: inset(0);
-      }
-
-      89% {
-        clip-path: inset(15% 0 62% 0);
-      }
-
-      93% {
-        clip-path: inset(68% 0 8% 0);
-      }
+      0%,86%,100% { clip-path:inset(0); }
+      89% { clip-path:inset(15% 0 62% 0); }
+      93% { clip-path:inset(68% 0 8% 0); }
     }
 
     .noise {
-      position: absolute;
-      top: 97%;
-      left: 50%;
-      z-index: 4;
-      width: 2px;
-      height: 2px;
-      background: #00ff45;
-      box-shadow:
-        8px -10px #00d9ff,
-        -8px 12px #ff2a2a,
-        5px 18px #66ff00,
-        10px 22px #ffffff,
-        -3px 26px #00ff45;
-      animation: noise 1.2s steps(2, end) infinite;
-      pointer-events: none;
+      position:absolute;
+      top:97%;
+      left:50%;
+      z-index:4;
+      width:2px;
+      height:2px;
+      background:#00ff45;
+      box-shadow:8px -10px #00d9ff,-8px 12px #ff2a2a,5px 18px #66ff00,10px 22px #fff,-3px 26px #00ff45;
+      animation:noise 1.2s steps(2,end) infinite;
+      pointer-events:none;
     }
 
     @keyframes noise {
-      0%,
-      100% {
-        opacity: 0.18;
-      }
-
-      50% {
-        opacity: 1;
-      }
+      0%,100% { opacity:.18; }
+      50% { opacity:1; }
     }
   </style>
 </head>
@@ -793,11 +574,11 @@
       <p class="question">관전하시겠습니까?</p>
 
       <div class="choice-buttons">
-        <button class="choice-button" type="button">
+        <button class="choice-button" type="button" data-choice="yes">
           <span class="choice-label">예</span>
         </button>
 
-        <button class="choice-button" type="button">
+        <button class="choice-button" type="button" data-choice="no">
           <span class="choice-label">아니오</span>
         </button>
       </div>
@@ -812,13 +593,7 @@
     <img src="00.png" alt="WELCOME comic part 2" />
 
     <section id="binary-stage" aria-label="숨겨진 이진수 메시지">
-      <div
-        class="binary-block block-1"
-        role="button"
-        tabindex="0"
-        data-destination="entity-room.html"
-        aria-label="개체의 방으로 이동"
-      >
+      <div class="binary-block block-1" role="button" tabindex="0" data-destination="entity-room.html" aria-label="개체의 방으로 이동">
         <div class="binary-line">11101100 10010110 10110100</div>
         <div class="binary-line">11101100 10000100 10011100</div>
         <div class="binary-line">11101100 10011000 10100100</div>
@@ -827,36 +602,18 @@
         <div class="binary-line">          00101100</div>
       </div>
 
-      <div
-        class="binary-block block-2"
-        role="button"
-        tabindex="0"
-        data-destination="error-room-2.html"
-        aria-label="이진2 오류 방으로 이동"
-      >
+      <div class="binary-block block-2" role="button" tabindex="0" data-destination="error-room-2.html" aria-label="이진2 오류 방으로 이동">
         <div class="binary-line">11101010 10110000 10000000</div>
         <div class="binary-line">11101100 10000011 10000001</div>
         <div class="binary-line">11101100 10011101 10011000</div>
       </div>
 
-      <div
-        class="binary-block block-3"
-        role="button"
-        tabindex="0"
-        data-destination="entity-record.html"
-        aria-label="개체 기록으로 이동"
-      >
+      <div class="binary-block block-3" role="button" tabindex="0" data-destination="entity-record.html" aria-label="개체 기록으로 이동">
         <div class="binary-line">11101100 10000100 10111000</div>
         <div class="binary-line">11101010 10110011 10000100</div>
       </div>
 
-      <div
-        class="binary-block block-4"
-        role="button"
-        tabindex="0"
-        data-destination="world-message.html"
-        aria-label="기록 메시지로 이동"
-      >
+      <div class="binary-block block-4" role="button" tabindex="0" data-destination="world-message.html" aria-label="기록 메시지로 이동">
         <div class="binary-line">11101011 10101001 10010100</div>
         <div class="binary-line">11101100 10001011 10011100</div>
         <div class="binary-line">11101100 10010110 10000100</div>
@@ -864,14 +621,7 @@
         <div class="binary-line">11101100 10010111 10010000</div>
       </div>
 
-      <button
-        class="face"
-        type="button"
-        data-face=":D"
-        data-destination="error.html"
-        aria-label="잘못된 방으로 이동"
-      >:D</button>
-
+      <button class="face" type="button" data-face=":D" data-destination="error.html" aria-label="잘못된 방으로 이동">:D</button>
       <div class="noise" aria-hidden="true"></div>
     </section>
   </main>
@@ -913,7 +663,7 @@
     }
 
     syncEntityGate();
-    window.addEventListener("pageshow", syncEntityGate);
+    addEventListener("pageshow", syncEntityGate);
 
     function waitImages(done) {
       const images = [...comic.querySelectorAll("img")];
@@ -936,11 +686,10 @@
       images.forEach((image) => {
         if (image.complete) {
           finish();
-          return;
+        } else {
+          image.addEventListener("load", finish, { once:true });
+          image.addEventListener("error", finish, { once:true });
         }
-
-        image.addEventListener("load", finish, { once: true });
-        image.addEventListener("error", finish, { once: true });
       });
     }
 
@@ -952,6 +701,7 @@
 
       waitImages(() => {
         comic.classList.add("comic-focus-in");
+        void comic.offsetWidth;
 
         requestAnimationFrame(() => {
           blackout.classList.add("drop");
@@ -980,7 +730,7 @@
         requestAnimationFrame(() => {
           window.scrollTo(
             0,
-            binaryStage.getBoundingClientRect().top + window.scrollY
+            binaryStage.getBoundingClientRect().top + scrollY
           );
 
           requestAnimationFrame(() => {
@@ -990,7 +740,7 @@
               history.replaceState(
                 null,
                 "",
-                `${window.location.pathname}#binary-stage`
+                `${location.pathname}#binary-stage`
               );
             }, 90);
           });
@@ -1011,22 +761,21 @@
         const fragment = document.createElement("span");
 
         fragment.className = "static-fragment";
-
-        fragment.style.setProperty("--left", `${range(2, 88).toFixed(2)}%`);
-        fragment.style.setProperty("--top", `${range(10, 84).toFixed(2)}%`);
-        fragment.style.setProperty("--width", `${Math.floor(range(5, 26))}px`);
-        fragment.style.setProperty("--height", `${Math.floor(range(1, 4))}px`);
-        fragment.style.setProperty("--dx", `${range(-78, 78).toFixed(2)}px`);
-        fragment.style.setProperty("--dy", `${range(-18, 18).toFixed(2)}px`);
-        fragment.style.setProperty("--stretch", range(0.35, 2.1).toFixed(2));
-        fragment.style.setProperty("--delay", `${Math.floor(range(0, 85))}ms`);
+        fragment.style.setProperty("--left", `${range(2,88).toFixed(2)}%`);
+        fragment.style.setProperty("--top", `${range(10,84).toFixed(2)}%`);
+        fragment.style.setProperty("--width", `${Math.floor(range(5,26))}px`);
+        fragment.style.setProperty("--height", `${Math.floor(range(1,4))}px`);
+        fragment.style.setProperty("--dx", `${range(-78,78).toFixed(2)}px`);
+        fragment.style.setProperty("--dy", `${range(-18,18).toFixed(2)}px`);
+        fragment.style.setProperty("--stretch", range(.35,2.1).toFixed(2));
+        fragment.style.setProperty("--delay", `${Math.floor(range(0,85))}ms`);
 
         button.appendChild(fragment);
       }
     }
 
     function scheduleIdle() {
-      const times = [5000, 7000, 10000];
+      const times = [5000,7000,10000];
 
       idleGlitchTimer = setTimeout(() => {
         if (storyHasStarted || entrance.hidden) {
@@ -1055,7 +804,6 @@
 
       choiceButtons.forEach((choice) => {
         choice.disabled = true;
-
         fragments(choice, choice === button ? 44 : 28);
         choice.classList.add("disintegrating");
       });
@@ -1066,13 +814,52 @@
 
       setTimeout(() => {
         entrance.hidden = true;
-        window.scrollTo(0, 0);
+        scrollTo(0,0);
         revealComic();
       }, 2500);
     }
 
+    function startNoRoute() {
+      if (storyHasStarted) {
+        return;
+      }
+
+      storyHasStarted = true;
+      clearTimeout(idleGlitchTimer);
+
+      /*
+        예 버튼의 파편 연출은 쓰지 않음.
+        손상 2프레임 → 하드 블랙 → ??? 방
+      */
+      entrance.classList.remove("connection-arrived");
+
+      choiceButtons.forEach((choice) => {
+        choice.disabled = true;
+      });
+
+      entrance.classList.add("no-cut-frame-1");
+
+      setTimeout(() => {
+        entrance.classList.remove("no-cut-frame-1");
+        entrance.classList.add("no-cut-frame-2");
+      }, 54);
+
+      setTimeout(() => {
+        blackout.classList.add("no-hard-cut", "active");
+      }, 108);
+
+      setTimeout(() => {
+        location.replace("no-room.html");
+      }, 154);
+    }
+
     choiceButtons.forEach((button) => {
       button.addEventListener("click", () => {
+        if (button.dataset.choice === "no") {
+          startNoRoute();
+          return;
+        }
+
         startStory(button);
       });
     });
@@ -1099,15 +886,15 @@
         span.className = "binary-char";
         span.textContent = character === " " ? "\u00A0" : character;
 
-        [1, 2, 3, 4].forEach((number) => {
-          span.style.setProperty(`--x${number}`, `${randomValue(0.8)}px`);
-          span.style.setProperty(`--y${number}`, `${randomValue(0.8)}px`);
-          span.style.setProperty(`--r${number}`, `${randomValue(0.7)}deg`);
+        [1,2,3,4].forEach((number) => {
+          span.style.setProperty(`--x${number}`, `${randomValue(.8)}px`);
+          span.style.setProperty(`--y${number}`, `${randomValue(.8)}px`);
+          span.style.setProperty(`--r${number}`, `${randomValue(.7)}deg`);
         });
 
         span.style.setProperty(
           "--duration",
-          `${(0.42 + Math.random() * 0.7).toFixed(2)}s`
+          `${(.42 + Math.random() * .7).toFixed(2)}s`
         );
 
         span.style.setProperty(
@@ -1130,7 +917,7 @@
         }
       });
     }, {
-      threshold: 0.25
+      threshold:.25
     });
 
     binaryBlocks.forEach((block) => {
@@ -1153,7 +940,7 @@
       const destination = element.dataset.destination;
 
       if (destination) {
-        window.location.href = destination;
+        location.href = destination;
       }
     }
 
