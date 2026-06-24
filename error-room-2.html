@@ -74,63 +74,36 @@
       font-weight: 400;
       letter-spacing: 0.015em;
       line-height: 1.58;
-      transform-origin: left center;
       text-shadow:
         0 0 5px rgba(255, 255, 255, 0.82),
         0 0 16px rgba(255, 255, 255, 0.34);
       white-space: pre-wrap;
     }
 
-    #error-message.type-tick {
-      animation: message-tick 0.08s steps(2, end) both;
-    }
-
-    @keyframes message-tick {
-      0% {
-        transform: translate(0, 0);
-      }
-
-      45% {
-        transform: translate(-1px, 1px);
-      }
-
-      100% {
-        transform: translate(0, 0);
-      }
-    }
-
     .typed-char {
       display: inline-block;
       min-width: 0.01em;
       transform-origin: center;
-      animation: type-pop 0.09s steps(2, end) both;
+      animation: text-tick 0.08s steps(2, end) both;
     }
 
-    @keyframes type-pop {
+    @keyframes text-tick {
       0% {
         opacity: 0;
-        filter: brightness(1.6);
-        transform:
-          translate(var(--pop-x), var(--pop-y))
-          scale(var(--pop-scale));
-        text-shadow:
-          0 0 2px rgba(255, 255, 255, 0.5),
-          0 0 12px rgba(255, 255, 255, 0.3);
+        filter: brightness(1.8);
+        transform: translate(0, 1px);
       }
 
-      45% {
+      50% {
         opacity: 1;
-        filter: brightness(1.45);
-        transform: translate(1px, 0) scale(1);
-        text-shadow:
-          0 0 4px rgba(255, 255, 255, 0.9),
-          0 0 14px rgba(255, 255, 255, 0.48);
+        filter: brightness(1.35);
+        transform: translate(1px, 0);
       }
 
       100% {
         opacity: 1;
         filter: brightness(1);
-        transform: translate(0, 0) scale(1);
+        transform: translate(0, 0);
       }
     }
 
@@ -173,7 +146,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       #room-content,
-      #error-message.type-tick,
       .typed-char {
         animation: none !important;
         transition-duration: 0.001ms !important;
@@ -201,17 +173,16 @@
     const errorDoorsFile = "";
 
     /*
-      error.html과 완전히 같은 소리를 사용함.
-      GitHub 맨 위 폴더에 error-type-01.mp3를 올리면 됨.
-
-      다른 소리도 섞고 싶으면 아래처럼 한 줄을 더 추가하면 됨.
-      "error-type-02.mp3",
+      GitHub 맨 위 폴더에
+      error-type-01.mp3
+      파일을 올리면 두 에러룸에서 같은 비프 소리가 남.
     */
     const textSoundFiles = [
       "error-type-01.mp3"
     ];
 
     const textSoundVolume = 0.16;
+
     const errorMessage = "잘못된 방에 입장했습니다.";
 
     const timing = {
@@ -270,38 +241,6 @@
       sound.play().catch(() => {});
     }
 
-    function createTypedCharacter(character) {
-      const span = document.createElement("span");
-
-      span.className = "typed-char";
-      span.textContent = character === " " ? "\u00A0" : character;
-
-      span.style.setProperty(
-        "--pop-x",
-        `${Math.floor(randomRange(-2, 3))}px`
-      );
-
-      span.style.setProperty(
-        "--pop-y",
-        `${Math.floor(randomRange(-1, 2))}px`
-      );
-
-      span.style.setProperty(
-        "--pop-scale",
-        randomRange(1.02, 1.10).toFixed(2)
-      );
-
-      return span;
-    }
-
-    function triggerMessageTick() {
-      messageElement.classList.remove("type-tick");
-
-      void messageElement.offsetWidth;
-
-      messageElement.classList.add("type-tick");
-    }
-
     function getNextDelay(character) {
       let delay = timing.characterDelay;
 
@@ -325,17 +264,13 @@
       }
 
       const character = characters[characterIndex];
+      const characterElement = document.createElement("span");
 
-      messageElement.appendChild(
-        createTypedCharacter(character)
-      );
+      characterElement.className = "typed-char";
+      characterElement.textContent = character === " " ? "\u00A0" : character;
 
-      triggerMessageTick();
+      messageElement.appendChild(characterElement);
 
-      /*
-        공백은 단어 멈춤 역할만 하고,
-        실제 글자가 뜰 때만 커스텀 비프가 재생됨.
-      */
       if (character !== " ") {
         playTextSound();
       }
