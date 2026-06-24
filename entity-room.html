@@ -52,33 +52,16 @@
       place-items: center;
     }
 
-    /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      이진2 중앙 대사 글자 크기 변경 구역
-      ========================================================
-    */
-
     #room-message {
       width: min(100%, 660px);
       margin: 0;
       color: #f5f5ff;
-
       font-size: clamp(1.5rem, 6vw, 2.45rem);
-
       font-weight: 400;
       line-height: 1.7;
       text-align: center;
       white-space: pre-wrap;
-
-      /*
-        ======================================================
-        !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-        이진2 중앙 대사 자간 변경 구역
-        ======================================================
-      */
       letter-spacing: 0.07em;
-
       text-shadow:
         0 0 5px rgba(255, 255, 255, 0.72),
         0 0 15px rgba(255, 255, 255, 0.38);
@@ -116,11 +99,6 @@
       }
     }
 
-    /*
-      일반 대사 넘김:
-      약한 글리치 흩어짐
-    */
-
     #room-message.leaving .room-char {
       animation: room-char-scatter 0.34s steps(2, end) forwards;
       animation-delay: var(--scatter-delay);
@@ -151,11 +129,6 @@
         ) rotate(var(--scatter-rotate));
       }
     }
-
-    /*
-      마지막 연결 끊김:
-      매우 짧고 거친 통신 오류
-    */
 
     #room-message.signal-cut {
       transform: translateX(-2px) skewX(-8deg);
@@ -202,13 +175,6 @@
     #screen-blackout.active {
       opacity: 1;
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      .room-char,
-      #room-message.leaving .room-char {
-        animation: none !important;
-      }
-    }
   </style>
 </head>
 
@@ -221,249 +187,230 @@
   <div id="screen-blackout" aria-hidden="true"></div>
 
   <script>
-    /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      이진2 방 대사 수정 구역
-      ========================================================
-    */
+    const entityRoomSessionKey = "welcome_entity_room_entered";
 
-    const roomLines = [
-      {
-        text: "...여긴 왜 들어온 거야?",
-        pauseAfterCharacter: 3,
-        pauseDuration: 1450
-      },
-      {
-        text: "거기 서서... 뭘 보고 있는 거야?",
-        pauseAfterCharacter: 8,
-        pauseDuration: 760
-      },
-      {
-        text: "......"
-      },
-      {
-        text: "왜 계속... 왜 계속",
-        cutAfterCharacter: 9
+    let entityRoomAlreadyEntered = false;
+
+    try {
+      entityRoomAlreadyEntered =
+        sessionStorage.getItem(entityRoomSessionKey) === "1";
+
+      if (!entityRoomAlreadyEntered) {
+        sessionStorage.setItem(entityRoomSessionKey, "1");
       }
-    ];
-
-    /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      이진2 시간 조절 구역
-      ========================================================
-    */
-
-    const timingSettings = {
-      firstLineBlackDelay: 3000,
-      characterDelay: 320,
-
-      scatterDuration: 340,
-
-      /*
-        ======================================================
-        !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-        터치 후 다음 대사까지 검은 공백 시간
-
-        현재 1500 = 1.5초
-        더 길게 하고 싶으면 숫자를 올리기.
-        더 짧게 하고 싶으면 숫자를 내리기.
-        ======================================================
-      */
-      transitionBlackGap: 1500,
-
-      cutFlashDuration: 65,
-      finalBlackHold: 2200
-    };
-
-    const roomMessage = document.getElementById("room-message");
-    const cutFlash = document.getElementById("cut-flash");
-    const screenBlackout = document.getElementById("screen-blackout");
-
-    let currentLineIndex = 0;
-    let characterIndex = 0;
-    let canAdvance = false;
-    let isTransitioning = false;
-
-    function randomValue(maximum) {
-      return ((Math.random() * 2 - 1) * maximum).toFixed(2);
+    } catch (error) {
+      entityRoomAlreadyEntered = false;
     }
 
-    function createShakingCharacter(character) {
-      const span = document.createElement("span");
+    if (entityRoomAlreadyEntered) {
+      window.location.replace("error.html");
+    } else {
+      const roomLines = [
+        {
+          text: "...여긴 왜 들어온 거야?",
+          pauseAfterCharacter: 3,
+          pauseDuration: 1450
+        },
+        {
+          text: "거기 서서... 뭘 보고 있는 거야?",
+          pauseAfterCharacter: 8,
+          pauseDuration: 760
+        },
+        {
+          text: "......"
+        },
+        {
+          text: "왜 계속... 왜 계속",
+          cutAfterCharacter: 9
+        }
+      ];
 
-      span.className = "room-char";
-      span.textContent = character === " " ? "\u00A0" : character;
+      const timingSettings = {
+        firstLineBlackDelay: 3000,
+        characterDelay: 320,
+        scatterDuration: 340,
+        transitionBlackGap: 1500,
+        cutFlashDuration: 65,
+        finalBlackHold: 2200
+      };
 
-      span.style.setProperty("--jx1", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jy1", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jx2", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jy2", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jx3", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jy3", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jx4", `${randomValue(0.8)}px`);
-      span.style.setProperty("--jy4", `${randomValue(0.8)}px`);
+      const roomMessage = document.getElementById("room-message");
+      const cutFlash = document.getElementById("cut-flash");
+      const screenBlackout = document.getElementById("screen-blackout");
 
-      span.style.setProperty("--r1", `${randomValue(0.7)}deg`);
-      span.style.setProperty("--r2", `${randomValue(0.7)}deg`);
-      span.style.setProperty("--r3", `${randomValue(0.7)}deg`);
-      span.style.setProperty("--r4", `${randomValue(0.7)}deg`);
+      let currentLineIndex = 0;
+      let characterIndex = 0;
+      let canAdvance = false;
+      let isTransitioning = false;
 
-      span.style.setProperty(
-        "--jitter-duration",
-        `${(0.42 + Math.random() * 0.7).toFixed(2)}s`
-      );
-
-      span.style.setProperty(
-        "--jitter-delay",
-        `${(-Math.random() * 1.2).toFixed(2)}s`
-      );
-
-      span.style.setProperty(
-        "--scatter-x",
-        `${randomValue(4)}px`
-      );
-
-      span.style.setProperty(
-        "--scatter-y",
-        `${randomValue(3.5)}px`
-      );
-
-      span.style.setProperty(
-        "--scatter-rotate",
-        `${randomValue(1.8)}deg`
-      );
-
-      span.style.setProperty(
-        "--scatter-delay",
-        `${Math.floor(Math.random() * 70)}ms`
-      );
-
-      return span;
-    }
-
-    function getCurrentCharacters() {
-      return Array.from(roomLines[currentLineIndex].text);
-    }
-
-    function startTypingCurrentLine() {
-      roomMessage.className = "";
-      roomMessage.textContent = "";
-
-      characterIndex = 0;
-      canAdvance = false;
-      isTransitioning = false;
-
-      const delayBeforeTyping =
-        currentLineIndex === 0
-          ? timingSettings.firstLineBlackDelay
-          : 0;
-
-      setTimeout(typeNextCharacter, delayBeforeTyping);
-    }
-
-    function typeNextCharacter() {
-      const currentLine = roomLines[currentLineIndex];
-      const characters = getCurrentCharacters();
-
-      if (characterIndex >= characters.length) {
-        canAdvance = true;
-        return;
+      function randomValue(maximum) {
+        return ((Math.random() * 2 - 1) * maximum).toFixed(2);
       }
 
-      const character = characters[characterIndex];
+      function createShakingCharacter(character) {
+        const span = document.createElement("span");
 
-      roomMessage.appendChild(
-        createShakingCharacter(character)
-      );
+        span.className = "room-char";
+        span.textContent = character === " " ? "\u00A0" : character;
 
-      characterIndex += 1;
+        span.style.setProperty("--jx1", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy1", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jx2", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy2", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jx3", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy3", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jx4", `${randomValue(0.8)}px`);
+        span.style.setProperty("--jy4", `${randomValue(0.8)}px`);
 
-      if (
-        currentLine.cutAfterCharacter &&
-        characterIndex === currentLine.cutAfterCharacter
-      ) {
-        setTimeout(
-          startAbruptCut,
-          timingSettings.cutFlashDuration
+        span.style.setProperty("--r1", `${randomValue(0.7)}deg`);
+        span.style.setProperty("--r2", `${randomValue(0.7)}deg`);
+        span.style.setProperty("--r3", `${randomValue(0.7)}deg`);
+        span.style.setProperty("--r4", `${randomValue(0.7)}deg`);
+
+        span.style.setProperty(
+          "--jitter-duration",
+          `${(0.42 + Math.random() * 0.7).toFixed(2)}s`
         );
 
-        return;
+        span.style.setProperty(
+          "--jitter-delay",
+          `${(-Math.random() * 1.2).toFixed(2)}s`
+        );
+
+        span.style.setProperty("--scatter-x", `${randomValue(4)}px`);
+        span.style.setProperty("--scatter-y", `${randomValue(3.5)}px`);
+        span.style.setProperty("--scatter-rotate", `${randomValue(1.8)}deg`);
+
+        span.style.setProperty(
+          "--scatter-delay",
+          `${Math.floor(Math.random() * 70)}ms`
+        );
+
+        return span;
       }
 
-      let nextDelay = timingSettings.characterDelay;
-
-      if (
-        currentLine.pauseAfterCharacter &&
-        characterIndex === currentLine.pauseAfterCharacter
-      ) {
-        nextDelay += currentLine.pauseDuration;
+      function getCurrentCharacters() {
+        return Array.from(roomLines[currentLineIndex].text);
       }
 
-      setTimeout(typeNextCharacter, nextDelay);
-    }
-
-    function returnToBinaryStage() {
-      window.location.replace(
-        "index.html?return=binary#binary-stage"
-      );
-    }
-
-    function advanceToNextLine() {
-      if (!canAdvance || isTransitioning) {
-        return;
-      }
-
-      isTransitioning = true;
-      canAdvance = false;
-
-      roomMessage.classList.add("leaving");
-
-      setTimeout(() => {
+      function startTypingCurrentLine() {
+        roomMessage.className = "";
         roomMessage.textContent = "";
+
+        characterIndex = 0;
+        canAdvance = false;
+        isTransitioning = false;
+
+        const delayBeforeTyping =
+          currentLineIndex === 0
+            ? timingSettings.firstLineBlackDelay
+            : 0;
+
+        setTimeout(typeNextCharacter, delayBeforeTyping);
+      }
+
+      function typeNextCharacter() {
+        const currentLine = roomLines[currentLineIndex];
+        const characters = getCurrentCharacters();
+
+        if (characterIndex >= characters.length) {
+          canAdvance = true;
+          return;
+        }
+
+        const character = characters[characterIndex];
+
+        roomMessage.appendChild(
+          createShakingCharacter(character)
+        );
+
+        characterIndex += 1;
+
+        if (
+          currentLine.cutAfterCharacter &&
+          characterIndex === currentLine.cutAfterCharacter
+        ) {
+          setTimeout(
+            startAbruptCut,
+            timingSettings.cutFlashDuration
+          );
+
+          return;
+        }
+
+        let nextDelay = timingSettings.characterDelay;
+
+        if (
+          currentLine.pauseAfterCharacter &&
+          characterIndex === currentLine.pauseAfterCharacter
+        ) {
+          nextDelay += currentLine.pauseDuration;
+        }
+
+        setTimeout(typeNextCharacter, nextDelay);
+      }
+
+      function returnToBinaryStage() {
+        window.location.replace(
+          "index.html?return=binary#binary-stage"
+        );
+      }
+
+      function advanceToNextLine() {
+        if (!canAdvance || isTransitioning) {
+          return;
+        }
+
+        isTransitioning = true;
+        canAdvance = false;
+
+        roomMessage.classList.add("leaving");
 
         setTimeout(() => {
-          currentLineIndex += 1;
-          startTypingCurrentLine();
-        }, timingSettings.transitionBlackGap);
-      }, timingSettings.scatterDuration);
-    }
+          roomMessage.textContent = "";
 
-    function startAbruptCut() {
-      if (isTransitioning) {
-        return;
+          setTimeout(() => {
+            currentLineIndex += 1;
+            startTypingCurrentLine();
+          }, timingSettings.transitionBlackGap);
+        }, timingSettings.scatterDuration);
       }
 
-      isTransitioning = true;
-      canAdvance = false;
+      function startAbruptCut() {
+        if (isTransitioning) {
+          return;
+        }
 
-      roomMessage.classList.add("signal-cut");
-      cutFlash.classList.add("active");
+        isTransitioning = true;
+        canAdvance = false;
 
-      setTimeout(() => {
-        cutFlash.classList.remove("active");
-        roomMessage.textContent = "";
-        screenBlackout.classList.add("active");
-      }, timingSettings.cutFlashDuration);
+        roomMessage.classList.add("signal-cut");
+        cutFlash.classList.add("active");
 
-      setTimeout(() => {
-        returnToBinaryStage();
-      }, timingSettings.cutFlashDuration + timingSettings.finalBlackHold);
-    }
+        setTimeout(() => {
+          cutFlash.classList.remove("active");
+          roomMessage.textContent = "";
+          screenBlackout.classList.add("active");
+        }, timingSettings.cutFlashDuration);
 
-    document.addEventListener("pointerup", () => {
-      advanceToNextLine();
-    });
+        setTimeout(() => {
+          returnToBinaryStage();
+        }, timingSettings.cutFlashDuration + timingSettings.finalBlackHold);
+      }
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
+      document.addEventListener("pointerup", () => {
         advanceToNextLine();
-      }
-    });
+      });
 
-    startTypingCurrentLine();
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          advanceToNextLine();
+        }
+      });
+
+      startTypingCurrentLine();
+    }
   </script>
 </body>
 </html>
