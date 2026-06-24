@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>WELCOME</title>
 
   <meta property="og:title" content="WELCOME" />
@@ -16,9 +15,7 @@
 
   <script>
     (function () {
-      const params = new URLSearchParams(window.location.search);
-
-      if (params.get("return") === "binary") {
+      if (new URLSearchParams(location.search).get("return") === "binary") {
         document.documentElement.classList.add("returning-to-binary");
       }
     })();
@@ -26,10 +23,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
     @font-face {
@@ -41,10 +35,8 @@
     @font-face {
       font-family: "DeterminationK2";
       src:
-        url("./DeterminationSansK2-FIX.woff2?v=10") format("woff2"),
-        url("./DeterminationSansK2-FIX.woff?v=10") format("woff");
-      font-weight: 400;
-      font-style: normal;
+        url("./DeterminationSansK2-FIX.woff2?v=11") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff?v=11") format("woff");
       font-display: swap;
     }
 
@@ -56,10 +48,6 @@
     body {
       margin: 0;
       background: #000000;
-    }
-
-    html {
-      scroll-behavior: auto;
     }
 
     body {
@@ -91,16 +79,17 @@
     }
 
     #entrance {
-      display: grid;
       min-height: 100svh;
-      padding: 32px;
+      display: grid;
       place-items: center;
+      padding: 32px;
       overflow: hidden;
       background: #000000;
       text-align: center;
     }
 
-    #entrance[hidden] {
+    #entrance[hidden],
+    #comic[hidden] {
       display: none !important;
     }
 
@@ -134,7 +123,7 @@
       content: "";
       background: #ffffff;
       box-shadow:
-        0 0 4px rgba(255, 255, 255, 1),
+        0 0 4px #ffffff,
         0 0 12px rgba(255, 255, 255, 0.95),
         0 0 28px rgba(255, 255, 255, 0.62);
       pointer-events: none;
@@ -166,7 +155,7 @@
 
       100% {
         opacity: 1;
-        transform: translate(0, 0);
+        transform: translate(0);
       }
     }
 
@@ -183,54 +172,54 @@
 
       100% {
         opacity: 1;
-        transform: translate(0, 0);
+        transform: translate(0);
       }
     }
 
     #entrance.idle-glitch .question {
-      animation: idle-question-glitch 0.14s steps(2, end) both;
+      animation: idle-question 0.14s steps(2, end) both;
     }
 
     #entrance.idle-glitch .choice-label {
-      animation: idle-label-glitch 0.12s steps(2, end) both;
+      animation: idle-label 0.12s steps(2, end) both;
     }
 
-    @keyframes idle-question-glitch {
+    @keyframes idle-question {
       0%,
       100% {
         filter: brightness(1);
-        transform: translate(0, 0);
-        clip-path: inset(0 0 0 0);
+        transform: translate(0);
+        clip-path: inset(0);
       }
 
       35% {
         filter: brightness(1.8);
-        transform: translate(-1px, 0);
+        transform: translate(-1px);
         clip-path: inset(0 0 52% 0);
       }
 
       70% {
         filter: brightness(1.25);
-        transform: translate(1px, 0);
-        clip-path: inset(48% 0 0 0);
+        transform: translate(1px);
+        clip-path: inset(48% 0 0);
       }
     }
 
-    @keyframes idle-label-glitch {
+    @keyframes idle-label {
       0%,
       100% {
-        transform: translate(0, 0);
-        clip-path: inset(0 0 0 0);
+        transform: translate(0);
+        clip-path: inset(0);
       }
 
       45% {
-        transform: translate(-1px, 0);
+        transform: translate(-1px);
         clip-path: inset(0 0 54% 0);
       }
 
       75% {
-        transform: translate(1px, 0);
-        clip-path: inset(46% 0 0 0);
+        transform: translate(1px);
+        clip-path: inset(46% 0 0);
       }
     }
 
@@ -252,7 +241,6 @@
       cursor: pointer;
       font-family: "DeterminationK2", sans-serif;
       font-size: clamp(1.15rem, 4.5vw, 1.55rem);
-      font-weight: 400;
       letter-spacing: 0.08em;
       transform-origin: center;
       clip-path: polygon(
@@ -331,26 +319,26 @@
     .choice-button.disintegrating {
       pointer-events: none;
       animation:
-        button-micro-jitter 0.08s steps(2, end),
-        button-outline-cut 0.28s steps(2, end) 0.08s forwards;
+        button-jitter 0.08s steps(2, end),
+        button-cut 0.28s steps(2, end) 0.08s forwards;
     }
 
     .choice-button.disintegrating::before {
-      animation: button-inner-cut 0.24s steps(2, end) 0.08s forwards;
+      animation: inner-cut 0.24s steps(2, end) 0.08s forwards;
     }
 
     .choice-button.disintegrating::after {
-      animation: button-static-snap 0.16s steps(2, end) 0.08s forwards;
+      animation: static-snap 0.16s steps(2, end) 0.08s forwards;
     }
 
     .choice-button.disintegrating .choice-label {
-      animation: label-static-shred 0.3s steps(3, end) 0.08s forwards;
+      animation: label-shred 0.3s steps(3, end) 0.08s forwards;
     }
 
-    @keyframes button-micro-jitter {
+    @keyframes button-jitter {
       0%,
       100% {
-        transform: translate(0, 0);
+        transform: translate(0);
       }
 
       33% {
@@ -362,12 +350,9 @@
       }
     }
 
-    @keyframes button-outline-cut {
+    @keyframes button-cut {
       0% {
         background: #ffffff;
-        filter:
-          drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))
-          drop-shadow(0 0 12px rgba(255, 255, 255, 0.36));
       }
 
       45% {
@@ -383,10 +368,10 @@
       }
     }
 
-    @keyframes button-inner-cut {
+    @keyframes inner-cut {
       0% {
         opacity: 1;
-        transform: translate(0, 0);
+        transform: translate(0);
       }
 
       48% {
@@ -400,39 +385,38 @@
       }
     }
 
-    @keyframes button-static-snap {
+    @keyframes static-snap {
       0% {
         opacity: 0;
-        transform: translate(0, 0);
       }
 
       25% {
         opacity: 1;
-        transform: translate(-4px, 0);
+        transform: translate(-4px);
       }
 
       100% {
         opacity: 0;
-        transform: translate(9px, 0);
+        transform: translate(9px);
       }
     }
 
-    @keyframes label-static-shred {
+    @keyframes label-shred {
       0% {
         opacity: 1;
-        transform: translate(0, 0);
+        transform: translate(0);
       }
 
       28% {
         opacity: 1;
-        transform: translate(-2px, 0);
+        transform: translate(-2px);
         clip-path: inset(0 0 46% 0);
       }
 
       58% {
         opacity: 0.72;
         transform: translate(5px, -1px);
-        clip-path: inset(46% 0 0 0);
+        clip-path: inset(46% 0 0);
       }
 
       100% {
@@ -445,10 +429,10 @@
     .static-fragment {
       position: absolute;
       z-index: 4;
-      top: var(--fragment-top);
-      left: var(--fragment-left);
-      width: var(--fragment-width);
-      height: var(--fragment-height);
+      top: var(--top);
+      left: var(--left);
+      width: var(--width);
+      height: var(--height);
       opacity: 0;
       background: #ffffff;
       box-shadow:
@@ -458,42 +442,39 @@
     }
 
     .choice-button.disintegrating .static-fragment {
-      animation: white-static-fragment 0.46s steps(3, end) forwards;
-      animation-delay: var(--fragment-delay);
+      animation: fragment 0.46s steps(3, end) forwards;
+      animation-delay: var(--delay);
     }
 
-    @keyframes white-static-fragment {
+    @keyframes fragment {
       0% {
         opacity: 1;
-        transform: translate(0, 0) scaleX(1);
+        transform: translate(0) scaleX(1);
       }
 
       35% {
         opacity: 1;
         transform: translate(
-          calc(var(--fragment-drift-x) * 0.28),
-          calc(var(--fragment-drift-y) * 0.28)
+          calc(var(--dx) * 0.28),
+          calc(var(--dy) * 0.28)
         ) scaleX(1.35);
       }
 
       100% {
         opacity: 0;
-        transform: translate(
-          var(--fragment-drift-x),
-          var(--fragment-drift-y)
-        ) scaleX(var(--fragment-stretch));
+        transform: translate(var(--dx), var(--dy)) scaleX(var(--stretch));
       }
     }
 
     #entrance.transitioning .question {
-      animation: question-tv-shutdown 0.2s steps(3, end) forwards;
+      animation: tv-off 0.2s steps(3, end) forwards;
     }
 
     #entrance.transitioning .question::after {
-      animation: question-tv-line 0.2s steps(3, end) forwards;
+      animation: tv-line 0.2s steps(3, end) forwards;
     }
 
-    @keyframes question-tv-shutdown {
+    @keyframes tv-off {
       0% {
         opacity: 1;
         filter: brightness(1);
@@ -505,7 +486,7 @@
         filter: brightness(2.4);
         transform: scaleX(1.01) scaleY(0.68);
         text-shadow:
-          0 0 6px rgba(255, 255, 255, 1),
+          0 0 6px #ffffff,
           0 0 18px rgba(255, 255, 255, 0.9),
           0 0 36px rgba(255, 255, 255, 0.58);
       }
@@ -515,7 +496,7 @@
         filter: brightness(3.4);
         transform: scaleX(1.06) scaleY(0.07);
         text-shadow:
-          0 0 8px rgba(255, 255, 255, 1),
+          0 0 8px #ffffff,
           0 0 24px rgba(255, 255, 255, 0.98),
           0 0 48px rgba(255, 255, 255, 0.74);
       }
@@ -527,7 +508,7 @@
       }
     }
 
-    @keyframes question-tv-line {
+    @keyframes tv-line {
       0% {
         width: 0;
         opacity: 0;
@@ -573,10 +554,6 @@
       background: #000000;
     }
 
-    #comic[hidden] {
-      display: none !important;
-    }
-
     #comic > img {
       display: block;
       width: auto;
@@ -588,10 +565,10 @@
     }
 
     #comic.comic-focus-in > img {
-      animation: comic-focus-in 1.05s cubic-bezier(0.16, 0.78, 0.25, 1) both;
+      animation: comic-focus 1.05s cubic-bezier(0.16, 0.78, 0.25, 1) both;
     }
 
-    @keyframes comic-focus-in {
+    @keyframes comic-focus {
       0% {
         opacity: 0;
         filter: blur(18px);
@@ -636,7 +613,6 @@
       cursor: pointer;
       font-family: "Handjet", monospace;
       font-size: clamp(16px, 4.55vw, 23px);
-      font-weight: 400;
       line-height: 1.78;
       text-align: center;
       text-shadow: 0 0 1px rgba(255, 255, 255, 0.25);
@@ -648,21 +624,10 @@
       outline-offset: 4px;
     }
 
-    .block-1 {
-      top: 50%;
-    }
-
-    .block-2 {
-      top: 66.5%;
-    }
-
-    .block-3 {
-      top: 74.2%;
-    }
-
-    .block-4 {
-      top: 81%;
-    }
+    .block-1 { top: 50%; }
+    .block-2 { top: 66.5%; }
+    .block-3 { top: 74.2%; }
+    .block-4 { top: 81%; }
 
     .binary-line {
       display: block;
@@ -673,7 +638,7 @@
 
     .binary-block.revealed .binary-line {
       animation: line-reveal 0.55s ease forwards;
-      animation-delay: calc(var(--line-index) * 0.14s);
+      animation-delay: calc(var(--line) * 0.14s);
     }
 
     @keyframes line-reveal {
@@ -694,31 +659,29 @@
       display: inline-block;
       min-width: 0.01em;
       transform-origin: center;
-      animation:
-        char-tremble var(--jitter-duration) steps(2, end)
-        var(--jitter-delay) infinite;
+      animation: char-tremble var(--duration) steps(2, end) var(--delay) infinite;
     }
 
     @keyframes char-tremble {
       0%,
       100% {
-        transform: translate(0, 0) rotate(0deg);
+        transform: translate(0) rotate(0);
       }
 
       18% {
-        transform: translate(var(--jx1), var(--jy1)) rotate(var(--r1));
+        transform: translate(var(--x1), var(--y1)) rotate(var(--r1));
       }
 
       39% {
-        transform: translate(var(--jx2), var(--jy2)) rotate(var(--r2));
+        transform: translate(var(--x2), var(--y2)) rotate(var(--r2));
       }
 
       63% {
-        transform: translate(var(--jx3), var(--jy3)) rotate(var(--r3));
+        transform: translate(var(--x3), var(--y3)) rotate(var(--r3));
       }
 
       82% {
-        transform: translate(var(--jx4), var(--jy4)) rotate(var(--r4));
+        transform: translate(var(--x4), var(--y4)) rotate(var(--r4));
       }
     }
 
@@ -781,7 +744,7 @@
       0%,
       86%,
       100% {
-        clip-path: inset(0 0 0 0);
+        clip-path: inset(0);
       }
 
       89% {
@@ -807,11 +770,11 @@
         5px 18px #66ff00,
         10px 22px #ffffff,
         -3px 26px #00ff45;
-      animation: noise-blink 1.2s steps(2, end) infinite;
+      animation: noise 1.2s steps(2, end) infinite;
       pointer-events: none;
     }
 
-    @keyframes noise-blink {
+    @keyframes noise {
       0%,
       100% {
         opacity: 0.18;
@@ -868,8 +831,8 @@
         class="binary-block block-2"
         role="button"
         tabindex="0"
-        data-destination="error.html"
-        aria-label="잘못된 방으로 이동"
+        data-destination="error-room-2.html"
+        aria-label="이진2 오류 방으로 이동"
       >
         <div class="binary-line">11101010 10110000 10000000</div>
         <div class="binary-line">11101100 10000011 10000001</div>
@@ -896,7 +859,7 @@
       >
         <div class="binary-line">11101011 10101001 10010100</div>
         <div class="binary-line">11101100 10001011 10011100</div>
-        <div class="binary-line">11101011 10110010 10000100</div>
+        <div class="binary-line">11101100 10010110 10000100</div>
         <div class="binary-line">11101100 10001010 10100100</div>
         <div class="binary-line">11101100 10010111 10010000</div>
       </div>
@@ -920,11 +883,14 @@
     const choiceButtons = document.querySelectorAll(".choice-button");
     const binaryStage = document.getElementById("binary-stage");
     const binaryBlocks = document.querySelectorAll(".binary-block");
-
     const entityRoomBlock = document.querySelector(".block-1");
+
     const entityRoomSessionKey = "welcome_entity_room_entered";
 
-    function hasEnteredEntityRoom() {
+    let storyHasStarted = false;
+    let idleGlitchTimer;
+
+    function enteredEntity() {
       try {
         return sessionStorage.getItem(entityRoomSessionKey) === "1";
       } catch (error) {
@@ -932,12 +898,12 @@
       }
     }
 
-    function syncEntityRoomGate() {
+    function syncEntityGate() {
       if (!entityRoomBlock) {
         return;
       }
 
-      if (hasEnteredEntityRoom()) {
+      if (enteredEntity()) {
         entityRoomBlock.dataset.destination = "error.html";
         entityRoomBlock.setAttribute("aria-label", "잘못된 방으로 이동");
       } else {
@@ -946,50 +912,46 @@
       }
     }
 
-    syncEntityRoomGate();
-    window.addEventListener("pageshow", syncEntityRoomGate);
+    syncEntityGate();
+    window.addEventListener("pageshow", syncEntityGate);
 
-    let storyHasStarted = false;
-    let idleGlitchTimer;
-
-    function waitForComicImages(callback) {
+    function waitImages(done) {
       const images = [...comic.querySelectorAll("img")];
 
-      if (images.length === 0) {
-        callback();
+      if (!images.length) {
+        done();
         return;
       }
 
-      let completed = 0;
+      let complete = 0;
 
-      function markCompleted() {
-        completed += 1;
+      function finish() {
+        complete += 1;
 
-        if (completed >= images.length) {
-          callback();
+        if (complete >= images.length) {
+          done();
         }
       }
 
       images.forEach((image) => {
         if (image.complete) {
-          markCompleted();
+          finish();
           return;
         }
 
-        image.addEventListener("load", markCompleted, { once: true });
-        image.addEventListener("error", markCompleted, { once: true });
+        image.addEventListener("load", finish, { once: true });
+        image.addEventListener("error", finish, { once: true });
       });
     }
 
-    function revealComicWithBlur() {
+    function revealComic() {
       comic.hidden = false;
       comic.classList.remove("comic-focus-in");
 
       void comic.offsetWidth;
 
-      waitForComicImages(() => {
+      waitImages(() => {
         comic.classList.add("comic-focus-in");
-        void comic.offsetWidth;
 
         requestAnimationFrame(() => {
           blackout.classList.add("drop");
@@ -1006,7 +968,7 @@
       });
     }
 
-    function returnToBinaryStage() {
+    function returnBinary() {
       storyHasStarted = true;
       clearTimeout(idleGlitchTimer);
 
@@ -1014,18 +976,16 @@
       entrance.hidden = true;
       comic.hidden = false;
 
-      waitForComicImages(() => {
+      waitImages(() => {
         requestAnimationFrame(() => {
-          const binaryTop =
-            binaryStage.getBoundingClientRect().top + window.scrollY;
-
-          window.scrollTo(0, binaryTop);
+          window.scrollTo(
+            0,
+            binaryStage.getBoundingClientRect().top + window.scrollY
+          );
 
           requestAnimationFrame(() => {
             setTimeout(() => {
-              document.documentElement.classList.remove(
-                "returning-to-binary"
-              );
+              document.documentElement.classList.remove("returning-to-binary");
 
               history.replaceState(
                 null,
@@ -1038,11 +998,11 @@
       });
     }
 
-    function randomRange(minimum, maximum) {
+    function range(minimum, maximum) {
       return Math.random() * (maximum - minimum) + minimum;
     }
 
-    function createStaticFragments(button, amount) {
+    function fragments(button, amount) {
       button.querySelectorAll(".static-fragment").forEach((fragment) => {
         fragment.remove();
       });
@@ -1052,57 +1012,21 @@
 
         fragment.className = "static-fragment";
 
-        fragment.style.setProperty(
-          "--fragment-left",
-          `${randomRange(2, 88).toFixed(2)}%`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-top",
-          `${randomRange(10, 84).toFixed(2)}%`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-width",
-          `${Math.floor(randomRange(5, 26))}px`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-height",
-          `${Math.floor(randomRange(1, 4))}px`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-drift-x",
-          `${randomRange(-78, 78).toFixed(2)}px`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-drift-y",
-          `${randomRange(-18, 18).toFixed(2)}px`
-        );
-
-        fragment.style.setProperty(
-          "--fragment-stretch",
-          randomRange(0.35, 2.1).toFixed(2)
-        );
-
-        fragment.style.setProperty(
-          "--fragment-delay",
-          `${Math.floor(randomRange(0, 85))}ms`
-        );
+        fragment.style.setProperty("--left", `${range(2, 88).toFixed(2)}%`);
+        fragment.style.setProperty("--top", `${range(10, 84).toFixed(2)}%`);
+        fragment.style.setProperty("--width", `${Math.floor(range(5, 26))}px`);
+        fragment.style.setProperty("--height", `${Math.floor(range(1, 4))}px`);
+        fragment.style.setProperty("--dx", `${range(-78, 78).toFixed(2)}px`);
+        fragment.style.setProperty("--dy", `${range(-18, 18).toFixed(2)}px`);
+        fragment.style.setProperty("--stretch", range(0.35, 2.1).toFixed(2));
+        fragment.style.setProperty("--delay", `${Math.floor(range(0, 85))}ms`);
 
         button.appendChild(fragment);
       }
     }
 
-    function scheduleIdleGlitch() {
-      const irregularIntervals = [5000, 7000, 10000];
-
-      const nextDelay =
-        irregularIntervals[
-          Math.floor(Math.random() * irregularIntervals.length)
-        ];
+    function scheduleIdle() {
+      const times = [5000, 7000, 10000];
 
       idleGlitchTimer = setTimeout(() => {
         if (storyHasStarted || entrance.hidden) {
@@ -1113,9 +1037,9 @@
 
         setTimeout(() => {
           entrance.classList.remove("idle-glitch");
-          scheduleIdleGlitch();
+          scheduleIdle();
         }, 150);
-      }, nextDelay);
+      }, times[Math.floor(Math.random() * times.length)]);
     }
 
     function startStory(button) {
@@ -1129,15 +1053,11 @@
       entrance.classList.remove("connection-arrived");
       entrance.classList.add("transitioning");
 
-      choiceButtons.forEach((choiceButton) => {
-        choiceButton.disabled = true;
+      choiceButtons.forEach((choice) => {
+        choice.disabled = true;
 
-        createStaticFragments(
-          choiceButton,
-          choiceButton === button ? 44 : 28
-        );
-
-        choiceButton.classList.add("disintegrating");
+        fragments(choice, choice === button ? 44 : 28);
+        choice.classList.add("disintegrating");
       });
 
       setTimeout(() => {
@@ -1146,12 +1066,8 @@
 
       setTimeout(() => {
         entrance.hidden = true;
-
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
         window.scrollTo(0, 0);
-
-        revealComicWithBlur();
+        revealComic();
       }, 2500);
     }
 
@@ -1165,7 +1081,7 @@
       entrance.classList.remove("connection-arrived");
     }, 500);
 
-    scheduleIdleGlitch();
+    scheduleIdle();
 
     function randomValue(maximum) {
       return ((Math.random() * 2 - 1) * maximum).toFixed(2);
@@ -1175,7 +1091,7 @@
       const characters = Array.from(line.textContent);
 
       line.textContent = "";
-      line.style.setProperty("--line-index", lineIndex);
+      line.style.setProperty("--line", lineIndex);
 
       characters.forEach((character) => {
         const span = document.createElement("span");
@@ -1183,27 +1099,19 @@
         span.className = "binary-char";
         span.textContent = character === " " ? "\u00A0" : character;
 
-        span.style.setProperty("--jx1", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jy1", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jx2", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jy2", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jx3", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jy3", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jx4", `${randomValue(0.8)}px`);
-        span.style.setProperty("--jy4", `${randomValue(0.8)}px`);
-
-        span.style.setProperty("--r1", `${randomValue(0.7)}deg`);
-        span.style.setProperty("--r2", `${randomValue(0.7)}deg`);
-        span.style.setProperty("--r3", `${randomValue(0.7)}deg`);
-        span.style.setProperty("--r4", `${randomValue(0.7)}deg`);
+        [1, 2, 3, 4].forEach((number) => {
+          span.style.setProperty(`--x${number}`, `${randomValue(0.8)}px`);
+          span.style.setProperty(`--y${number}`, `${randomValue(0.8)}px`);
+          span.style.setProperty(`--r${number}`, `${randomValue(0.7)}deg`);
+        });
 
         span.style.setProperty(
-          "--jitter-duration",
+          "--duration",
           `${(0.42 + Math.random() * 0.7).toFixed(2)}s`
         );
 
         span.style.setProperty(
-          "--jitter-delay",
+          "--delay",
           `${(-Math.random() * 1.2).toFixed(2)}s`
         );
 
@@ -1211,14 +1119,14 @@
       });
     });
 
-    let binaryHasAppeared = false;
+    let binaryShown = false;
 
-    const binaryObserver = new IntersectionObserver((entries, observer) => {
+    const observer = new IntersectionObserver((entries, currentObserver) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("revealed");
-          binaryHasAppeared = true;
-          observer.unobserve(entry.target);
+          binaryShown = true;
+          currentObserver.unobserve(entry.target);
         }
       });
     }, {
@@ -1226,11 +1134,11 @@
     });
 
     binaryBlocks.forEach((block) => {
-      binaryObserver.observe(block);
+      observer.observe(block);
     });
 
     setInterval(() => {
-      if (!binaryHasAppeared) {
+      if (!binaryShown) {
         return;
       }
 
@@ -1264,11 +1172,8 @@
       }
     });
 
-    const isReturningFromRoom =
-      new URLSearchParams(window.location.search).get("return") === "binary";
-
-    if (isReturningFromRoom) {
-      returnToBinaryStage();
+    if (new URLSearchParams(location.search).get("return") === "binary") {
+      returnBinary();
     }
   </script>
 </body>
