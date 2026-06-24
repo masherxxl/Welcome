@@ -40,107 +40,120 @@
     #app {
       width: min(100%, 520px);
       margin: 0 auto;
-      padding: 18px 14px 46px;
-    }
-
-    .room-title {
-      margin: 0;
-      color: #c8c8d4;
-      font-size: clamp(18px, 5.2vw, 30px);
-      font-weight: 400;
-      line-height: 1;
-      letter-spacing: .03em;
+      padding: 30px 14px 46px;
     }
 
     /*
-      모든 텍스트: 불규칙 타이핑 + 글자 버프 + 화면 반응
+      맨 위 제목.
+      효과 없음 / 모션 없음 / 회색 / 조금 아래 / 조금 크게.
     */
-    .typed-target.typing {
-      animation: text-screen-react .32s steps(2, end) infinite;
+    .room-title {
+      margin: 16px 0 0;
+      color: #9c9ca8;
+      font-size: clamp(20px, 5.8vw, 34px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: .035em;
+    }
+
+    /*
+      언더테일식 타이핑:
+      부드러운 파도 모션 제거.
+      글자는 딱딱하게 찍히고,
+      일부 글자만 아주 짧게 잔떨림/글로우.
+    */
+    .typed-target {
+      position: relative;
     }
 
     .typed-char {
       display: inline-block;
       min-width: .08em;
       opacity: 0;
-      transform: translateY(4px) scale(.82);
-      animation:
-        typed-char-arrive .34s steps(3, end) forwards,
-        typed-char-sync 2.7s steps(2, end) calc(.42s + var(--pulse-delay)) infinite;
+      transform: translate(0, 0);
+      animation: type-pop .035s steps(1, end) forwards;
     }
 
-    @keyframes typed-char-arrive {
+    .typed-char.glitch {
+      animation:
+        type-pop .035s steps(1, end) forwards,
+        tiny-jitter .18s steps(2, end) .04s 1;
+    }
+
+    .typed-char.glow {
+      animation:
+        type-pop .035s steps(1, end) forwards,
+        tiny-glow .28s steps(2, end) .04s 1;
+    }
+
+    @keyframes type-pop {
       0% {
         opacity: 0;
-        filter: brightness(.5);
-        transform: translateY(4px) scale(.82);
-      }
-
-      55% {
-        opacity: 1;
-        filter: brightness(2.2);
-        transform: translateY(-1px) scale(1.08);
       }
 
       100% {
         opacity: 1;
-        filter: brightness(1);
-        transform: translateY(0) scale(1);
       }
     }
 
-    @keyframes typed-char-sync {
+    @keyframes tiny-jitter {
       0%,
-      84%,
       100% {
+        transform: translate(0, 0);
         filter: brightness(1);
-        transform: translateY(0) scale(1);
+      }
+
+      35% {
+        transform: translate(-1px, 0);
+        filter: brightness(1.25);
+      }
+
+      70% {
+        transform: translate(1px, -1px);
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes tiny-glow {
+      0%,
+      100% {
         text-shadow: none;
-      }
-
-      89% {
-        filter: brightness(1.9);
-        transform: translateY(-1px) scale(1.05);
-        text-shadow: 0 0 5px rgba(255,255,255,.8);
-      }
-
-      94% {
-        filter: brightness(1.2);
-        transform: translateX(1px) scale(.98);
-      }
-    }
-
-    @keyframes text-screen-react {
-      0%,
-      100% {
         filter: brightness(1);
-      }
-
-      50% {
-        filter: brightness(1.16);
-      }
-    }
-
-    .text-response {
-      animation: panel-text-response .34s steps(2, end) both;
-    }
-
-    @keyframes panel-text-response {
-      0% {
-        filter: brightness(.82);
       }
 
       45% {
-        filter: brightness(1.38);
-      }
-
-      100% {
-        filter: brightness(1);
+        text-shadow: 0 0 4px rgba(255,255,255,.75);
+        filter: brightness(1.55);
       }
     }
 
     /*
-      게임 본 화면 위치
+      화면 반응형 모션.
+      새 글자가 찍힐 때 대화창이 아주 짧게 반응.
+    */
+    .screen-react {
+      animation: screen-react .12s steps(2, end) both;
+    }
+
+    @keyframes screen-react {
+      0% {
+        filter: brightness(1);
+        transform: translate(0, 0);
+      }
+
+      45% {
+        filter: brightness(1.18);
+        transform: translate(1px, 0);
+      }
+
+      100% {
+        filter: brightness(1);
+        transform: translate(0, 0);
+      }
+    }
+
+    /*
+      게임 본 화면 위치.
       여기 숫자를 올리면 게임 화면 전체가 더 아래로 내려갑니다.
     */
     #room-stage {
@@ -274,7 +287,6 @@
 
     /*
       대화창과 조이스틱 영역
-      게임 본 화면과는 가깝게 유지
     */
     #ui-zone {
       position: relative;
@@ -396,7 +408,10 @@
       inset: 0;
       display: grid;
       align-content: start;
+
+      /* 여기에요 여기!!! T1 선택지 줄 간격 */
       gap: 5.8%;
+
       padding: 6.5% 9% 15%;
     }
 
@@ -509,11 +524,11 @@
     @media (min-width: 700px) {
       #app {
         width: min(92vw, 960px);
-        padding: 24px 24px 40px;
+        padding: 36px 24px 40px;
       }
 
       .room-title {
-        font-size: 32px;
+        font-size: 36px;
       }
 
       #room-stage {
@@ -533,6 +548,10 @@
     @media (max-width: 360px) {
       #app {
         padding-inline: 10px;
+      }
+
+      .room-title {
+        font-size: 21px;
       }
 
       #room-stage {
@@ -580,7 +599,7 @@
 
 <body>
   <main id="app">
-    <h1 class="room-title typed-target" id="room-title"></h1>
+    <h1 class="room-title">Room- 11101011</h1>
 
     <section id="room-stage" aria-label="미니 연구실">
       <img id="room-bg" src="./room-bg.png" alt="">
@@ -630,7 +649,6 @@
     const NO_ROOM_URL = "no-room.html";
 
     const COPY = {
-      title: "Room- 11101011",
       confirm: "확인",
       question: "스크린을 확인하시겠습니까?",
       yes: "• 네",
@@ -687,7 +705,6 @@
 
     const $ = (selector) => document.querySelector(selector);
 
-    const roomTitle = $("#room-title");
     const player = $("#player");
     const confirmButton = $("#confirm-button");
     const stageEffects = $("#stage-effects");
@@ -746,43 +763,38 @@
       if (element._typingTimer) {
         clearTimeout(element._typingTimer);
       }
-
-      element.classList.remove("typing");
     }
 
-    function triggerTextResponse(element) {
+    function screenReact(element) {
       const host = element.closest(
-        "#t0-panel, #t1-panel, #confirm-button, .room-title"
+        "#t0-panel, #t1-panel, #confirm-button"
       );
 
       if (!host) {
         return;
       }
 
-      host.classList.remove("text-response");
+      host.classList.remove("screen-react");
 
       void host.offsetWidth;
 
-      host.classList.add("text-response");
+      host.classList.add("screen-react");
 
       window.setTimeout(() => {
-        host.classList.remove("text-response");
-      }, 360);
+        host.classList.remove("screen-react");
+      }, 130);
     }
 
     function typeText(element, text, options = {}) {
       stopTyping(element);
 
       const token = element._typingToken;
-      const speed = options.speed ?? 56;
+      const speed = options.speed ?? 58;
       const startDelay = options.startDelay ?? 0;
       const chars = Array.from(text);
 
       element.textContent = "";
       element.setAttribute("aria-label", text.replace(/\n/g, " "));
-      element.classList.add("typing");
-
-      triggerTextResponse(element);
 
       let index = 0;
 
@@ -792,8 +804,6 @@
         }
 
         if (index >= chars.length) {
-          element.classList.remove("typing");
-
           if (typeof options.onComplete === "function") {
             options.onComplete();
           }
@@ -809,32 +819,48 @@
           const span = document.createElement("span");
 
           span.className = "typed-char";
+
+          /*
+            불규칙하게 한두 글자만 잔떨림/글로우.
+            숫자를 올리면 효과가 더 자주 생깁니다.
+          */
+          const roll = Math.random();
+
+          if (roll > .88) {
+            span.classList.add("glitch");
+          } else if (roll > .78) {
+            span.classList.add("glow");
+          }
+
           span.textContent = character === " " ? "\u00A0" : character;
-          span.style.setProperty(
-            "--pulse-delay",
-            `${((index % 8) * 0.07).toFixed(2)}s`
-          );
 
           element.append(span);
         }
+
+        screenReact(element);
 
         index += 1;
 
         let delay =
           speed +
-          Math.round((Math.random() - 0.5) * 28);
+          Math.round((Math.random() - .5) * 34);
 
         if (/[.,?!]/.test(character)) {
-          delay += 90;
+          delay += 80;
+        }
+
+        if (character === " ") {
+          delay -= 10;
         }
 
         element._typingTimer = window.setTimeout(
           next,
-          Math.max(30, delay)
+          Math.max(34, delay)
         );
       }
 
-      element._typingTimer = window.setTimeout(next, startDelay);
+      element._typingTimer =
+        window.setTimeout(next, startDelay);
     }
 
     function stopPanelTyping() {
@@ -860,7 +886,7 @@
       t0No.disabled = true;
 
       typeText(t0Text, COPY.question, {
-        speed: 60,
+        speed: 62,
         onComplete: () => {
           if (scene !== state.textScene) {
             return;
@@ -888,7 +914,7 @@
                 }
               }
             });
-          }, 150);
+          }, 120);
         }
       });
     }
@@ -903,7 +929,7 @@
         const label = COPY.actions[index];
 
         typeText(button, label, {
-          speed: 52,
+          speed: 50,
           startDelay: delay,
           onComplete: () => {
             if (scene === state.textScene) {
@@ -912,7 +938,7 @@
           }
         });
 
-        delay += label.length * 52 + 120;
+        delay += label.length * 50 + 90;
       });
     }
 
@@ -998,7 +1024,7 @@
 
       if (isNew) {
         typeText(confirmButton, COPY.confirm, {
-          speed: 80
+          speed: 72
         });
       }
     }
@@ -1127,10 +1153,6 @@
         return;
       }
 
-      /*
-        예 / 아니오 중 무엇을 누르든
-        누르는 즉시 버튼들은 먼저 사라짐.
-      */
       t0Choices.hidden = true;
       stopTyping(t0Yes);
       stopTyping(t0No);
@@ -1266,9 +1288,7 @@
 
     joystickBase.addEventListener("pointerdown", (event) => {
       joystick.active = true;
-
       joystickBase.setPointerCapture(event.pointerId);
-
       setJoystick(event.clientX, event.clientY);
     });
 
@@ -1440,10 +1460,6 @@
 
       requestAnimationFrame(loop);
     }
-
-    typeText(roomTitle, COPY.title, {
-      speed: 72
-    });
 
     updatePlayer();
     renderRemoved();
