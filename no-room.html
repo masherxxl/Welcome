@@ -16,9 +16,7 @@
       font-display: swap;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html,
     body {
@@ -88,8 +86,7 @@
 
     /*
       ★★★ 여기예요 여기!!! ★★★
-      대화창 위 이름의 글자 모양을 정하는 곳.
-      실제 이름은 아래 HTML의 <p id="speaker">???</p> 안에서 바꿔줘.
+      실제 이름은 아래 HTML의 <p id="speaker">???</p>에서 바꿔줘.
     */
     #speaker {
       margin: 0 0 9px;
@@ -275,7 +272,7 @@
     </div>
 
     <section id="dialogue-panel" aria-label="???의 대화">
-      <!-- ★★★ 여기예요 여기!!! 아래 ???를 원하는 이름으로 바꿔줘. 예: 창문 너머의 목소리 ★★★ -->
+      <!-- ★★★ 여기예요 여기!!! 아래 ???를 원하는 이름으로 바꿔줘. -->
       <p id="speaker">???</p>
       <p id="dialogue-text" aria-live="polite"></p>
       <p id="advance-mark" aria-hidden="true">▼</p>
@@ -287,19 +284,10 @@
   <script>
     /*
       중앙 도트 오브젝트를 나중에 올릴 때만 파일명을 적어줘.
-
-      예시:
-      const objectImageFile = "no-object.png";
-
-      지금은 빈칸이라 이미지가 없어도 깨진 그림 아이콘이 뜨지 않음.
+      예: const objectImageFile = "no-object.png";
     */
     const objectImageFile = "";
 
-    /*
-      현재 GitHub 맨 위 폴더에 올린 대사음 파일.
-      여러 개를 올린 뒤 아래에 이름을 더 적으면,
-      글자마다 그중 하나가 랜덤으로 선택됨.
-    */
     const textSoundFiles = [
       "It.mp3"
     ];
@@ -309,149 +297,153 @@
 
     const timing = {
       openingDelay: 420,
+
+      /*
+        아래 숫자들은 새 대사를 추가했는데 개별 설정을 빼먹었을 때만 쓰는 기본값.
+      */
       characterDelay: 57,
-
-      // 공백마다 생기는 기본 단어 멈춤.
+      randomDelay: 20,
       wordPause: 250,
-
-      // 마침표·쉼표·물음표 뒤 기본 멈춤.
       punctuationPause: 250,
 
-      // 텍스트가 뚝뚝 끊기며 사라지는 시간.
       messageFadeDuration: 170,
-
-      // 사라진 뒤 다음 대사가 시작되기 전 빈 시간.
       nextMessageDelay: 740
     };
 
     /*
-      ["텍스트", 숫자]에서 숫자는 그 텍스트가 전부 적힌 뒤 추가로 멈출 시간(ms)이야.
+      ★★★ 대사 하나하나의 글자 리듬을 여기서 직접 바꿔요. ★★★
 
-      100  = 0.1초
-      300  = 0.3초
-      500  = 0.5초
-      1000 = 1초
+      characterDelay:
+      글자 하나가 나온 뒤 다음 글자가 나올 때까지의 기본 시간(ms).
+      40 = 빠름 / 60 = 보통 / 90 = 느림
 
-      예시:
-      ["저기,", 500],
-      [" 창문 쪽에.", 0]
+      randomDelay:
+      글자마다 기본 시간에서 얼마나 들쭉날쭉해질지(ms).
+      8 = 정돈됨 / 20 = 자연스러움 / 35 = 불안정함
 
-      위처럼 나누면 "저기,"가 다 적힌 다음 0.5초 쉬고,
-      그 뒤에 " 창문 쪽에."가 이어서 적혀.
+      wordPause:
+      공백 뒤 추가로 멈추는 시간(ms).
+      15 = "또 왔어"처럼 자연스러움 / 250 = 일부러 크게 끊김
 
-      한 줄을 화면에서 줄바꿈하고 싶으면 문장 안에 \n을 넣으면 돼.
+      punctuationPause:
+      . , ! ? 뒤 추가로 멈추는 시간(ms).
+
+      pauseAfter:
+      이 조각이 전부 나온 뒤, 다음 조각 전까지 추가로 쉬는 시간(ms).
+      100 = 0.1초 / 300 = 0.3초 / 500 = 0.5초
     */
     const dialogueLines = [
       {
-        segments: [
-          ["...", 0]
+        parts: [
+          { text: "...", characterDelay: 90, randomDelay: 26, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["...저기 봐,", 0]
+        parts: [
+          { text: "...저기 봐,", characterDelay: 72, randomDelay: 25, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["또 왔어.", 0]
+        parts: [
+          { text: "또 왔어.", characterDelay: 44, randomDelay: 8, wordPause: 15, punctuationPause: 250, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["저기,", 500],
-          [" 창문 쪽에.", 0]
+        parts: [
+          { text: "저기,", characterDelay: 62, randomDelay: 18, pauseAfter: 500 },
+          { text: " 창문 쪽에.", characterDelay: 74, randomDelay: 30, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["아까부터...같은 곳에 서서,", 300],
-          ["\n이곳만 뚫어지게 바라보고 있어.", 0]
+        parts: [
+          { text: "아까부터...같은 곳에 서서,", characterDelay: 58, randomDelay: 24, pauseAfter: 300 },
+          { text: "\n이곳만 뚫어지게 바라보고 있어.", characterDelay: 68, randomDelay: 30, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["...저거,", 500],
-          [" 한 번도 안 깜빡였어.", 0]
+        parts: [
+          { text: "...저거,", characterDelay: 82, randomDelay: 32, pauseAfter: 500 },
+          { text: " 한 번도 안 깜빡였어.", characterDelay: 60, randomDelay: 20, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["...도대체 저게 뭔지,", 100],
-          [" 알 길이 없단 말이야.", 0]
+        parts: [
+          { text: "...도대체 저게 뭔지,", characterDelay: 72, randomDelay: 28, pauseAfter: 100 },
+          { text: " 알 길이 없단 말이야.", characterDelay: 58, randomDelay: 18, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["어제는 내가 출근하기 전부터 있었거든.", 0]
+        parts: [
+          { text: "어제는 내가 출근하기 전부터 있었거든.", characterDelay: 54, randomDelay: 18, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["그냥...", 500],
-          [" 여길 보고만 있었어.", 0]
+        parts: [
+          { text: "그냥...", characterDelay: 84, randomDelay: 30, pauseAfter: 500 },
+          { text: " 여길 보고만 있었어.", characterDelay: 58, randomDelay: 22, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["아무것도 안 하고.", 0]
+        parts: [
+          { text: "아무것도 안 하고.", characterDelay: 52, randomDelay: 16, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["진짜 아무것도.", 0]
+        parts: [
+          { text: "진짜 아무것도.", characterDelay: 78, randomDelay: 30, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["내가 컵을 세 번 엎지른 거.", 100],
-          ["\n점심을 안 먹은 거.", 100],
-          ["\n넬슨과의 약속을 못 지킨 거.", 0]
+        parts: [
+          { text: "내가 컵을 세 번 엎지른 거.", characterDelay: 57, randomDelay: 20, pauseAfter: 100 },
+          { text: "\n점심을 안 먹은 거.", characterDelay: 62, randomDelay: 22, pauseAfter: 100 },
+          { text: "\n넬슨과의 약속을 못 지킨 거.", characterDelay: 66, randomDelay: 25, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["전부 봤겠지.", 0]
+        parts: [
+          { text: "전부 봤겠지.", characterDelay: 66, randomDelay: 24, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["...하하.", 0]
+        parts: [
+          { text: "...하하.", characterDelay: 94, randomDelay: 34, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["근데", 100],
-          [" 이상하지 않아?", 0]
+        parts: [
+          { text: "근데", characterDelay: 52, randomDelay: 14, pauseAfter: 100 },
+          { text: " 이상하지 않아?", characterDelay: 74, randomDelay: 30, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["저건...", 300],
-          [" 우리가 보고 있다는 걸 모르는 것 같아.", 0]
+        parts: [
+          { text: "저건...", characterDelay: 84, randomDelay: 32, wordPause: 250, punctuationPause: 250, pauseAfter: 300 },
+          { text: " 우리가 보고 있다는 걸", characterDelay: 82, randomDelay: 30, wordPause: 250, punctuationPause: 250, pauseAfter: 0 },
+          { text: " 모르는 것 같아.", characterDelay: 45, randomDelay: 10, wordPause: 250, punctuationPause: 250, pauseAfter: 0 }
         ]
       },
       {
         beginApproach: true,
-        segments: [
-          ["아니면.", 0]
+        parts: [
+          { text: "아니면.", characterDelay: 98, randomDelay: 34, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["우리가 저걸 보고 있다는 걸,\n아예 신경도 안 쓰는 거겠지.", 0]
+        parts: [
+          { text: "우리가 저걸 보고 있다는 걸,\n아예 신경도 안 쓰는 거겠지.", characterDelay: 66, randomDelay: 27, pauseAfter: 0 }
         ]
       },
       {
-        segments: [
-          ["...", 200],
-          ["정말로 기괴하네.", 0]
+        parts: [
+          { text: "...", characterDelay: 102, randomDelay: 30, pauseAfter: 200 },
+          { text: "정말로 기괴하네.", characterDelay: 72, randomDelay: 29, pauseAfter: 0 }
         ]
       },
       {
         leadDelay: 500,
-        segments: [
-          ["안 그래?", 0]
+        parts: [
+          { text: "안 그래?", characterDelay: 88, randomDelay: 32, pauseAfter: 0 }
         ]
       }
     ];
@@ -463,10 +455,8 @@
 
     const soundSources = textSoundFiles.map((fileName) => {
       const audio = new Audio(fileName);
-
       audio.preload = "auto";
       audio.volume = textSoundVolume;
-
       return audio;
     });
 
@@ -515,18 +505,23 @@
       sound.play().catch(() => {});
     }
 
-    function getCharacterDelay(character) {
-      let delay = timing.characterDelay;
+    function getCharacterDelay(character, part) {
+      const characterDelay = part.characterDelay ?? timing.characterDelay;
+      const randomDelay = part.randomDelay ?? timing.randomDelay;
+      const wordPause = part.wordPause ?? timing.wordPause;
+      const punctuationPause = part.punctuationPause ?? timing.punctuationPause;
+
+      let delay = characterDelay + randomRange(-randomDelay, randomDelay);
 
       if (character === " ") {
-        delay += timing.wordPause;
+        delay += wordPause;
       }
 
       if (/[.!?,]/.test(character)) {
-        delay += timing.punctuationPause;
+        delay += punctuationPause;
       }
 
-      return delay;
+      return Math.max(16, Math.round(delay));
     }
 
     function createCharacter(character) {
@@ -551,66 +546,26 @@
         `${randomRange(-0.95, 0).toFixed(2)}s`
       );
 
-      inner.style.setProperty(
-        "--x1",
-        `${randomRange(-0.58, 0.58).toFixed(2)}px`
-      );
-
-      inner.style.setProperty(
-        "--y1",
-        `${randomRange(-0.52, 0.52).toFixed(2)}px`
-      );
-
-      inner.style.setProperty(
-        "--x2",
-        `${randomRange(-0.58, 0.58).toFixed(2)}px`
-      );
-
-      inner.style.setProperty(
-        "--y2",
-        `${randomRange(-0.52, 0.52).toFixed(2)}px`
-      );
-
-      inner.style.setProperty(
-        "--x3",
-        `${randomRange(-0.58, 0.58).toFixed(2)}px`
-      );
-
-      inner.style.setProperty(
-        "--y3",
-        `${randomRange(-0.52, 0.52).toFixed(2)}px`
-      );
-
-      inner.style.setProperty(
-        "--r1",
-        `${randomRange(-0.36, 0.36).toFixed(2)}deg`
-      );
-
-      inner.style.setProperty(
-        "--r2",
-        `${randomRange(-0.36, 0.36).toFixed(2)}deg`
-      );
-
-      inner.style.setProperty(
-        "--r3",
-        `${randomRange(-0.36, 0.36).toFixed(2)}deg`
-      );
+      inner.style.setProperty("--x1", `${randomRange(-0.58, 0.58).toFixed(2)}px`);
+      inner.style.setProperty("--y1", `${randomRange(-0.52, 0.52).toFixed(2)}px`);
+      inner.style.setProperty("--x2", `${randomRange(-0.58, 0.58).toFixed(2)}px`);
+      inner.style.setProperty("--y2", `${randomRange(-0.52, 0.52).toFixed(2)}px`);
+      inner.style.setProperty("--x3", `${randomRange(-0.58, 0.58).toFixed(2)}px`);
+      inner.style.setProperty("--y3", `${randomRange(-0.52, 0.52).toFixed(2)}px`);
+      inner.style.setProperty("--r1", `${randomRange(-0.36, 0.36).toFixed(2)}deg`);
+      inner.style.setProperty("--r2", `${randomRange(-0.36, 0.36).toFixed(2)}deg`);
+      inner.style.setProperty("--r3", `${randomRange(-0.36, 0.36).toFixed(2)}deg`);
 
       outer.appendChild(inner);
-
       return outer;
     }
 
     function wait(time) {
-      return new Promise((resolve) => {
-        setTimeout(resolve, time);
-      });
+      return new Promise((resolve) => setTimeout(resolve, time));
     }
 
-    async function typeText(text) {
-      const characters = Array.from(text);
-
-      for (const character of characters) {
+    async function typeText(part) {
+      for (const character of Array.from(part.text)) {
         if (trapped) {
           return;
         }
@@ -621,7 +576,7 @@
           playTextSound();
         }
 
-        await wait(getCharacterDelay(character));
+        await wait(getCharacterDelay(character, part));
       }
     }
 
@@ -680,11 +635,11 @@
         await wait(line.leadDelay);
       }
 
-      for (const [segment, pauseAfter] of line.segments) {
-        await typeText(segment);
+      for (const part of line.parts) {
+        await typeText(part);
 
-        if (pauseAfter) {
-          await wait(pauseAfter);
+        if (part.pauseAfter) {
+          await wait(part.pauseAfter);
         }
       }
 
