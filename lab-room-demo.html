@@ -40,7 +40,7 @@
     #app {
       width: min(100%, 520px);
       margin: 0 auto;
-      padding: 18px 14px 42px;
+      padding: 18px 14px 46px;
     }
 
     .room-title {
@@ -53,13 +53,101 @@
     }
 
     /*
-      게임 본 화면: 제목 아래에서 조금 더 내려오도록 배치
+      모든 글자 타이핑 / 버프 동기화 / 화면 반응형 모션
+    */
+    .typed-target.typing {
+      animation: text-screen-react .32s steps(2, end) infinite;
+    }
+
+    .typed-char {
+      display: inline-block;
+      min-width: .08em;
+      opacity: 0;
+      transform: translateY(4px) scale(.82);
+      animation:
+        typed-char-arrive .34s steps(3, end) forwards,
+        typed-char-sync 2.7s steps(2, end) calc(.42s + var(--pulse-delay)) infinite;
+    }
+
+    @keyframes typed-char-arrive {
+      0% {
+        opacity: 0;
+        filter: brightness(.5);
+        transform: translateY(4px) scale(.82);
+      }
+
+      55% {
+        opacity: 1;
+        filter: brightness(2.2);
+        transform: translateY(-1px) scale(1.08);
+      }
+
+      100% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes typed-char-sync {
+      0%,
+      84%,
+      100% {
+        filter: brightness(1);
+        transform: translateY(0) scale(1);
+        text-shadow: none;
+      }
+
+      89% {
+        filter: brightness(1.9);
+        transform: translateY(-1px) scale(1.05);
+        text-shadow: 0 0 5px rgba(255,255,255,.8);
+      }
+
+      94% {
+        filter: brightness(1.2);
+        transform: translateX(1px) scale(.98);
+      }
+    }
+
+    @keyframes text-screen-react {
+      0%,
+      100% {
+        filter: brightness(1);
+      }
+
+      50% {
+        filter: brightness(1.16);
+      }
+    }
+
+    .text-response {
+      animation: panel-text-response .34s steps(2, end) both;
+    }
+
+    @keyframes panel-text-response {
+      0% {
+        filter: brightness(.82);
+      }
+
+      45% {
+        filter: brightness(1.38);
+      }
+
+      100% {
+        filter: brightness(1);
+      }
+    }
+
+    /*
+      게임 본 화면
+      제목 아래에서 더 아래로 내림
     */
     #room-stage {
       position: relative;
       width: 100%;
       aspect-ratio: 1.52 / 1;
-      margin-top: 28px;
+      margin-top: 54px;
       overflow: hidden;
       background: #000;
     }
@@ -142,37 +230,54 @@
     }
 
     /*
-      오브젝트 오른쪽에 나타나는 확인 버튼
+      각 스크린 세모 문양 바로 위 확인 버튼
+      가까이 가면 서서히 나타남
     */
     #confirm-button {
       position: absolute;
       z-index: 5;
-      min-width: 78px;
-      padding: 10px 16px 9px;
+      min-width: 82px;
+      padding: 10px 17px 9px;
       border: 3px solid #fff;
       background: #000;
       color: #fff;
-      font-size: clamp(15px, 3.9vw, 22px);
+      font-size: clamp(15px, 4vw, 23px);
       line-height: 1;
       letter-spacing: .04em;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 3px #000, 0 0 10px rgba(255,255,255,.34);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translate(-50%, calc(-50% + 10px)) scale(.9);
+      box-shadow:
+        0 0 0 3px #000,
+        0 0 10px rgba(255,255,255,.3);
+      transition:
+        opacity .34s ease,
+        transform .34s cubic-bezier(.2,.8,.25,1),
+        filter .34s ease;
       cursor: pointer;
     }
 
+    #confirm-button.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      filter: brightness(1);
+      transform: translate(-50%, -50%) scale(1);
+    }
+
     #confirm-button:active {
-      transform: translate(-50%, calc(-50% + 1px));
+      transform: translate(-50%, calc(-50% + 1px)) scale(.98);
     }
 
     /*
-      T0/T1/조이스틱은 절대 위치가 고정.
-      숨기거나 나타나기만 하며 서로 이동하지 않음.
+      T0/T1/조이스틱 고정 영역
     */
     #ui-zone {
       position: relative;
       width: 100%;
-      height: clamp(340px, 92vw, 500px);
-      margin-top: 26px;
+      height: clamp(350px, 94vw, 520px);
+      margin-top: 32px;
     }
 
     .frame-crop {
@@ -184,7 +289,6 @@
 
     /*
       T0: 질문 및 설명창
-      이전보다 아래 배치
     */
     #t0-panel {
       position: absolute;
@@ -212,7 +316,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) 24%;
       gap: 3%;
-      padding: 10.5% 8% 13% 7%;
+      padding: 7.8% 8% 13% 7%;
     }
 
     #t0-panel.is-message .content {
@@ -225,7 +329,7 @@
       color: #fff;
 
       /* 여기에요 여기!!! T0 질문/설명 글자 크기는 이 font-size를 바꾸면 됩니다. */
-      font-size: clamp(17px, 4.55vw, 29px);
+      font-size: clamp(19px, 4.95vw, 32px);
 
       line-height: 1.18;
       letter-spacing: .01em;
@@ -246,7 +350,7 @@
       background: transparent;
       color: #fff;
       padding: 0;
-      font-size: clamp(16px, 4.25vw, 26px);
+      font-size: clamp(16px, 4.3vw, 27px);
       line-height: 1.1;
       text-align: left;
       cursor: pointer;
@@ -259,12 +363,12 @@
 
     /*
       T1: 행동 선택창
-      조금 더 위로, 더 넓게.
+      선택지 텍스트를 대화창 기준으로 더 위에 배치
     */
     #t1-panel {
       position: absolute;
       left: 0;
-      bottom: 28px;
+      bottom: 30px;
       width: 64%;
       aspect-ratio: 2470 / 1271;
       overflow: hidden;
@@ -286,8 +390,8 @@
       inset: 0;
       display: grid;
       align-content: start;
-      gap: 5.4%;
-      padding: 13% 9% 11%;
+      gap: 4.8%;
+      padding: 8.8% 9% 15%;
     }
 
     .t1-action {
@@ -297,7 +401,7 @@
       background: transparent;
       color: #fff;
       padding: 0;
-      font-size: clamp(12px, 3.65vw, 22px);
+      font-size: clamp(12px, 3.35vw, 20px);
       line-height: 1.04;
       text-align: left;
       white-space: nowrap;
@@ -312,13 +416,12 @@
     }
 
     /*
-      조이스틱: 사각 박스 없음, 흰 라인 + 검정 내부.
-      T1과 함께 아주 조금 위로, 크기는 조금 축소.
+      조이스틱
     */
     #joystick-base {
       position: absolute;
       right: 3%;
-      bottom: 28px;
+      bottom: 30px;
       width: 30%;
       min-width: 108px;
       max-width: 156px;
@@ -393,15 +496,19 @@
     @media (min-width: 700px) {
       #app {
         width: min(92vw, 960px);
-        padding: 24px 24px 36px;
+        padding: 24px 24px 40px;
       }
 
       .room-title {
         font-size: 32px;
       }
 
+      #room-stage {
+        margin-top: 62px;
+      }
+
       #ui-zone {
-        height: min(68vw, 650px);
+        height: min(70vw, 670px);
       }
 
       #joystick-base {
@@ -415,8 +522,12 @@
         padding-inline: 10px;
       }
 
+      #room-stage {
+        margin-top: 46px;
+      }
+
       #ui-zone {
-        height: 340px;
+        height: 350px;
       }
 
       #t1-panel {
@@ -433,11 +544,21 @@
       }
 
       #t0-text {
-        font-size: 16px;
+        font-size: 17px;
       }
 
       .t0-choice {
         font-size: 15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
       }
     }
   </style>
@@ -445,13 +566,13 @@
 
 <body>
   <main id="app">
-    <h1 class="room-title">Room- 11101011</h1>
+    <h1 class="room-title typed-target" id="room-title"></h1>
 
     <section id="room-stage" aria-label="미니 연구실">
       <img id="room-bg" src="./room-bg.png" alt="">
       <div id="stage-effects" aria-hidden="true"></div>
       <div id="player" aria-hidden="true"></div>
-      <button id="confirm-button" type="button" hidden>확인</button>
+      <button id="confirm-button" class="typed-target" type="button" hidden></button>
     </section>
 
     <section id="ui-zone" aria-label="연구실 인터페이스">
@@ -461,11 +582,11 @@
         </div>
 
         <div class="content">
-          <div id="t0-text">스크린을 확인하시겠습니까?</div>
+          <div id="t0-text" class="typed-target"></div>
 
           <div id="t0-choices">
-            <button class="t0-choice active" id="t0-yes" type="button">• 네</button>
-            <button class="t0-choice" id="t0-no" type="button">• 아니오</button>
+            <button class="t0-choice typed-target" id="t0-yes" type="button"></button>
+            <button class="t0-choice typed-target" id="t0-no" type="button"></button>
           </div>
         </div>
       </section>
@@ -476,10 +597,10 @@
         </div>
 
         <div class="content">
-          <button class="t1-action" data-action="inspect" type="button">1. 조사한다</button>
-          <button class="t1-action" data-action="drop" type="button">2. 바닥으로 버린다.</button>
-          <button class="t1-action" data-action="peek" type="button">3. 안을 자세히 들여다 본다.</button>
-          <button class="t1-action" data-action="quit" type="button">4. 관둔다</button>
+          <button class="t1-action typed-target" data-action="inspect" type="button"></button>
+          <button class="t1-action typed-target" data-action="drop" type="button"></button>
+          <button class="t1-action typed-target" data-action="peek" type="button"></button>
+          <button class="t1-action typed-target" data-action="quit" type="button"></button>
         </div>
       </section>
 
@@ -494,13 +615,27 @@
   <script>
     const NO_ROOM_URL = "no-room.html";
 
+    const COPY = {
+      title: "Room- 11101011",
+      confirm: "확인",
+      question: "스크린을 확인하시겠습니까?",
+      yes: "• 네",
+      no: "• 아니오",
+      actions: [
+        "1. 조사한다",
+        "2. 바닥으로 버린다.",
+        "3. 안을 자세히 들여다 본다.",
+        "4. 관둔다"
+      ]
+    };
+
     const OBJECTS = [
       {
         id: "screen01",
         x: 16,
         y: 55,
-        buttonX: 29,
-        buttonY: 47,
+        buttonX: 16,
+        buttonY: 13,
         coverX: 10,
         coverY: 28,
         coverW: 12,
@@ -512,8 +647,8 @@
         id: "screen02",
         x: 50,
         y: 55,
-        buttonX: 63,
-        buttonY: 47,
+        buttonX: 50,
+        buttonY: 13,
         coverX: 44,
         coverY: 28,
         coverW: 12,
@@ -525,8 +660,8 @@
         id: "screen03",
         x: 84,
         y: 55,
-        buttonX: 89,
-        buttonY: 47,
+        buttonX: 84,
+        buttonY: 13,
         coverX: 78,
         coverY: 28,
         coverW: 12,
@@ -538,27 +673,35 @@
 
     const $ = (selector) => document.querySelector(selector);
 
+    const roomTitle = $("#room-title");
     const player = $("#player");
     const confirmButton = $("#confirm-button");
     const stageEffects = $("#stage-effects");
+
     const t0Panel = $("#t0-panel");
     const t1Panel = $("#t1-panel");
     const t0Text = $("#t0-text");
     const t0Choices = $("#t0-choices");
     const t0Yes = $("#t0-yes");
     const t0No = $("#t0-no");
+
     const joystickBase = $("#joystick-base");
     const joystickKnob = $("#joystick-knob");
     const cutOverlay = $("#cut-overlay");
-    const actionButtons = [...document.querySelectorAll(".t1-action")];
+
+    const actionButtons = [
+      ...document.querySelectorAll(".t1-action")
+    ];
 
     const state = {
       mode: "free",
       playerX: 50,
       playerY: 76,
       activeId: null,
+      confirmId: null,
       selectedQuestion: "yes",
-      removed: new Set()
+      removed: new Set(),
+      textScene: 0
     };
 
     const keys = {
@@ -582,6 +725,182 @@
 
     const distance = (a, b, c, d) =>
       Math.hypot(a - c, b - d);
+
+    function stopTyping(element) {
+      element._typingToken = (element._typingToken || 0) + 1;
+
+      if (element._typingTimer) {
+        clearTimeout(element._typingTimer);
+      }
+
+      element.classList.remove("typing");
+    }
+
+    function triggerTextResponse(element) {
+      const host = element.closest(
+        "#t0-panel, #t1-panel, #confirm-button, .room-title"
+      );
+
+      if (!host) {
+        return;
+      }
+
+      host.classList.remove("text-response");
+
+      void host.offsetWidth;
+
+      host.classList.add("text-response");
+
+      window.setTimeout(() => {
+        host.classList.remove("text-response");
+      }, 360);
+    }
+
+    function typeText(element, text, options = {}) {
+      stopTyping(element);
+
+      const token = element._typingToken;
+      const speed = options.speed ?? 56;
+      const startDelay = options.startDelay ?? 0;
+      const chars = Array.from(text);
+
+      element.textContent = "";
+      element.setAttribute("aria-label", text.replace(/\n/g, " "));
+      element.classList.add("typing");
+
+      triggerTextResponse(element);
+
+      let index = 0;
+
+      function next() {
+        if (element._typingToken !== token) {
+          return;
+        }
+
+        if (index >= chars.length) {
+          element.classList.remove("typing");
+
+          if (typeof options.onComplete === "function") {
+            options.onComplete();
+          }
+
+          return;
+        }
+
+        const character = chars[index];
+
+        if (character === "\n") {
+          element.append(document.createElement("br"));
+        } else {
+          const span = document.createElement("span");
+
+          span.className = "typed-char";
+          span.textContent = character === " " ? "\u00A0" : character;
+          span.style.setProperty(
+            "--pulse-delay",
+            `${((index % 8) * 0.07).toFixed(2)}s`
+          );
+
+          element.append(span);
+        }
+
+        index += 1;
+
+        let delay =
+          speed +
+          Math.round((Math.random() - 0.5) * 28);
+
+        if (/[.,?!]/.test(character)) {
+          delay += 90;
+        }
+
+        element._typingTimer = window.setTimeout(
+          next,
+          Math.max(30, delay)
+        );
+      }
+
+      element._typingTimer = window.setTimeout(next, startDelay);
+    }
+
+    function stopPanelTyping() {
+      state.textScene += 1;
+
+      stopTyping(t0Text);
+      stopTyping(t0Yes);
+      stopTyping(t0No);
+
+      actionButtons.forEach((button) => {
+        stopTyping(button);
+      });
+    }
+
+    function typeQuestion() {
+      const scene = ++state.textScene;
+
+      stopTyping(t0Text);
+      stopTyping(t0Yes);
+      stopTyping(t0No);
+
+      t0Yes.disabled = true;
+      t0No.disabled = true;
+
+      typeText(t0Text, COPY.question, {
+        speed: 60,
+        onComplete: () => {
+          if (scene !== state.textScene) {
+            return;
+          }
+
+          typeText(t0Yes, COPY.yes, {
+            speed: 68,
+            onComplete: () => {
+              if (scene === state.textScene) {
+                t0Yes.disabled = false;
+              }
+            }
+          });
+
+          window.setTimeout(() => {
+            if (scene !== state.textScene) {
+              return;
+            }
+
+            typeText(t0No, COPY.no, {
+              speed: 68,
+              onComplete: () => {
+                if (scene === state.textScene) {
+                  t0No.disabled = false;
+                }
+              }
+            });
+          }, 150);
+        }
+      });
+    }
+
+    function typeActions() {
+      const scene = ++state.textScene;
+      let delay = 0;
+
+      actionButtons.forEach((button, index) => {
+        button.disabled = true;
+
+        const label = COPY.actions[index];
+
+        typeText(button, label, {
+          speed: 52,
+          startDelay: delay,
+          onComplete: () => {
+            if (scene === state.textScene) {
+              button.disabled = false;
+            }
+          }
+        });
+
+        delay += label.length * 52 + 120;
+      });
+    }
 
     function updatePlayer() {
       player.style.left = `${state.playerX}%`;
@@ -645,6 +964,61 @@
       }
     }
 
+    function showConfirm(item) {
+      confirmButton.style.left = `${item.buttonX}%`;
+      confirmButton.style.top = `${item.buttonY}%`;
+
+      const isNew =
+        confirmButton.hidden ||
+        state.confirmId !== item.id;
+
+      state.confirmId = item.id;
+
+      if (confirmButton.hidden) {
+        confirmButton.hidden = false;
+      }
+
+      requestAnimationFrame(() => {
+        confirmButton.classList.add("visible");
+      });
+
+      if (isNew) {
+        typeText(confirmButton, COPY.confirm, {
+          speed: 80
+        });
+      }
+    }
+
+    function hideConfirm(immediate = false) {
+      if (confirmButton.hidden) {
+        return;
+      }
+
+      state.confirmId = null;
+      confirmButton.classList.remove("visible");
+
+      if (immediate) {
+        confirmButton.hidden = true;
+        stopTyping(confirmButton);
+        return;
+      }
+
+      const hideToken =
+        (confirmButton._hideToken || 0) + 1;
+
+      confirmButton._hideToken = hideToken;
+
+      window.setTimeout(() => {
+        if (
+          confirmButton._hideToken === hideToken &&
+          !confirmButton.classList.contains("visible")
+        ) {
+          confirmButton.hidden = true;
+          stopTyping(confirmButton);
+        }
+      }, 360);
+    }
+
     function updateConfirm() {
       const item =
         state.mode === "free"
@@ -652,25 +1026,27 @@
           : null;
 
       if (!item) {
-        confirmButton.hidden = true;
+        hideConfirm();
         return;
       }
 
-      confirmButton.hidden = false;
-      confirmButton.style.left = `${item.buttonX}%`;
-      confirmButton.style.top = `${item.buttonY}%`;
+      showConfirm(item);
     }
 
     function closeAllPanels() {
       state.mode = "free";
       state.activeId = null;
 
+      stopPanelTyping();
+
       t0Panel.hidden = true;
       t1Panel.hidden = true;
       t0Panel.classList.remove("is-message");
 
       t0Choices.hidden = false;
-      t0Text.textContent = "스크린을 확인하시겠습니까?";
+      t0Text.textContent = "";
+      t0Yes.textContent = "";
+      t0No.textContent = "";
 
       updateConfirm();
     }
@@ -680,14 +1056,16 @@
       state.activeId = item.id;
       state.selectedQuestion = "yes";
 
+      hideConfirm(true);
+
       t0Panel.classList.remove("is-message");
-      t0Text.textContent = "스크린을 확인하시겠습니까?";
       t0Choices.hidden = false;
+
       t0Panel.hidden = false;
       t1Panel.hidden = true;
-      confirmButton.hidden = true;
 
       updateQuestionSelection();
+      typeQuestion();
     }
 
     function openT1Actions() {
@@ -696,21 +1074,30 @@
       }
 
       state.mode = "actions";
+
       t0Panel.hidden = false;
       t1Panel.hidden = false;
+
+      typeActions();
     }
 
     function showMessage(text) {
       state.mode = "message";
 
-      /*
-        선택지 결과 설명은 반드시 T0에 표시
-      */
-      t0Text.textContent = text;
+      state.textScene += 1;
+
+      stopTyping(t0Text);
+      stopTyping(t0Yes);
+      stopTyping(t0No);
+
       t0Panel.classList.add("is-message");
       t0Choices.hidden = true;
       t0Panel.hidden = false;
       t1Panel.hidden = false;
+
+      typeText(t0Text, text, {
+        speed: 56
+      });
     }
 
     function answerQuestion(answer) {
@@ -820,7 +1207,9 @@
       joystick.active = false;
       joystick.x = 0;
       joystick.y = 0;
-      joystickKnob.style.transform = "translate(-50%, -50%)";
+
+      joystickKnob.style.transform =
+        "translate(-50%, -50%)";
     }
 
     confirmButton.addEventListener("click", () => {
@@ -847,7 +1236,9 @@
 
     joystickBase.addEventListener("pointerdown", (event) => {
       joystick.active = true;
+
       joystickBase.setPointerCapture(event.pointerId);
+
       setJoystick(event.clientX, event.clientY);
     });
 
@@ -860,9 +1251,6 @@
     joystickBase.addEventListener("pointerup", resetJoystick);
     joystickBase.addEventListener("pointercancel", resetJoystick);
 
-    /*
-      설명을 읽은 뒤에는 아무 화면이나 터치하면 평상시로 복귀
-    */
     document.addEventListener("pointerdown", () => {
       if (state.mode === "message") {
         closeAllPanels();
@@ -881,6 +1269,7 @@
         "a",
         "s",
         "d",
+        "e",
         "enter",
         " ",
         "1",
@@ -908,6 +1297,18 @@
 
       if (key === "arrowright" || key === "d") {
         keys.right = true;
+      }
+
+      if (state.mode === "free") {
+        if (key === "e" || key === "enter") {
+          const item = nearestObject();
+
+          if (item) {
+            openT0Question(item);
+          }
+        }
+
+        return;
       }
 
       if (state.mode === "question") {
@@ -979,6 +1380,7 @@
 
       if (state.mode === "free") {
         const vector = moveVector();
+
         const moving =
           vector.x !== 0 ||
           vector.y !== 0;
@@ -1008,6 +1410,10 @@
 
       requestAnimationFrame(loop);
     }
+
+    typeText(roomTitle, COPY.title, {
+      speed: 72
+    });
 
     updatePlayer();
     renderRemoved();
