@@ -87,13 +87,18 @@
     }
 
     /*
-      ??? 글자는 지웠지만, 아래 빈 높이로 원래 대사 위치는 그대로 유지함.
+      ★★★ 여기예요 여기!!! ★★★
+      대화창 위 이름의 글자 모양을 정하는 곳.
+      실제 이름은 아래 HTML의 <p id="speaker">???</p> 안에서 바꿔줘.
     */
     #speaker {
-      height: clamp(0.98rem, 4vw, 1.35rem);
       margin: 0 0 9px;
+      color: #ffffff;
+      font-size: clamp(0.98rem, 4vw, 1.35rem);
+      font-weight: 400;
+      letter-spacing: 0.08em;
       line-height: 1;
-      visibility: hidden;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.42);
     }
 
     #dialogue-text {
@@ -111,9 +116,6 @@
       white-space: pre-wrap;
     }
 
-    /*
-      부드러운 페이드 대신 짧게 잘리며 끊겨 사라지는 퇴장 연출.
-    */
     #dialogue-text.fading {
       animation: dialogue-out 0.17s steps(4, end) both;
     }
@@ -182,7 +184,6 @@
       }
     }
 
-    /* 글자마다 서로 다른 아주 작은 독립 떨림. */
     .tremble-char {
       display: inline-block;
       min-width: 0.01em;
@@ -273,8 +274,9 @@
       <img id="object-art" alt="" />
     </div>
 
-    <section id="dialogue-panel" aria-label="대화">
-      <p id="speaker" aria-hidden="true">&nbsp;</p>
+    <section id="dialogue-panel" aria-label="???의 대화">
+      <!-- ★★★ 여기예요 여기!!! 아래 ???를 원하는 이름으로 바꿔줘. 예: 창문 너머의 목소리 ★★★ -->
+      <p id="speaker">???</p>
       <p id="dialogue-text" aria-live="polite"></p>
       <p id="advance-mark" aria-hidden="true">▼</p>
     </section>
@@ -309,10 +311,10 @@
       openingDelay: 420,
       characterDelay: 57,
 
-      // 공백마다 생기는 기본 단어 멈춤. 기존보다 0.1초 느리게 조정함.
+      // 공백마다 생기는 기본 단어 멈춤.
       wordPause: 250,
 
-      // 마침표·쉼표·물음표 뒤 기본 멈춤도 같은 결로 조금 늘림.
+      // 마침표·쉼표·물음표 뒤 기본 멈춤.
       punctuationPause: 250,
 
       // 텍스트가 뚝뚝 끊기며 사라지는 시간.
