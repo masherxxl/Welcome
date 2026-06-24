@@ -43,15 +43,15 @@
     }
 
     #app {
-      width: 100%;
+      width: min(100%, 520px);
       margin: 0 auto;
-      padding: 18px 14px 28px;
+      padding: 18px 14px 30px;
     }
 
     .room-title {
       margin: 0 0 18px;
       color: #c8c8d4;
-      font-size: clamp(18px, 5.2vw, 32px);
+      font-size: clamp(18px, 5.2vw, 30px);
       font-weight: 400;
       line-height: 1;
       letter-spacing: 0.03em;
@@ -59,12 +59,12 @@
 
     /*
       연구실 배경
-      화면을 넓게 쓰고, 이미지도 살짝 확대
+      cover + scale로 원본보다 조금 크게 보이게 처리
     */
     #room-stage {
       position: relative;
       width: 100%;
-      aspect-ratio: 1.53 / 1;
+      aspect-ratio: 1.52 / 1;
       overflow: hidden;
       background: #000000;
     }
@@ -74,27 +74,24 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: fill;
-      transform: scale(1.05);
-      transform-origin: center;
+      object-fit: cover;
+      object-position: 50% 49%;
+      transform: scale(1.13);
       image-rendering: pixelated;
       pointer-events: none;
       user-select: none;
     }
 
-    /*
-      플레이어
-    */
     #player {
       position: absolute;
       left: 50%;
       top: 76%;
-      z-index: 4;
+      z-index: 2;
       width: 5.4%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
       pointer-events: none;
-      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.58));
     }
 
     #player::before {
@@ -152,174 +149,153 @@
     }
 
     /*
-      시작 화면의 작은 조이스틱 위치
+      이 영역은 처음부터 같은 크기를 유지함.
+      T0, T1, 조이스틱은 위치가 절대 바뀌지 않고
+      보이거나 숨겨지기만 함.
     */
-    #stage-controller-slot {
-      position: absolute;
-      right: 2.5%;
-      bottom: 3%;
-      z-index: 8;
-      width: clamp(72px, 19vw, 108px);
-      aspect-ratio: 1 / 1;
+    #ui-zone {
+      position: relative;
+      width: 100%;
+      height: clamp(300px, 88vw, 455px);
+      margin-top: 18px;
     }
 
     /*
-      T1
-      파일명: T1.png
-      PNG 투명 여백을 CSS로 잘라 실제 테두리만 사용
+      T1 = 4개 행동 선택창
+      T0에서 네를 눌렀을 때만 표시
     */
-    #main-dialog {
-      position: relative;
+    #t1-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      aspect-ratio: 2.58 / 1;
-      margin-top: 20px;
+      aspect-ratio: 2470 / 1271;
       overflow: hidden;
     }
 
-    #main-dialog .frame-crop {
+    #t1-panel .frame-crop,
+    #t0-panel .frame-crop {
       position: absolute;
       inset: 0;
       overflow: hidden;
+      pointer-events: none;
     }
 
-    #main-dialog .frame-crop img {
+    #t1-panel .frame-crop img {
       position: absolute;
       left: -7.17%;
       top: -14.71%;
       width: 115.71%;
       height: 129.9%;
       max-width: none;
-      pointer-events: none;
-      user-select: none;
       image-rendering: pixelated;
-    }
-
-    #main-dialog .content {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 25%;
-      gap: 3%;
-      padding: 17% 8% 13% 7%;
-    }
-
-    #main-text {
-      align-self: start;
-      font-size: clamp(15px, 4.05vw, 29px);
-      line-height: 1.25;
-      letter-spacing: 0.01em;
-      white-space: pre-wrap;
-      word-break: keep-all;
-    }
-
-    #choice-column {
-      align-self: start;
-      display: grid;
-      gap: 19%;
-      padding-top: 1%;
-    }
-
-    .yn-choice {
-      border: 0;
-      background: transparent;
-      color: #ffffff;
-      padding: 0;
-      font-size: clamp(15px, 4.05vw, 29px);
-      line-height: 1.1;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .yn-choice.active {
-      transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.72);
-    }
-
-    /*
-      T0 넓게 + 조이스틱 작게
-    */
-    #bottom-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 34%;
-      gap: 16px;
-      align-items: end;
-      margin-top: 14px;
-    }
-
-    /*
-      T0
-      파일명: T0.PNG
-    */
-    #action-dialog {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 2.08 / 1;
-      overflow: hidden;
-    }
-
-    #action-dialog .frame-crop {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-
-    #action-dialog .frame-crop img {
-      position: absolute;
-      left: -3.88%;
-      top: -11.44%;
-      width: 108.77%;
-      height: 121.98%;
-      max-width: none;
-      pointer-events: none;
       user-select: none;
-      image-rendering: pixelated;
     }
 
-    #action-dialog .content {
+    #t1-panel .content {
       position: absolute;
       inset: 0;
       display: grid;
       align-content: start;
-      gap: 5.5%;
-      padding: 13% 8% 11%;
+      gap: 6.2%;
+      padding: 13.2% 10% 11%;
     }
 
-    .action-btn {
-      display: block;
+    .t1-action {
       width: max-content;
       max-width: 100%;
       border: 0;
       background: transparent;
       color: #ffffff;
       padding: 0;
-      font-size: clamp(12px, 3.45vw, 25px);
-      line-height: 1.02;
+      font-size: clamp(13px, 3.55vw, 24px);
+      line-height: 1.04;
       text-align: left;
       white-space: nowrap;
       cursor: pointer;
     }
 
-    .action-btn:focus-visible,
-    .action-btn:active {
+    .t1-action:active,
+    .t1-action:focus-visible {
       outline: 0;
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.75);
-    }
-
-    #bottom-controller-slot {
-      position: relative;
-      aspect-ratio: 1 / 1;
-      min-width: 0;
-      min-height: 0;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.78);
     }
 
     /*
-      실제 조이스틱 패널
-      설명 텍스트는 넣지 않음
+      T0 = 네 / 아니오 질문창
+      A 조사 버튼을 눌렀을 때만 표시
+    */
+    #t0-panel {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 73%;
+      aspect-ratio: 4355 / 1774;
+      overflow: hidden;
+    }
+
+    #t0-panel .frame-crop img {
+      position: absolute;
+      left: -3.88%;
+      top: -11.44%;
+      width: 108.77%;
+      height: 121.98%;
+      max-width: none;
+      image-rendering: pixelated;
+      user-select: none;
+    }
+
+    #t0-panel .content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 25%;
+      gap: 3%;
+      padding: 16% 9% 13% 8%;
+    }
+
+    #t0-question {
+      align-self: start;
+      color: #ffffff;
+      font-size: clamp(11px, 3.15vw, 21px);
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    #t0-choices {
+      display: grid;
+      align-content: start;
+      gap: 20%;
+      padding-top: 1%;
+    }
+
+    .t0-choice {
+      width: max-content;
+      border: 0;
+      background: transparent;
+      color: #ffffff;
+      padding: 0;
+      font-size: clamp(11px, 3.1vw, 21px);
+      line-height: 1.1;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .t0-choice.active {
+      transform: translateX(2px);
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.78);
+    }
+
+    /*
+      조이스틱: 항상 우하단 같은 자리
     */
     #controller {
       position: absolute;
-      inset: 0;
+      right: 0;
+      bottom: 0;
+      width: 23%;
+      aspect-ratio: 1 / 1;
       overflow: hidden;
       border: 2px solid rgba(142, 162, 255, 0.88);
       background: linear-gradient(#080814, #000000);
@@ -341,23 +317,22 @@
       position: absolute;
       inset: 0;
       display: grid;
-      grid-template-columns: 1fr;
       grid-template-rows: auto 1fr;
       align-items: center;
       justify-items: center;
-      padding: 10% 12% 9%;
-      gap: 7%;
+      padding: 10% 13% 10%;
+      gap: 8%;
     }
 
     #interact-button {
-      width: 43%;
-      min-width: 32px;
+      width: 44%;
+      min-width: 28px;
       aspect-ratio: 1 / 0.72;
       border: 1px solid var(--blue);
       background: #06060c;
       color: #ffffff;
       padding: 0;
-      font-size: clamp(11px, 3.1vw, 20px);
+      font-size: clamp(10px, 2.9vw, 19px);
       line-height: 1;
       cursor: pointer;
     }
@@ -366,7 +341,7 @@
       position: relative;
       align-self: end;
       width: 77%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1;
       border: 2px solid rgba(142, 162, 255, 0.8);
       border-radius: 50%;
       background:
@@ -391,7 +366,7 @@
       left: 50%;
       top: 50%;
       width: 43%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1;
       border: 2px solid #090a10;
       border-radius: 50%;
       background:
@@ -405,13 +380,31 @@
       pointer-events: none;
     }
 
+    #info-note {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-content: center;
+      padding: 14% 10%;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.72);
+      font-size: clamp(13px, 3.4vw, 22px);
+      line-height: 1.28;
+      white-space: pre-wrap;
+      cursor: pointer;
+    }
+
+    #info-note.show {
+      display: grid;
+    }
+
     #cut-overlay {
       position: fixed;
       inset: 0;
-      z-index: 99;
-      background: #000000;
+      z-index: 30;
       opacity: 0;
       pointer-events: none;
+      background: #000000;
     }
 
     #cut-overlay.active {
@@ -432,26 +425,29 @@
 
     @media (min-width: 700px) {
       #app {
-        width: min(92vw, 940px);
-        padding: 24px 24px 34px;
+        width: min(92vw, 960px);
+        padding: 24px 24px 36px;
       }
 
       .room-title {
-        margin-bottom: 22px;
         font-size: 32px;
       }
 
-      #stage-controller-slot {
-        width: min(18vw, 150px);
+      #ui-zone {
+        height: min(64vw, 615px);
       }
 
-      #main-text,
-      .yn-choice {
-        font-size: 30px;
-      }
-
-      .action-btn {
+      .t1-action {
         font-size: 24px;
+      }
+
+      #t0-question,
+      .t0-choice {
+        font-size: 21px;
+      }
+
+      #controller {
+        width: 20%;
       }
     }
 
@@ -460,17 +456,21 @@
         padding-inline: 10px;
       }
 
-      #bottom-row {
-        gap: 10px;
+      #ui-zone {
+        height: 300px;
       }
 
-      .action-btn {
-        font-size: 11px;
+      .t1-action {
+        font-size: 12px;
       }
 
-      #main-text,
-      .yn-choice {
-        font-size: 14px;
+      #t0-question,
+      .t0-choice {
+        font-size: 10px;
+      }
+
+      #controller {
+        width: 24%;
       }
     }
   </style>
@@ -483,70 +483,68 @@
     <section id="room-stage" aria-label="미니 연구실">
       <img id="room-bg" src="./room-bg.png" alt="">
       <div id="player" aria-hidden="true"></div>
-
-      <div id="stage-controller-slot"></div>
     </section>
 
-    <!-- T1: 1. 확인한다를 누른 뒤에만 표시 -->
-    <section id="main-dialog" hidden aria-live="polite">
-      <div class="frame-crop">
-        <img src="./T1.png" alt="">
-      </div>
+    <section id="ui-zone" aria-label="연구실 조작 인터페이스">
+      <section id="t1-panel" hidden aria-label="행동 선택">
+        <div class="frame-crop">
+          <img src="./T1.png" alt="">
+        </div>
 
-      <div class="content">
-        <div id="main-text"></div>
-
-        <div id="choice-column" hidden>
-          <button class="yn-choice active" id="choice-yes" type="button">
-            • 네
+        <div class="content" id="t1-actions">
+          <button class="t1-action" data-action="inspect" type="button">
+            1. 조사한다
           </button>
 
-          <button class="yn-choice" id="choice-no" type="button">
-            • 아니오
+          <button class="t1-action" data-action="drop" type="button">
+            2. 바닥으로 버린다.
+          </button>
+
+          <button class="t1-action" data-action="peek" type="button">
+            3. 안을 자세히 들여다 본다.
+          </button>
+
+          <button class="t1-action" data-action="quit" type="button">
+            4. 관둔다
           </button>
         </div>
-      </div>
-    </section>
 
-    <!-- T0: A 버튼으로 조사했을 때만 표시 -->
-    <section id="bottom-row" hidden aria-label="행동 선택">
-      <section id="action-dialog">
+        <div id="info-note" role="button" tabindex="0"></div>
+      </section>
+
+      <section id="t0-panel" hidden aria-label="스크린 확인 질문">
         <div class="frame-crop">
           <img src="./T0.PNG" alt="">
         </div>
 
         <div class="content">
-          <button class="action-btn" data-action="inspect" type="button">
-            1. 확인한다
-          </button>
+          <div id="t0-question">
+            스크린을 확인하시겠습니까?
+          </div>
 
-          <button class="action-btn" data-action="drop" type="button">
-            2. 바닥으로 버린다.
-          </button>
+          <div id="t0-choices">
+            <button class="t0-choice active" id="t0-yes" type="button">
+              • 네
+            </button>
 
-          <button class="action-btn" data-action="peek" type="button">
-            3. 안을 자세히 들여다 본다.
-          </button>
-
-          <button class="action-btn" data-action="back" type="button">
-            4. 돌아간다
-          </button>
+            <button class="t0-choice" id="t0-no" type="button">
+              • 아니오
+            </button>
+          </div>
         </div>
       </section>
 
-      <div id="bottom-controller-slot"></div>
-    </section>
+      <section id="controller" aria-label="조작 패널">
+        <div class="controller-inner">
+          <button id="interact-button" type="button" aria-label="조사">
+            A
+          </button>
 
-    <section id="controller" aria-label="조작 패널">
-      <div class="controller-inner">
-        <button id="interact-button" type="button" aria-label="조사">
-          A
-        </button>
-
-        <div id="joystick-base" aria-label="이동 조이스틱">
-          <div id="joystick-knob"></div>
+          <div id="joystick-base" aria-label="이동 조이스틱">
+            <div id="joystick-knob"></div>
+          </div>
         </div>
-      </div>
+      </section>
     </section>
   </main>
 
@@ -581,25 +579,19 @@
 
     const $ = (selector) => document.querySelector(selector);
 
-    const stageControllerSlot = $("#stage-controller-slot");
-    const bottomControllerSlot = $("#bottom-controller-slot");
-    const controller = $("#controller");
-
     const player = $("#player");
-    const mainDialog = $("#main-dialog");
-    const mainText = $("#main-text");
-    const choiceColumn = $("#choice-column");
-    const choiceYes = $("#choice-yes");
-    const choiceNo = $("#choice-no");
-
-    const bottomRow = $("#bottom-row");
+    const t0Panel = $("#t0-panel");
+    const t1Panel = $("#t1-panel");
+    const t0Yes = $("#t0-yes");
+    const t0No = $("#t0-no");
+    const infoNote = $("#info-note");
     const interactButton = $("#interact-button");
     const joystickBase = $("#joystick-base");
     const joystickKnob = $("#joystick-knob");
     const cutOverlay = $("#cut-overlay");
 
     const actionButtons = [
-      ...document.querySelectorAll(".action-btn")
+      ...document.querySelectorAll(".t1-action")
     ];
 
     const state = {
@@ -607,7 +599,7 @@
       playerX: 50,
       playerY: 75,
       activeId: null,
-      selectedYN: "yes",
+      selectedQuestion: "yes",
       removed: new Set()
     };
 
@@ -633,17 +625,13 @@
     const distance = (a, b, c, d) =>
       Math.hypot(a - c, b - d);
 
-    function moveController(target) {
-      target.append(controller);
-    }
-
     function updatePlayer() {
       player.style.left = `${state.playerX}%`;
       player.style.top = `${state.playerY}%`;
     }
 
     function nearestObject() {
-      let closest = null;
+      let nearest = null;
       let shortest = Infinity;
 
       for (const item of OBJECTS) {
@@ -651,123 +639,112 @@
           continue;
         }
 
-        const currentDistance = distance(
+        const current = distance(
           state.playerX,
           state.playerY,
           item.x,
           item.y
         );
 
-        if (currentDistance < shortest) {
-          shortest = currentDistance;
-          closest = item;
+        if (current < shortest) {
+          shortest = current;
+          nearest = item;
         }
       }
 
-      return shortest <= 12 ? closest : null;
+      return shortest <= 12 ? nearest : null;
     }
 
-    function updateYN() {
-      choiceYes.classList.toggle(
+    function updateQuestionSelection() {
+      t0Yes.classList.toggle(
         "active",
-        state.selectedYN === "yes"
+        state.selectedQuestion === "yes"
       );
 
-      choiceNo.classList.toggle(
+      t0No.classList.toggle(
         "active",
-        state.selectedYN === "no"
+        state.selectedQuestion === "no"
       );
     }
 
-    function closePanels() {
+    function closeAllPanels() {
       state.mode = "free";
       state.activeId = null;
 
-      mainDialog.hidden = true;
-      bottomRow.hidden = true;
-      choiceColumn.hidden = true;
-
-      moveController(stageControllerSlot);
+      t0Panel.hidden = true;
+      t1Panel.hidden = true;
+      infoNote.classList.remove("show");
     }
 
-    function openActionMenu(item) {
-      state.mode = "action";
-      state.activeId = item.id;
-
-      mainDialog.hidden = true;
-      choiceColumn.hidden = true;
-      bottomRow.hidden = false;
-
-      moveController(bottomControllerSlot);
-    }
-
-    function openQuestion(item) {
+    function openT0Question(item) {
       state.mode = "question";
       state.activeId = item.id;
-      state.selectedYN = "yes";
+      state.selectedQuestion = "yes";
 
-      mainText.textContent = "스크린을 확인하시겠습니까?";
+      t0Panel.hidden = false;
+      t1Panel.hidden = true;
+      infoNote.classList.remove("show");
 
-      choiceColumn.hidden = false;
-      mainDialog.hidden = false;
-      bottomRow.hidden = false;
-
-      moveController(bottomControllerSlot);
-      updateYN();
+      updateQuestionSelection();
     }
 
-    function openMessage(text) {
-      state.mode = "message";
+    function openT1Actions() {
+      if (!state.activeId) {
+        return;
+      }
 
-      mainText.textContent = text;
+      state.mode = "actions";
 
-      choiceColumn.hidden = true;
-      mainDialog.hidden = false;
-      bottomRow.hidden = false;
-
-      moveController(bottomControllerSlot);
+      /*
+        T0는 그대로 유지.
+        T1만 추가로 표시.
+      */
+      t0Panel.hidden = false;
+      t1Panel.hidden = false;
+      infoNote.classList.remove("show");
     }
 
-    function chooseYN(value) {
+    function openInfo(text) {
+      state.mode = "info";
+      infoNote.textContent =
+        `${text}\n\n누르면 행동 목록으로 돌아갑니다.`;
+
+      infoNote.classList.add("show");
+    }
+
+    function closeInfo() {
+      infoNote.classList.remove("show");
+      state.mode = "actions";
+    }
+
+    function answerQuestion(answer) {
       if (state.mode !== "question") {
         return;
       }
 
-      const item = byId(state.activeId);
-
-      if (!item) {
-        closePanels();
-        return;
-      }
-
-      if (value === "yes") {
-        openMessage(item.description);
+      if (answer === "yes") {
+        openT1Actions();
       } else {
-        openActionMenu(item);
+        closeAllPanels();
       }
     }
 
-    function runAction(action) {
+    function runT1Action(action) {
       const item = byId(state.activeId);
 
-      if (action === "back") {
-        closePanels();
-        return;
-      }
-
       if (!item) {
-        closePanels();
+        closeAllPanels();
         return;
       }
 
       if (action === "inspect") {
-        openQuestion(item);
+        openInfo(item.description);
         return;
       }
 
       if (action === "drop") {
         state.removed.add(item.id);
-        openMessage("스크린을 바닥으로 버렸다.");
+        openInfo("스크린을 바닥으로 버렸다.");
         return;
       }
 
@@ -778,32 +755,42 @@
         window.setTimeout(() => {
           window.location.href = NO_ROOM_URL;
         }, 240);
+
+        return;
+      }
+
+      if (action === "quit") {
+        closeAllPanels();
       }
     }
 
     function interact() {
       if (state.mode === "question") {
-        chooseYN(state.selectedYN);
+        answerQuestion(state.selectedQuestion);
         return;
       }
 
-      if (state.mode === "message") {
-        closePanels();
+      if (state.mode === "info") {
+        closeInfo();
         return;
       }
 
-      if (state.mode === "action") {
+      if (state.mode === "actions") {
+        return;
+      }
+
+      if (state.mode !== "free") {
         return;
       }
 
       const item = nearestObject();
 
       if (item) {
-        openActionMenu(item);
+        openT0Question(item);
       }
     }
 
-    function getMoveVector() {
+    function currentMoveVector() {
       if (joystick.active) {
         return {
           x: joystick.x,
@@ -811,19 +798,19 @@
         };
       }
 
-      const rawX =
+      const x =
         (keys.right ? 1 : 0) -
         (keys.left ? 1 : 0);
 
-      const rawY =
+      const y =
         (keys.down ? 1 : 0) -
         (keys.up ? 1 : 0);
 
-      const length = Math.hypot(rawX, rawY) || 1;
+      const length = Math.hypot(x, y) || 1;
 
       return {
-        x: rawX / length,
-        y: rawY / length
+        x: x / length,
+        y: y / length
       };
     }
 
@@ -832,7 +819,6 @@
 
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-
       const maxRadius = rect.width * 0.28;
 
       const dx = clientX - centerX;
@@ -883,30 +869,32 @@
 
     interactButton.addEventListener("click", interact);
 
+    t0Yes.addEventListener("click", () => {
+      answerQuestion("yes");
+    });
+
+    t0No.addEventListener("click", () => {
+      answerQuestion("no");
+    });
+
+    infoNote.addEventListener("click", closeInfo);
+
+    infoNote.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        closeInfo();
+      }
+    });
+
     actionButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        runAction(button.dataset.action);
+        runT1Action(button.dataset.action);
       });
-    });
-
-    choiceYes.addEventListener("click", () => {
-      chooseYN("yes");
-    });
-
-    choiceNo.addEventListener("click", () => {
-      chooseYN("no");
-    });
-
-    mainDialog.addEventListener("click", () => {
-      if (state.mode === "message") {
-        closePanels();
-      }
     });
 
     document.addEventListener("keydown", (event) => {
       const key = event.key.toLowerCase();
 
-      const controlledKeys = [
+      const controlled = [
         "arrowup",
         "arrowdown",
         "arrowleft",
@@ -916,8 +904,8 @@
         "s",
         "d",
         "e",
-        " ",
         "enter",
+        " ",
         "1",
         "2",
         "3",
@@ -925,7 +913,7 @@
         "escape"
       ];
 
-      if (controlledKeys.includes(key)) {
+      if (controlled.includes(key)) {
         event.preventDefault();
       }
 
@@ -945,46 +933,54 @@
         keys.right = true;
       }
 
-      if (key === "e" || key === "enter") {
-        interact();
-      }
-
       if (state.mode === "question") {
         if (key === "arrowup" || key === "arrowleft") {
-          state.selectedYN = "yes";
-          updateYN();
+          state.selectedQuestion = "yes";
+          updateQuestionSelection();
         }
 
         if (key === "arrowdown" || key === "arrowright") {
-          state.selectedYN = "no";
-          updateYN();
+          state.selectedQuestion = "no";
+          updateQuestionSelection();
         }
 
-        if (key === " ") {
-          chooseYN(state.selectedYN);
+        if (key === "enter" || key === " ") {
+          answerQuestion(state.selectedQuestion);
         }
+
+        return;
       }
 
-      if (state.mode === "action") {
+      if (state.mode === "actions") {
         if (key === "1") {
-          runAction("inspect");
+          runT1Action("inspect");
         }
 
         if (key === "2") {
-          runAction("drop");
+          runT1Action("drop");
         }
 
         if (key === "3") {
-          runAction("peek");
+          runT1Action("peek");
         }
 
         if (key === "4" || key === "escape") {
-          runAction("back");
+          runT1Action("quit");
         }
+
+        return;
       }
 
-      if (state.mode === "message" && key === " ") {
-        closePanels();
+      if (state.mode === "info") {
+        if (key === "enter" || key === " " || key === "escape") {
+          closeInfo();
+        }
+
+        return;
+      }
+
+      if (key === "e" || key === "enter") {
+        interact();
       }
     });
 
@@ -1019,7 +1015,7 @@
       lastTime = now;
 
       if (state.mode === "free") {
-        const vector = getMoveVector();
+        const vector = currentMoveVector();
 
         const moving =
           vector.x !== 0 ||
@@ -1050,7 +1046,7 @@
     }
 
     updatePlayer();
-    closePanels();
+    closeAllPanels();
     requestAnimationFrame(loop);
   </script>
 </body>
