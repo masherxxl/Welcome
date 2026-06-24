@@ -72,8 +72,6 @@
       font: inherit;
     }
 
-    /* 이진 방에서 돌아올 때 01 화면이 잠깐 보이는 문제 차단 */
-
     html.returning-to-binary #entrance,
     html.returning-to-binary #comic {
       visibility: hidden !important;
@@ -91,10 +89,6 @@
     html.returning-to-binary #return-curtain {
       display: block;
     }
-
-    /* ========================================================
-       01 — 메인 화면
-       ======================================================== */
 
     #entrance {
       display: grid;
@@ -555,10 +549,6 @@
       }
     }
 
-    /* ========================================================
-       01 → 02 전환
-       ======================================================== */
-
     #blackout {
       position: fixed;
       inset: 0;
@@ -578,10 +568,6 @@
       transition: none !important;
     }
 
-    /* ========================================================
-       02 — 만화
-       ======================================================== */
-
     #comic {
       overflow: hidden;
       background: #000000;
@@ -590,16 +576,6 @@
     #comic[hidden] {
       display: none !important;
     }
-
-    /*
-      ========================================================
-      !!!!!!!!!! 여기에요 여기 !!!!!!!!!!
-      만화 블러 강도 / 속도
-
-      blur(18px) = 시작 흐림 강도
-      1.05s = 선명해지는 시간
-      ========================================================
-    */
 
     #comic > img {
       display: block;
@@ -640,10 +616,6 @@
         transform: scale(1);
       }
     }
-
-    /* ========================================================
-       검은 공백 + 이진수
-       ======================================================== */
 
     #binary-stage {
       position: relative;
@@ -849,15 +821,6 @@
         opacity: 1;
       }
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-      }
-    }
   </style>
 </head>
 
@@ -890,8 +853,8 @@
         class="binary-block block-1"
         role="button"
         tabindex="0"
-        data-destination="error.html"
-        aria-label="잘못된 방으로 이동"
+        data-destination="entity-room.html"
+        aria-label="개체의 방으로 이동"
       >
         <div class="binary-line">11101100 10010110 10110100</div>
         <div class="binary-line">11101100 10000100 10011100</div>
@@ -905,8 +868,8 @@
         class="binary-block block-2"
         role="button"
         tabindex="0"
-        data-destination="entity-room.html"
-        aria-label="개체의 방으로 이동"
+        data-destination="error.html"
+        aria-label="잘못된 방으로 이동"
       >
         <div class="binary-line">11101010 10110000 10000000</div>
         <div class="binary-line">11101100 10000011 10000001</div>
@@ -958,6 +921,34 @@
     const binaryStage = document.getElementById("binary-stage");
     const binaryBlocks = document.querySelectorAll(".binary-block");
 
+    const entityRoomBlock = document.querySelector(".block-1");
+    const entityRoomSessionKey = "welcome_entity_room_entered";
+
+    function hasEnteredEntityRoom() {
+      try {
+        return sessionStorage.getItem(entityRoomSessionKey) === "1";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function syncEntityRoomGate() {
+      if (!entityRoomBlock) {
+        return;
+      }
+
+      if (hasEnteredEntityRoom()) {
+        entityRoomBlock.dataset.destination = "error.html";
+        entityRoomBlock.setAttribute("aria-label", "잘못된 방으로 이동");
+      } else {
+        entityRoomBlock.dataset.destination = "entity-room.html";
+        entityRoomBlock.setAttribute("aria-label", "개체의 방으로 이동");
+      }
+    }
+
+    syncEntityRoomGate();
+    window.addEventListener("pageshow", syncEntityRoomGate);
+
     let storyHasStarted = false;
     let idleGlitchTimer;
 
@@ -994,11 +985,6 @@
       comic.hidden = false;
       comic.classList.remove("comic-focus-in");
 
-      /*
-        이 강제 리플로우가 핵심.
-        만화를 화면에 배치한 뒤 시작 프레임을 확정해서
-        blur(18px) → blur(0) 애니메이션이 반드시 보이게 함.
-      */
       void comic.offsetWidth;
 
       waitForComicImages(() => {
