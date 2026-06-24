@@ -1,967 +1,1070 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WELCOME</title>
-
-  <meta property="og:title" content="WELCOME" />
-  <meta property="og:description" content="YOU ARE ALREADY INSIDE." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://masherxxl.github.io/Welcome/" />
-  <meta property="og:image" content="https://masherxxl.github.io/Welcome/preview.png" />
-  <meta property="og:image:alt" content="WELCOME — black and white hand" />
-  <meta property="og:site_name" content="WELCOME" />
-
-  <script>
-    (function () {
-      const params = new URLSearchParams(location.search);
-
-      /* 마지막 암전 뒤, 같은 탭에서는 첫 화면으로 돌아오지 않게 함. */
-      try {
-        if (sessionStorage.getItem("welcome_no_room_trapped") === "1") {
-          document.documentElement.classList.add("no-room-locked");
-          location.replace("no-room.html");
-          return;
-        }
-      } catch (error) {}
-
-      if (params.get("return") === "binary") {
-        document.documentElement.classList.add("returning-to-binary");
-      }
-    })();
-  </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;500&display=swap" rel="stylesheet" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Room - 11101011</title>
 
   <style>
-    @font-face { font-family:"Computer Says No"; src:url("computer-says-no.woff2") format("woff2"); font-display:swap; }
-    @font-face { font-family:"DeterminationK2"; src:url("./DeterminationSansK2-FIX.woff2?v=11") format("woff2"),url("./DeterminationSansK2-FIX.woff?v=11") format("woff"); font-display:swap; }
+    @font-face {
+      font-family: "DeterminationK2";
+      src:
+        url("./DeterminationSansK2-FIX.woff2") format("woff2"),
+        url("./DeterminationSansK2-FIX.woff") format("woff");
+      font-display: swap;
+    }
 
-    * { box-sizing:border-box; }
+    :root {
+      --ink: #f8f8ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     html,
     body {
-      margin:0;
-      background:#000;
+      margin: 0;
+      min-height: 100%;
+      background: #000000;
+      color: var(--ink);
+      font-family: "DeterminationK2", monospace;
+      overflow-x: hidden;
     }
 
-    body {
-      overflow-x:hidden;
-      color:#fff;
-      font-family:Arial,sans-serif;
+    button {
+      font: inherit;
     }
 
-    button { font:inherit; }
-
-    html.returning-to-binary #entrance,
-    html.returning-to-binary #comic {
-      visibility:hidden!important;
+    [hidden] {
+      display: none !important;
     }
 
-    html.no-room-locked body {
-      visibility:hidden;
-      background:#000;
+    #app {
+      width: min(100%, 520px);
+      margin: 0 auto;
+      padding: 18px 14px 34px;
     }
 
-    #return-curtain {
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:999;
-      background:#000;
-      pointer-events:none;
+    .room-title {
+      margin: 0 0 18px;
+      color: #c8c8d4;
+      font-size: clamp(18px, 5.2vw, 30px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.03em;
     }
 
-    html.returning-to-binary #return-curtain {
-      display:block;
+    /*
+      연구실 배경
+    */
+    #room-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.52 / 1;
+      overflow: hidden;
+      background: #000000;
     }
 
-    #entrance {
-      min-height:100svh;
-      display:grid;
-      place-items:center;
-      padding:32px;
-      overflow:hidden;
-      background:#000;
-      text-align:center;
+    #room-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 49%;
+      transform: scale(1.17);
+      image-rendering: pixelated;
+      pointer-events: none;
+      user-select: none;
     }
 
-    #entrance[hidden],
-    #comic[hidden] {
-      display:none!important;
+    #stage-effects {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
     }
 
-    .entrance-content {
-      width:min(100%,500px);
+    .removed-cover {
+      position: absolute;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      background: #040407;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
     }
 
-    .question {
-      position:relative;
-      display:inline-block;
-      margin:0;
-      color:#f5f5f5;
-      font-family:"DeterminationK2",sans-serif;
-      font-size:clamp(1.56rem,6vw,2.62rem);
-      font-weight:400;
-      letter-spacing:.065em;
-      line-height:1.42;
-      transform-origin:center;
-      text-shadow:0 0 4px rgba(255,255,255,.88),0 0 13px rgba(255,255,255,.42);
+    /*
+      플레이어
+    */
+    #player {
+      position: absolute;
+      left: 50%;
+      top: 76%;
+      z-index: 2;
+      width: 5.5%;
+      aspect-ratio: 14 / 22;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+      pointer-events: none;
     }
 
-    .question::after {
-      content:"";
-      position:absolute;
-      top:50%;
-      left:50%;
-      width:0;
-      height:1px;
-      opacity:0;
-      background:#fff;
-      box-shadow:0 0 4px #fff,0 0 12px rgba(255,255,255,.95),0 0 28px rgba(255,255,255,.62);
-      transform:translate(-50%,-50%);
-      pointer-events:none;
-    }
-
-    #entrance.connection-arrived .question {
-      animation:connection-question .3s steps(2,end) both;
-    }
-
-    #entrance.connection-arrived .choice-label {
-      animation:connection-label .26s steps(2,end) both;
-    }
-
-    @keyframes connection-question {
-      0% { opacity:.82; transform:translate(-1px,1px); }
-      35% { opacity:1; transform:translate(1px,0); }
-      70% { transform:translate(-1px,0); }
-      100% { opacity:1; transform:translate(0); }
-    }
-
-    @keyframes connection-label {
-      0% { opacity:.76; transform:translate(1px,0); }
-      50% { opacity:1; transform:translate(-1px,0); }
-      100% { opacity:1; transform:translate(0); }
-    }
-
-    #entrance.idle-glitch .question {
-      animation:idle-question .14s steps(2,end) both;
-    }
-
-    #entrance.idle-glitch .choice-label {
-      animation:idle-label .12s steps(2,end) both;
-    }
-
-    @keyframes idle-question {
-      0%,100% { filter:brightness(1); transform:translate(0); clip-path:inset(0); }
-      35% { filter:brightness(1.8); transform:translate(-1px); clip-path:inset(0 0 52% 0); }
-      70% { filter:brightness(1.25); transform:translate(1px); clip-path:inset(48% 0 0); }
-    }
-
-    @keyframes idle-label {
-      0%,100% { transform:translate(0); clip-path:inset(0); }
-      45% { transform:translate(-1px); clip-path:inset(0 0 54% 0); }
-      75% { transform:translate(1px); clip-path:inset(46% 0 0); }
-    }
-
-    .choice-buttons {
-      display:flex;
-      justify-content:center;
-      gap:22px;
-      margin-top:32px;
-    }
-
-    .choice-button {
-      position:relative;
-      min-width:92px;
-      padding:12px 20px;
-      border:0;
-      overflow:visible;
-      background:#fff;
-      color:#fff;
-      cursor:pointer;
-      font-family:"DeterminationK2",sans-serif;
-      font-size:clamp(1.15rem,4.5vw,1.55rem);
-      letter-spacing:.08em;
-      transform-origin:center;
-      clip-path:polygon(0 6px,6px 6px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 6px),0 calc(100% - 6px));
-      filter:drop-shadow(0 0 3px rgba(255,255,255,.84)) drop-shadow(0 0 10px rgba(255,255,255,.22));
-    }
-
-    .choice-button::before {
-      content:"";
-      position:absolute;
-      inset:2px;
-      z-index:0;
-      background:#000;
-      clip-path:polygon(0 5px,5px 5px,5px 0,calc(100% - 5px) 0,calc(100% - 5px) 5px,100% 5px,100% calc(100% - 5px),calc(100% - 5px) calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,5px calc(100% - 5px),0 calc(100% - 5px));
-    }
-
-    .choice-button::after {
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:2;
-      opacity:0;
-      background:#fff;
-      clip-path:polygon(0 42%,100% 42%,100% 49%,0 49%);
-      pointer-events:none;
-    }
-
-    .choice-label {
-      position:relative;
-      z-index:3;
-      display:inline-block;
-      pointer-events:none;
-      text-shadow:0 0 4px rgba(255,255,255,.9),0 0 11px rgba(255,255,255,.34);
-    }
-
-    .choice-button:hover:not(:disabled) {
-      filter:drop-shadow(0 0 5px rgba(255,255,255,.96)) drop-shadow(0 0 16px rgba(255,255,255,.4));
-    }
-
-    .choice-button.disintegrating {
-      pointer-events:none;
-      animation:button-jitter .08s steps(2,end),button-cut .28s steps(2,end) .08s forwards;
-    }
-
-    .choice-button.disintegrating::before {
-      animation:inner-cut .24s steps(2,end) .08s forwards;
-    }
-
-    .choice-button.disintegrating::after {
-      animation:static-snap .16s steps(2,end) .08s forwards;
-    }
-
-    .choice-button.disintegrating .choice-label {
-      animation:label-shred .3s steps(3,end) .08s forwards;
-    }
-
-    @keyframes button-jitter {
-      0%,100% { transform:translate(0); }
-      33% { transform:translate(-1px,1px); }
-      66% { transform:translate(1px,0); }
-    }
-
-    @keyframes button-cut {
-      0% { background:#fff; filter:drop-shadow(0 0 4px rgba(255,255,255,.9)) drop-shadow(0 0 12px rgba(255,255,255,.36)); }
-      45% { background:#fff; filter:drop-shadow(-2px 0 0 rgba(255,255,255,.72)) drop-shadow(2px 0 0 rgba(255,255,255,.72)); }
-      100% { background:transparent; filter:none; }
-    }
-
-    @keyframes inner-cut {
-      0% { opacity:1; transform:translate(0); }
-      48% { opacity:.55; transform:translate(-3px,1px) scaleX(1.1); }
-      100% { opacity:0; transform:translate(7px,-1px) scaleX(.18); }
-    }
-
-    @keyframes static-snap {
-      0% { opacity:0; transform:translate(0); }
-      25% { opacity:1; transform:translate(-4px,0); }
-      100% { opacity:0; transform:translate(9px,0); }
-    }
-
-    @keyframes label-shred {
-      0% { opacity:1; transform:translate(0); }
-      28% { opacity:1; transform:translate(-2px,0); clip-path:inset(0 0 46% 0); }
-      58% { opacity:.72; transform:translate(5px,-1px); clip-path:inset(46% 0 0); }
-      100% { opacity:0; transform:translate(-12px,2px); clip-path:inset(0 0 100% 0); }
-    }
-
-    .static-fragment {
-      position:absolute;
-      z-index:4;
-      top:var(--top);
-      left:var(--left);
-      width:var(--width);
-      height:var(--height);
-      opacity:0;
-      background:#fff;
-      box-shadow:0 0 3px rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.32);
-      pointer-events:none;
-    }
-
-    .choice-button.disintegrating .static-fragment {
-      animation:fragment .46s steps(3,end) forwards;
-      animation-delay:var(--delay);
-    }
-
-    @keyframes fragment {
-      0% { opacity:1; transform:translate(0) scaleX(1); }
-      35% { opacity:1; transform:translate(calc(var(--dx) * .28),calc(var(--dy) * .28)) scaleX(1.35); }
-      100% { opacity:0; transform:translate(var(--dx),var(--dy)) scaleX(var(--stretch)); }
-    }
-
-    #entrance.transitioning .question {
-      animation:tv-off .2s steps(3,end) forwards;
-    }
-
-    #entrance.transitioning .question::after {
-      animation:tv-line .2s steps(3,end) forwards;
-    }
-
-    @keyframes tv-off {
-      0% { opacity:1; filter:brightness(1); transform:scaleX(1) scaleY(1); }
-      28% { opacity:1; filter:brightness(2.4); transform:scaleX(1.01) scaleY(.68); text-shadow:0 0 6px #fff,0 0 18px rgba(255,255,255,.9),0 0 36px rgba(255,255,255,.58); }
-      62% { opacity:1; filter:brightness(3.4); transform:scaleX(1.06) scaleY(.07); text-shadow:0 0 8px #fff,0 0 24px rgba(255,255,255,.98),0 0 48px rgba(255,255,255,.74); }
-      100% { opacity:0; filter:brightness(1); transform:scaleX(1.22) scaleY(.01); }
-    }
-
-    @keyframes tv-line {
-      0% { width:0; opacity:0; }
-      42% { width:56%; opacity:1; }
-      72% { width:112%; opacity:1; }
-      100% { width:136%; opacity:0; }
-    }
-
-    /* 아니오 전용: 2프레임만 보이고, 바로 검정으로 끊김. */
-    #entrance.no-cut-frame-1 .entrance-content {
-      filter:brightness(1.7) contrast(1.4);
-      transform:translate(-3px,1px);
-      clip-path:polygon(0 0,100% 0,100% 17%,72% 17%,72% 25%,100% 25%,100% 47%,38% 47%,38% 56%,100% 56%,100% 100%,0 100%,0 76%,24% 76%,24% 68%,0 68%);
-    }
-
-    #entrance.no-cut-frame-1::before,
-    #entrance.no-cut-frame-1::after,
-    #entrance.no-cut-frame-2::before,
-    #entrance.no-cut-frame-2::after {
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:8;
-      pointer-events:none;
-    }
-
-    #entrance.no-cut-frame-1::before {
+    #player::before {
+      position: absolute;
+      inset: 0;
+      content: "";
+      border: 1px solid #0b0c14;
       background:
-        linear-gradient(90deg,transparent 0 12%,#fff 12% 21%,transparent 21% 100%) 0 37%/100% 2px no-repeat,
-        linear-gradient(90deg,transparent 0 67%,#fff 67% 85%,transparent 85% 100%) 0 53%/100% 3px no-repeat,
-        linear-gradient(90deg,transparent 0 35%,#fff 35% 48%,transparent 48% 100%) 0 66%/100% 1px no-repeat;
-      opacity:.92;
-      transform:translate(2px,-1px);
+        linear-gradient(
+          to bottom,
+          #ffffff 0 27%,
+          #d9def8 27% 58%,
+          #8a94c0 58% 100%
+        );
+      clip-path: polygon(
+        35% 0%,
+        65% 0%,
+        74% 10%,
+        74% 28%,
+        88% 42%,
+        82% 57%,
+        69% 57%,
+        69% 100%,
+        56% 100%,
+        56% 73%,
+        44% 73%,
+        44% 100%,
+        31% 100%,
+        31% 57%,
+        18% 57%,
+        12% 42%,
+        26% 28%,
+        26% 10%
+      );
     }
 
-    #entrance.no-cut-frame-1::after {
-      background:
-        linear-gradient(#000,#000) 0 23%/100% 8px no-repeat,
-        linear-gradient(#000,#000) 0 55%/100% 11px no-repeat,
-        linear-gradient(#000,#000) 0 73%/100% 5px no-repeat;
+    #player::after {
+      position: absolute;
+      left: 40%;
+      top: 18%;
+      width: 20%;
+      height: 9%;
+      content: "";
+      background: #05050a;
     }
 
-    #entrance.no-cut-frame-2 .entrance-content {
-      filter:brightness(2.25) contrast(1.75);
-      transform:translate(4px,-2px);
-      clip-path:polygon(0 0,100% 0,100% 31%,18% 31%,18% 40%,100% 40%,100% 63%,61% 63%,61% 74%,100% 74%,100% 100%,0 100%,0 52%,42% 52%,42% 43%,0 43%);
+    #player.walking {
+      animation: player-bob 0.15s steps(2, end) infinite;
     }
 
-    #entrance.no-cut-frame-2::before {
-      background:
-        linear-gradient(90deg,transparent 0 54%,#fff 54% 76%,transparent 76% 100%) 0 28%/100% 2px no-repeat,
-        linear-gradient(90deg,transparent 0 8%,#fff 8% 31%,transparent 31% 100%) 0 62%/100% 2px no-repeat;
-      opacity:.96;
-      transform:translate(-3px,1px);
+    @keyframes player-bob {
+      50% {
+        transform: translate(-50%, calc(-50% + 1px));
+      }
     }
 
-    #entrance.no-cut-frame-2::after {
-      background:
-        linear-gradient(#000,#000) 0 11%/100% 6px no-repeat,
-        linear-gradient(#000,#000) 0 49%/100% 12px no-repeat,
-        linear-gradient(#000,#000) 0 83%/100% 7px no-repeat;
+    /*
+      오브젝트 주변 확인 버튼
+    */
+    #confirm-button {
+      position: absolute;
+      z-index: 5;
+      min-width: 48px;
+      padding: 6px 10px 5px;
+      border: 2px solid #ffffff;
+      background: #000000;
+      color: #ffffff;
+      font-size: clamp(12px, 3.2vw, 18px);
+      line-height: 1;
+      letter-spacing: 0.04em;
+      transform: translate(-50%, -50%);
+      box-shadow:
+        0 0 0 2px #000000,
+        0 0 8px rgba(255, 255, 255, 0.3);
+      cursor: pointer;
     }
 
-    #blackout.no-hard-cut {
-      transition:none!important;
+    #confirm-button:active {
+      transform: translate(-50%, calc(-50% + 1px));
     }
 
-    #blackout {
-      position:fixed;
-      inset:0;
-      z-index:100;
-      pointer-events:none;
-      background:#000;
-      opacity:0;
-      transition:opacity .18s steps(2,end);
+    /*
+      UI 위치 고정 영역
+      대화창과 조이스틱은 이 안에서 절대 이동하지 않음
+    */
+    #ui-zone {
+      position: relative;
+      width: 100%;
+      height: clamp(310px, 86vw, 455px);
+      margin-top: 18px;
     }
 
-    #blackout.active {
-      pointer-events:auto;
-      opacity:1;
+    /*
+      T0 = 상단 질문창
+      스크린을 확인하시겠습니까? / 네 / 아니오
+    */
+    #t0-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      aspect-ratio: 4355 / 1774;
+      overflow: hidden;
     }
 
-    #blackout.drop {
-      transition:none!important;
+    .frame-crop {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
     }
 
-    #comic {
-      overflow:hidden;
-      background:#000;
+    #t0-panel .frame-crop img {
+      position: absolute;
+      left: -3.88%;
+      top: -11.44%;
+      width: 108.29%;
+      height: 121.98%;
+      max-width: none;
+      image-rendering: pixelated;
+      user-select: none;
     }
 
-    #comic > img {
-      display:block;
-      width:auto;
-      max-width:100%;
-      height:auto;
-      margin:0 auto;
-      transform-origin:center top;
-      will-change:opacity,filter,transform;
+    #t0-panel .content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 24%;
+      gap: 3%;
+      padding: 16% 9% 13% 8%;
     }
 
-    #comic.comic-focus-in > img {
-      animation:comic-focus 1.05s cubic-bezier(.16,.78,.25,1) both;
+    #t0-text {
+      align-self: start;
+      color: #ffffff;
+      font-size: clamp(15px, 4.15vw, 27px);
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+      white-space: pre-wrap;
+      word-break: keep-all;
     }
 
-    @keyframes comic-focus {
-      0% { opacity:0; filter:blur(18px); transform:scale(1.018); }
-      38% { opacity:.72; filter:blur(9px); transform:scale(1.01); }
-      72% { opacity:.96; filter:blur(2px); transform:scale(1.002); }
-      100% { opacity:1; filter:blur(0); transform:scale(1); }
+    #t0-choices {
+      display: grid;
+      align-content: start;
+      gap: 18%;
+      padding-top: 1%;
     }
 
-    #binary-stage {
-      position:relative;
-      isolation:isolate;
-      width:min(100%,505px);
-      aspect-ratio:505/1650;
-      margin:0 auto;
-      overflow:hidden;
-      background:#000;
+    .t0-choice {
+      width: max-content;
+      border: 0;
+      background: transparent;
+      color: #ffffff;
+      padding: 0;
+      font-size: clamp(15px, 4.15vw, 27px);
+      line-height: 1.1;
+      text-align: left;
+      cursor: pointer;
     }
 
-    .binary-block {
-      position:absolute;
-      left:0;
-      z-index:2;
-      width:100%;
-      color:#d8d8d8;
-      cursor:pointer;
-      font-family:"Handjet",monospace;
-      font-size:clamp(16px,4.55vw,23px);
-      font-weight:400;
-      line-height:1.78;
-      text-align:center;
-      text-shadow:0 0 1px rgba(255,255,255,.25);
-      user-select:none;
+    .t0-choice.active {
+      transform: translateX(2px);
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.78);
     }
 
-    .binary-block:focus-visible {
-      outline:1px solid #fff;
-      outline-offset:4px;
+    /*
+      T1 = 하단 왼쪽 행동 선택창
+    */
+    #t1-panel {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 60%;
+      aspect-ratio: 2470 / 1271;
+      overflow: hidden;
     }
 
-    .block-1 { top:50%; }
-    .block-2 { top:66.5%; }
-    .block-3 { top:74.2%; }
-    .block-4 { top:81%; }
-
-    .binary-line {
-      display:block;
-      opacity:0;
-      transform:translateY(5px);
-      white-space:pre;
+    #t1-panel .frame-crop img {
+      position: absolute;
+      left: -7.17%;
+      top: -14.71%;
+      width: 115.71%;
+      height: 129.9%;
+      max-width: none;
+      image-rendering: pixelated;
+      user-select: none;
     }
 
-    .binary-block.revealed .binary-line {
-      animation:line-reveal .55s ease forwards;
-      animation-delay:calc(var(--line) * .14s);
+    #t1-panel .content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: start;
+      gap: 5.2%;
+      padding: 13% 10% 11%;
     }
 
-    @keyframes line-reveal {
-      0% { opacity:0; filter:blur(3px); transform:translateY(5px); }
-      100% { opacity:1; filter:blur(0); transform:translateY(0); }
+    .t1-action {
+      width: max-content;
+      max-width: 100%;
+      border: 0;
+      background: transparent;
+      color: #ffffff;
+      padding: 0;
+      font-size: clamp(15px, 4.8vw, 30px);
+      line-height: 1.02;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
-    .binary-char {
-      display:inline-block;
-      min-width:.01em;
-      transform-origin:center;
-      animation:char-tremble var(--duration) steps(2,end) var(--delay) infinite;
+    .t1-action:active,
+    .t1-action:focus-visible {
+      outline: 0;
+      transform: translateX(2px);
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.78);
     }
 
-    @keyframes char-tremble {
-      0%,100% { transform:translate(0) rotate(0); }
-      18% { transform:translate(var(--x1),var(--y1)) rotate(var(--r1)); }
-      39% { transform:translate(var(--x2),var(--y2)) rotate(var(--r2)); }
-      63% { transform:translate(var(--x3),var(--y3)) rotate(var(--r3)); }
-      82% { transform:translate(var(--x4),var(--y4)) rotate(var(--r4)); }
+    /*
+      조이스틱
+      사각 박스 없음
+      흰 라인 + 검정 내부
+    */
+    #joystick-base {
+      position: absolute;
+      right: 2.5%;
+      bottom: 0;
+      width: 34%;
+      max-width: 178px;
+      min-width: 126px;
+      aspect-ratio: 1;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      background: #000000;
+      box-shadow:
+        0 0 0 5px #000000,
+        0 0 0 7px rgba(255, 255, 255, 0.16),
+        0 0 9px rgba(255, 255, 255, 0.2);
+      touch-action: none;
     }
 
-    #binary-stage.glitching .binary-block.revealed {
-      color:#fff;
-      filter:drop-shadow(-2px 0 rgba(255,55,55,.85)) drop-shadow(2px 0 rgba(0,225,255,.85));
+    #joystick-base::before {
+      position: absolute;
+      inset: 13%;
+      content: "";
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      pointer-events: none;
     }
 
-    #binary-stage.glitching .binary-block.revealed .binary-line:nth-child(odd) {
-      margin-left:-4px;
+    #joystick-base::after {
+      position: absolute;
+      inset: 28%;
+      content: "";
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
     }
 
-    #binary-stage.glitching .binary-block.revealed .binary-line:nth-child(even) {
-      margin-left:3px;
+    #joystick-knob {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 35%;
+      aspect-ratio: 1;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      background: #000000;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      box-shadow: 0 0 7px rgba(255, 255, 255, 0.3);
     }
 
-    .face {
-      position:absolute;
-      top:95.5%;
-      left:50%;
-      z-index:5;
-      margin:0;
-      padding:0;
-      border:0;
-      background:transparent;
-      color:#eee;
-      cursor:pointer;
-      font-family:"Computer Says No",monospace;
-      font-size:clamp(24px,6vw,31px);
-      line-height:1;
-      transform:translateX(-50%);
-      user-select:none;
+    #cut-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      background: #000000;
     }
 
-    .face::before,
-    .face::after {
-      content:attr(data-face);
-      position:absolute;
-      inset:0;
-      pointer-events:none;
+    #cut-overlay.active {
+      opacity: 1;
+      animation: cut 0.22s steps(2, end) both;
     }
 
-    .face::before {
-      color:#00ff45;
-      opacity:.68;
-      transform:translate(-2px,2px);
-      animation:face-glitch 1.8s steps(2,end) infinite;
+    @keyframes cut {
+      30% {
+        background: #ffffff;
+      }
+
+      100% {
+        background: #000000;
+        opacity: 1;
+      }
     }
 
-    .face::after {
-      color:#ff3030;
-      opacity:.62;
-      transform:translate(2px,-1px);
-      animation:face-glitch 2.5s steps(2,end) infinite reverse;
+    @media (min-width: 700px) {
+      #app {
+        width: min(92vw, 960px);
+        padding: 24px 24px 36px;
+      }
+
+      .room-title {
+        font-size: 32px;
+      }
+
+      #ui-zone {
+        height: min(64vw, 615px);
+      }
+
+      #joystick-base {
+        min-width: 158px;
+        width: 32%;
+      }
     }
 
-    @keyframes face-glitch {
-      0%,86%,100% { clip-path:inset(0); }
-      89% { clip-path:inset(15% 0 62% 0); }
-      93% { clip-path:inset(68% 0 8% 0); }
-    }
+    @media (max-width: 360px) {
+      #app {
+        padding-inline: 10px;
+      }
 
-    .noise {
-      position:absolute;
-      top:97%;
-      left:50%;
-      z-index:4;
-      width:2px;
-      height:2px;
-      background:#00ff45;
-      box-shadow:8px -10px #00d9ff,-8px 12px #ff2a2a,5px 18px #66ff00,10px 22px #fff,-3px 26px #00ff45;
-      animation:noise 1.2s steps(2,end) infinite;
-      pointer-events:none;
-    }
+      #ui-zone {
+        height: 310px;
+      }
 
-    @keyframes noise {
-      0%,100% { opacity:.18; }
-      50% { opacity:1; }
+      #t1-panel {
+        width: 61%;
+      }
+
+      #joystick-base {
+        min-width: 112px;
+        width: 33%;
+      }
+
+      .t1-action {
+        font-size: 14px;
+      }
+
+      #t0-text,
+      .t0-choice {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <section id="entrance" class="connection-arrived">
-    <div class="entrance-content">
-      <p class="question">관전하시겠습니까?</p>
+  <main id="app">
+    <h1 class="room-title">Room- 11101011</h1>
 
-      <div class="choice-buttons">
-        <button class="choice-button" type="button" data-choice="yes">
-          <span class="choice-label">예</span>
-        </button>
+    <section id="room-stage" aria-label="미니 연구실">
+      <img id="room-bg" src="./room-bg.png" alt="">
+      <div id="stage-effects" aria-hidden="true"></div>
+      <div id="player" aria-hidden="true"></div>
+      <button id="confirm-button" type="button" hidden>확인</button>
+    </section>
 
-        <button class="choice-button" type="button" data-choice="no">
-          <span class="choice-label">아니오</span>
-        </button>
+    <section id="ui-zone" aria-label="연구실 인터페이스">
+      <section id="t0-panel" hidden aria-label="스크린 확인 질문">
+        <div class="frame-crop">
+          <img src="./T0.PNG" alt="">
+        </div>
+
+        <div class="content">
+          <div id="t0-text">스크린을 확인하시겠습니까?</div>
+
+          <div id="t0-choices">
+            <button class="t0-choice active" id="t0-yes" type="button">
+              • 네
+            </button>
+
+            <button class="t0-choice" id="t0-no" type="button">
+              • 아니오
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="t1-panel" hidden aria-label="행동 선택">
+        <div class="frame-crop">
+          <img src="./T1.png" alt="">
+        </div>
+
+        <div class="content">
+          <button class="t1-action" data-action="inspect" type="button">
+            1. 조사한다
+          </button>
+
+          <button class="t1-action" data-action="drop" type="button">
+            2. 바닥으로 버린다.
+          </button>
+
+          <button class="t1-action" data-action="peek" type="button">
+            3. 안을 자세히 들여다 본다.
+          </button>
+
+          <button class="t1-action" data-action="quit" type="button">
+            4. 관둔다
+          </button>
+        </div>
+      </section>
+
+      <div id="joystick-base" aria-label="이동 조이스틱">
+        <div id="joystick-knob"></div>
       </div>
-    </div>
-  </section>
-
-  <div id="blackout" aria-hidden="true"></div>
-  <div id="return-curtain" aria-hidden="true"></div>
-
-  <main id="comic" hidden>
-    <img src="0.png" alt="WELCOME comic part 1" />
-    <img src="00.png" alt="WELCOME comic part 2" />
-
-    <section id="binary-stage" aria-label="숨겨진 이진수 메시지">
-      <div class="binary-block block-1" role="button" tabindex="0" data-destination="entity-room.html" aria-label="개체의 방으로 이동">
-        <div class="binary-line">11101100 10010110 10110100</div>
-        <div class="binary-line">11101100 10000100 10011100</div>
-        <div class="binary-line">11101100 10011000 10100100</div>
-        <div class="binary-line">11101100 10000100 10111000</div>
-        <div class="binary-line">11101100 10011010 10010100</div>
-        <div class="binary-line">          00101100</div>
-      </div>
-
-      <div class="binary-block block-2" role="button" tabindex="0" data-destination="error-room-2.html" aria-label="이진2 오류 방으로 이동">
-        <div class="binary-line">11101010 10110000 10000000</div>
-        <div class="binary-line">11101100 10000011 10000001</div>
-        <div class="binary-line">11101100 10011101 10011000</div>
-      </div>
-
-      <div class="binary-block block-3" role="button" tabindex="0" data-destination="entity-record.html" aria-label="개체 기록으로 이동">
-        <div class="binary-line">11101100 10000100 10111000</div>
-        <div class="binary-line">11101010 10110011 10000100</div>
-      </div>
-
-      <div class="binary-block block-4" role="button" tabindex="0" data-destination="world-message.html" aria-label="기록 메시지로 이동">
-        <div class="binary-line">11101011 10101001 10010100</div>
-        <div class="binary-line">11101100 10001011 10011100</div>
-        <div class="binary-line">11101100 10010110 10000100</div>
-        <div class="binary-line">11101100 10001010 10100100</div>
-        <div class="binary-line">11101100 10010111 10010000</div>
-      </div>
-
-      <button class="face" type="button" data-face=":D" data-destination="error.html" aria-label="잘못된 방으로 이동">:D</button>
-      <div class="noise" aria-hidden="true"></div>
     </section>
   </main>
 
+  <div id="cut-overlay" aria-hidden="true"></div>
+
   <script>
-    const entrance = document.getElementById("entrance");
-    const comic = document.getElementById("comic");
-    const blackout = document.getElementById("blackout");
-    const choiceButtons = document.querySelectorAll(".choice-button");
-    const binaryStage = document.getElementById("binary-stage");
-    const binaryBlocks = document.querySelectorAll(".binary-block");
-    const entityRoomBlock = document.querySelector(".block-1");
+    const NO_ROOM_URL = "no-room.html";
 
-    const entityRoomSessionKey = "welcome_entity_room_entered";
-
-    let storyHasStarted = false;
-    let idleGlitchTimer;
-
-    function enteredEntity() {
-      try {
-        return sessionStorage.getItem(entityRoomSessionKey) === "1";
-      } catch (error) {
-        return false;
+    const OBJECTS = [
+      {
+        id: "screen01",
+        x: 16,
+        y: 55,
+        buttonX: 16,
+        buttonY: 42,
+        coverX: 10,
+        coverY: 28,
+        coverW: 12,
+        coverH: 25,
+        description:
+          "스크린에는 오래된 관측 로그가 남아 있다.\n같은 좌표를 반복해서 가리키는 흔적만 남아 있다."
+      },
+      {
+        id: "screen02",
+        x: 50,
+        y: 55,
+        buttonX: 50,
+        buttonY: 42,
+        coverX: 44,
+        coverY: 28,
+        coverW: 12,
+        coverH: 25,
+        description:
+          "화면 안쪽에는 흐릿한 도면이 열려 있다.\n출입문이 아니라, 안쪽으로 향하는 틈처럼 보인다."
+      },
+      {
+        id: "screen03",
+        x: 84,
+        y: 55,
+        buttonX: 84,
+        buttonY: 42,
+        coverX: 78,
+        coverY: 28,
+        coverW: 12,
+        coverH: 25,
+        description:
+          "스크린 표면은 멀쩡해 보인다.\n하지만 안쪽에서 미세한 떨림이 계속 느껴진다."
       }
+    ];
+
+    const $ = (selector) => document.querySelector(selector);
+
+    const player = $("#player");
+    const confirmButton = $("#confirm-button");
+    const stageEffects = $("#stage-effects");
+
+    const t0Panel = $("#t0-panel");
+    const t1Panel = $("#t1-panel");
+    const t0Text = $("#t0-text");
+    const t0Choices = $("#t0-choices");
+    const t0Yes = $("#t0-yes");
+    const t0No = $("#t0-no");
+
+    const joystickBase = $("#joystick-base");
+    const joystickKnob = $("#joystick-knob");
+    const cutOverlay = $("#cut-overlay");
+
+    const actionButtons = [
+      ...document.querySelectorAll(".t1-action")
+    ];
+
+    const state = {
+      mode: "free",
+      playerX: 50,
+      playerY: 76,
+      activeId: null,
+      selectedQuestion: "yes",
+      removed: new Set()
+    };
+
+    const keys = {
+      up: false,
+      down: false,
+      left: false,
+      right: false
+    };
+
+    const joystick = {
+      active: false,
+      x: 0,
+      y: 0
+    };
+
+    const clamp = (value, min, max) =>
+      Math.max(min, Math.min(max, value));
+
+    const byId = (id) =>
+      OBJECTS.find((item) => item.id === id) || null;
+
+    const distance = (a, b, c, d) =>
+      Math.hypot(a - c, b - d);
+
+    function updatePlayer() {
+      player.style.left = `${state.playerX}%`;
+      player.style.top = `${state.playerY}%`;
     }
 
-    function syncEntityGate() {
-      if (!entityRoomBlock) {
-        return;
-      }
+    function nearestObject() {
+      let nearest = null;
+      let shortest = Infinity;
 
-      if (enteredEntity()) {
-        entityRoomBlock.dataset.destination = "error.html";
-        entityRoomBlock.setAttribute("aria-label", "잘못된 방으로 이동");
-      } else {
-        entityRoomBlock.dataset.destination = "entity-room.html";
-        entityRoomBlock.setAttribute("aria-label", "개체의 방으로 이동");
-      }
-    }
+      for (const item of OBJECTS) {
+        if (state.removed.has(item.id)) {
+          continue;
+        }
 
-    syncEntityGate();
-    addEventListener("pageshow", syncEntityGate);
+        const currentDistance = distance(
+          state.playerX,
+          state.playerY,
+          item.x,
+          item.y
+        );
 
-    function waitImages(done) {
-      const images = [...comic.querySelectorAll("img")];
-
-      if (!images.length) {
-        done();
-        return;
-      }
-
-      let complete = 0;
-
-      function finish() {
-        complete += 1;
-
-        if (complete >= images.length) {
-          done();
+        if (currentDistance < shortest) {
+          shortest = currentDistance;
+          nearest = item;
         }
       }
 
-      images.forEach((image) => {
-        if (image.complete) {
-          finish();
-        } else {
-          image.addEventListener("load", finish, { once:true });
-          image.addEventListener("error", finish, { once:true });
+      return shortest <= 13 ? nearest : null;
+    }
+
+    function updateQuestionSelection() {
+      t0Yes.classList.toggle(
+        "active",
+        state.selectedQuestion === "yes"
+      );
+
+      t0No.classList.toggle(
+        "active",
+        state.selectedQuestion === "no"
+      );
+    }
+
+    function renderRemoved() {
+      stageEffects.innerHTML = "";
+
+      for (const item of OBJECTS) {
+        if (!state.removed.has(item.id)) {
+          continue;
         }
-      });
-    }
 
-    function revealComic() {
-      comic.hidden = false;
-      comic.classList.remove("comic-focus-in");
+        const cover = document.createElement("div");
 
-      void comic.offsetWidth;
+        cover.className = "removed-cover";
+        cover.style.left = `${item.coverX}%`;
+        cover.style.top = `${item.coverY}%`;
+        cover.style.width = `${item.coverW}%`;
+        cover.style.height = `${item.coverH}%`;
 
-      waitImages(() => {
-        comic.classList.add("comic-focus-in");
-        void comic.offsetWidth;
-
-        requestAnimationFrame(() => {
-          blackout.classList.add("drop");
-          blackout.classList.remove("active");
-
-          requestAnimationFrame(() => {
-            blackout.classList.remove("drop");
-          });
-        });
-
-        setTimeout(() => {
-          comic.classList.remove("comic-focus-in");
-        }, 1120);
-      });
-    }
-
-    function returnBinary() {
-      storyHasStarted = true;
-      clearTimeout(idleGlitchTimer);
-
-      comic.classList.remove("comic-focus-in");
-      entrance.hidden = true;
-      comic.hidden = false;
-
-      waitImages(() => {
-        requestAnimationFrame(() => {
-          window.scrollTo(
-            0,
-            binaryStage.getBoundingClientRect().top + scrollY
-          );
-
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              document.documentElement.classList.remove("returning-to-binary");
-
-              history.replaceState(
-                null,
-                "",
-                `${location.pathname}#binary-stage`
-              );
-            }, 90);
-          });
-        });
-      });
-    }
-
-    function range(minimum, maximum) {
-      return Math.random() * (maximum - minimum) + minimum;
-    }
-
-    function fragments(button, amount) {
-      button.querySelectorAll(".static-fragment").forEach((fragment) => {
-        fragment.remove();
-      });
-
-      for (let index = 0; index < amount; index += 1) {
-        const fragment = document.createElement("span");
-
-        fragment.className = "static-fragment";
-        fragment.style.setProperty("--left", `${range(2,88).toFixed(2)}%`);
-        fragment.style.setProperty("--top", `${range(10,84).toFixed(2)}%`);
-        fragment.style.setProperty("--width", `${Math.floor(range(5,26))}px`);
-        fragment.style.setProperty("--height", `${Math.floor(range(1,4))}px`);
-        fragment.style.setProperty("--dx", `${range(-78,78).toFixed(2)}px`);
-        fragment.style.setProperty("--dy", `${range(-18,18).toFixed(2)}px`);
-        fragment.style.setProperty("--stretch", range(.35,2.1).toFixed(2));
-        fragment.style.setProperty("--delay", `${Math.floor(range(0,85))}ms`);
-
-        button.appendChild(fragment);
+        stageEffects.append(cover);
       }
     }
 
-    function scheduleIdle() {
-      const times = [5000,7000,10000];
+    function updateConfirm() {
+      const item =
+        state.mode === "free"
+          ? nearestObject()
+          : null;
 
-      idleGlitchTimer = setTimeout(() => {
-        if (storyHasStarted || entrance.hidden) {
-          return;
-        }
-
-        entrance.classList.add("idle-glitch");
-
-        setTimeout(() => {
-          entrance.classList.remove("idle-glitch");
-          scheduleIdle();
-        }, 150);
-      }, times[Math.floor(Math.random() * times.length)]);
-    }
-
-    function startStory(button) {
-      if (storyHasStarted) {
+      if (!item) {
+        confirmButton.hidden = true;
         return;
       }
 
-      storyHasStarted = true;
-      clearTimeout(idleGlitchTimer);
-
-      entrance.classList.remove("connection-arrived");
-      entrance.classList.add("transitioning");
-
-      choiceButtons.forEach((choice) => {
-        choice.disabled = true;
-        fragments(choice, choice === button ? 44 : 28);
-        choice.classList.add("disintegrating");
-      });
-
-      setTimeout(() => {
-        blackout.classList.add("active");
-      }, 470);
-
-      setTimeout(() => {
-        entrance.hidden = true;
-        scrollTo(0,0);
-        revealComic();
-      }, 2500);
+      confirmButton.hidden = false;
+      confirmButton.style.left = `${item.buttonX}%`;
+      confirmButton.style.top = `${item.buttonY}%`;
     }
 
-    function startNoRoute() {
-      if (storyHasStarted) {
+    function closeAllPanels() {
+      state.mode = "free";
+      state.activeId = null;
+
+      t0Panel.hidden = true;
+      t1Panel.hidden = true;
+
+      t0Choices.hidden = false;
+      t0Text.textContent = "스크린을 확인하시겠습니까?";
+
+      updateConfirm();
+    }
+
+    function openT0Question(item) {
+      state.mode = "question";
+      state.activeId = item.id;
+      state.selectedQuestion = "yes";
+
+      t0Text.textContent = "스크린을 확인하시겠습니까?";
+
+      t0Choices.hidden = false;
+      t0Panel.hidden = false;
+      t1Panel.hidden = true;
+
+      confirmButton.hidden = true;
+
+      updateQuestionSelection();
+    }
+
+    function openT1Actions() {
+      if (!state.activeId) {
         return;
       }
 
-      storyHasStarted = true;
-      clearTimeout(idleGlitchTimer);
+      state.mode = "actions";
 
       /*
-        예 버튼의 파편 연출은 쓰지 않음.
-        손상 2프레임 → 하드 블랙 → ??? 방
+        T0는 유지하고,
+        T1만 추가 표시
       */
-      entrance.classList.remove("connection-arrived");
-
-      choiceButtons.forEach((choice) => {
-        choice.disabled = true;
-      });
-
-      entrance.classList.add("no-cut-frame-1");
-
-      setTimeout(() => {
-        entrance.classList.remove("no-cut-frame-1");
-        entrance.classList.add("no-cut-frame-2");
-      }, 54);
-
-      setTimeout(() => {
-        blackout.classList.add("no-hard-cut", "active");
-      }, 108);
-
-      setTimeout(() => {
-        location.replace("no-room.html");
-      }, 154);
+      t0Panel.hidden = false;
+      t1Panel.hidden = false;
     }
 
-    choiceButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        if (button.dataset.choice === "no") {
-          startNoRoute();
-          return;
-        }
+    function showMessage(text) {
+      state.mode = "message";
 
-        startStory(button);
-      });
-    });
+      /*
+        설명은 반드시 T0 안에 표시
+      */
+      t0Text.textContent = text;
+      t0Choices.hidden = true;
 
-    setTimeout(() => {
-      entrance.classList.remove("connection-arrived");
-    }, 500);
-
-    scheduleIdle();
-
-    function randomValue(maximum) {
-      return ((Math.random() * 2 - 1) * maximum).toFixed(2);
+      /*
+        T1은 화면에 유지
+      */
+      t0Panel.hidden = false;
+      t1Panel.hidden = false;
     }
 
-    document.querySelectorAll(".binary-line").forEach((line, lineIndex) => {
-      const characters = Array.from(line.textContent);
-
-      line.textContent = "";
-      line.style.setProperty("--line", lineIndex);
-
-      characters.forEach((character) => {
-        const span = document.createElement("span");
-
-        span.className = "binary-char";
-        span.textContent = character === " " ? "\u00A0" : character;
-
-        [1,2,3,4].forEach((number) => {
-          span.style.setProperty(`--x${number}`, `${randomValue(.8)}px`);
-          span.style.setProperty(`--y${number}`, `${randomValue(.8)}px`);
-          span.style.setProperty(`--r${number}`, `${randomValue(.7)}deg`);
-        });
-
-        span.style.setProperty(
-          "--duration",
-          `${(.42 + Math.random() * .7).toFixed(2)}s`
-        );
-
-        span.style.setProperty(
-          "--delay",
-          `${(-Math.random() * 1.2).toFixed(2)}s`
-        );
-
-        line.appendChild(span);
-      });
-    });
-
-    let binaryShown = false;
-
-    const observer = new IntersectionObserver((entries, currentObserver) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("revealed");
-          binaryShown = true;
-          currentObserver.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold:.25
-    });
-
-    binaryBlocks.forEach((block) => {
-      observer.observe(block);
-    });
-
-    setInterval(() => {
-      if (!binaryShown) {
+    function answerQuestion(answer) {
+      if (state.mode !== "question") {
         return;
       }
 
-      binaryStage.classList.add("glitching");
-
-      setTimeout(() => {
-        binaryStage.classList.remove("glitching");
-      }, 280);
-    }, 10000);
-
-    function openDestination(element) {
-      const destination = element.dataset.destination;
-
-      if (destination) {
-        location.href = destination;
+      if (answer === "yes") {
+        openT1Actions();
+      } else {
+        closeAllPanels();
       }
     }
 
-    document.querySelectorAll("[data-destination]").forEach((element) => {
-      element.addEventListener("click", () => {
-        openDestination(element);
-      });
+    function runT1Action(action) {
+      if (state.mode !== "actions") {
+        return;
+      }
 
-      if (element.classList.contains("binary-block")) {
-        element.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            openDestination(element);
-          }
-        });
+      const item = byId(state.activeId);
+
+      if (!item) {
+        closeAllPanels();
+        return;
+      }
+
+      if (action === "inspect") {
+        showMessage(item.description);
+        return;
+      }
+
+      if (action === "drop") {
+        state.removed.add(item.id);
+
+        renderRemoved();
+
+        showMessage("스크린을 바닥으로 버렸다.");
+        return;
+      }
+
+      if (action === "peek") {
+        state.mode = "cut";
+        cutOverlay.classList.add("active");
+
+        window.setTimeout(() => {
+          window.location.href = NO_ROOM_URL;
+        }, 220);
+
+        return;
+      }
+
+      if (action === "quit") {
+        closeAllPanels();
+      }
+    }
+
+    function currentMoveVector() {
+      if (joystick.active) {
+        return {
+          x: joystick.x,
+          y: joystick.y
+        };
+      }
+
+      const x =
+        (keys.right ? 1 : 0) -
+        (keys.left ? 1 : 0);
+
+      const y =
+        (keys.down ? 1 : 0) -
+        (keys.up ? 1 : 0);
+
+      const length = Math.hypot(x, y) || 1;
+
+      return {
+        x: x / length,
+        y: y / length
+      };
+    }
+
+    function setJoystick(clientX, clientY) {
+      const rect = joystickBase.getBoundingClientRect();
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const maxRadius = rect.width * 0.28;
+
+      const dx = clientX - centerX;
+      const dy = clientY - centerY;
+
+      const length = Math.hypot(dx, dy) || 1;
+      const limited = Math.min(length, maxRadius);
+
+      joystick.x =
+        (dx / length) *
+        (limited / maxRadius);
+
+      joystick.y =
+        (dy / length) *
+        (limited / maxRadius);
+
+      const knobX = joystick.x * rect.width * 0.22;
+      const knobY = joystick.y * rect.width * 0.22;
+
+      joystickKnob.style.transform =
+        `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
+    }
+
+    function resetJoystick() {
+      joystick.active = false;
+      joystick.x = 0;
+      joystick.y = 0;
+
+      joystickKnob.style.transform =
+        "translate(-50%, -50%)";
+    }
+
+    confirmButton.addEventListener("click", () => {
+      const item = nearestObject();
+
+      if (item) {
+        openT0Question(item);
       }
     });
 
-    if (new URLSearchParams(location.search).get("return") === "binary") {
-      returnBinary();
+    t0Yes.addEventListener("click", () => {
+      answerQuestion("yes");
+    });
+
+    t0No.addEventListener("click", () => {
+      answerQuestion("no");
+    });
+
+    actionButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        runT1Action(button.dataset.action);
+      });
+    });
+
+    joystickBase.addEventListener("pointerdown", (event) => {
+      joystick.active = true;
+
+      joystickBase.setPointerCapture(event.pointerId);
+
+      setJoystick(event.clientX, event.clientY);
+    });
+
+    joystickBase.addEventListener("pointermove", (event) => {
+      if (joystick.active) {
+        setJoystick(event.clientX, event.clientY);
+      }
+    });
+
+    joystickBase.addEventListener("pointerup", resetJoystick);
+    joystickBase.addEventListener("pointercancel", resetJoystick);
+
+    /*
+      설명문을 본 뒤
+      아무 화면이나 터치하면 평상시로 복귀
+    */
+    document.addEventListener("pointerdown", () => {
+      if (state.mode === "message") {
+        closeAllPanels();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+
+      const controlledKeys = [
+        "arrowup",
+        "arrowdown",
+        "arrowleft",
+        "arrowright",
+        "w",
+        "a",
+        "s",
+        "d",
+        "enter",
+        " ",
+        "1",
+        "2",
+        "3",
+        "4",
+        "escape"
+      ];
+
+      if (controlledKeys.includes(key)) {
+        event.preventDefault();
+      }
+
+      if (key === "arrowup" || key === "w") {
+        keys.up = true;
+      }
+
+      if (key === "arrowdown" || key === "s") {
+        keys.down = true;
+      }
+
+      if (key === "arrowleft" || key === "a") {
+        keys.left = true;
+      }
+
+      if (key === "arrowright" || key === "d") {
+        keys.right = true;
+      }
+
+      if (state.mode === "question") {
+        if (key === "arrowup" || key === "arrowleft") {
+          state.selectedQuestion = "yes";
+          updateQuestionSelection();
+        }
+
+        if (key === "arrowdown" || key === "arrowright") {
+          state.selectedQuestion = "no";
+          updateQuestionSelection();
+        }
+
+        if (key === "enter" || key === " ") {
+          answerQuestion(state.selectedQuestion);
+        }
+
+        return;
+      }
+
+      if (state.mode === "actions") {
+        if (key === "1") {
+          runT1Action("inspect");
+        }
+
+        if (key === "2") {
+          runT1Action("drop");
+        }
+
+        if (key === "3") {
+          runT1Action("peek");
+        }
+
+        if (key === "4" || key === "escape") {
+          runT1Action("quit");
+        }
+      }
+    });
+
+    document.addEventListener("keyup", (event) => {
+      const key = event.key.toLowerCase();
+
+      if (key === "arrowup" || key === "w") {
+        keys.up = false;
+      }
+
+      if (key === "arrowdown" || key === "s") {
+        keys.down = false;
+      }
+
+      if (key === "arrowleft" || key === "a") {
+        keys.left = false;
+      }
+
+      if (key === "arrowright" || key === "d") {
+        keys.right = false;
+      }
+    });
+
+    let lastTime = performance.now();
+
+    function loop(now) {
+      const delta = Math.min(
+        (now - lastTime) / 1000,
+        0.05
+      );
+
+      lastTime = now;
+
+      if (state.mode === "free") {
+        const vector = currentMoveVector();
+
+        const moving =
+          vector.x !== 0 ||
+          vector.y !== 0;
+
+        player.classList.toggle("walking", moving);
+
+        if (moving) {
+          state.playerX = clamp(
+            state.playerX + vector.x * 32 * delta,
+            7,
+            93
+          );
+
+          state.playerY = clamp(
+            state.playerY + vector.y * 32 * delta,
+            46,
+            88
+          );
+
+          updatePlayer();
+        }
+
+        updateConfirm();
+      } else {
+        player.classList.remove("walking");
+      }
+
+      requestAnimationFrame(loop);
     }
+
+    updatePlayer();
+    renderRemoved();
+    closeAllPanels();
+    requestAnimationFrame(loop);
   </script>
 </body>
 </html>
