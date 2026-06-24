@@ -44,8 +44,8 @@
     }
 
     /*
-      맨 위 제목.
-      효과 없음 / 모션 없음 / 회색 / 조금 아래 / 조금 크게.
+      맨 위 제목
+      효과 없음 / 모션 없음 / 회색 / 조금 아래 / 조금 크게
     */
     .room-title {
       margin: 16px 0 0;
@@ -57,9 +57,9 @@
     }
 
     /*
-      언더테일식 타이핑:
-      글자는 딱딱하게 찍히고,
-      일부 글자만 아주 짧게 잔떨림/글로우.
+      언더테일식 타이핑
+      글자는 딱딱하게 나타나고,
+      일부 글자에만 짧은 잔떨림 또는 글로우
     */
     .typed-target {
       position: relative;
@@ -86,11 +86,11 @@
     }
 
     @keyframes type-pop {
-      0% {
+      from {
         opacity: 0;
       }
 
-      100% {
+      to {
         opacity: 1;
       }
     }
@@ -121,13 +121,14 @@
       }
 
       45% {
-        text-shadow: 0 0 4px rgba(255,255,255,.75);
+        text-shadow: 0 0 4px rgba(255, 255, 255, .75);
         filter: brightness(1.55);
       }
     }
 
     /*
-      새 글자가 찍힐 때 대화창이 아주 짧게 반응.
+      대화창 화면 반응
+      확인 버튼에는 적용하지 않음
     */
     .screen-react {
       animation: screen-react .12s steps(2, end) both;
@@ -151,15 +152,14 @@
     }
 
     /*
-      게임 본 화면 위치.
-      여기 숫자를 올리면 게임 화면 전체가 더 아래로 내려갑니다.
+      게임 본 화면 위치
     */
     #room-stage {
       position: relative;
       width: 100%;
       aspect-ratio: 1.52 / 1;
 
-      /* 게임 본 화면 아래로 내리는 곳 */
+      /* 게임 화면 전체를 아래로 내리는 곳 */
       margin-top: clamp(94px, 23vw, 120px);
 
       overflow: hidden;
@@ -188,9 +188,9 @@
 
     .removed-cover {
       position: absolute;
-      border: 2px solid rgba(255,255,255,.58);
+      border: 2px solid rgba(255, 255, 255, .58);
       background: #050507;
-      box-shadow: 0 0 8px rgba(255,255,255,.12);
+      box-shadow: 0 0 8px rgba(255, 255, 255, .12);
     }
 
     #player {
@@ -201,7 +201,7 @@
       width: 5.5%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
-      filter: drop-shadow(0 0 2px rgba(255,255,255,.6));
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, .6));
       pointer-events: none;
     }
 
@@ -234,7 +234,7 @@
     }
 
     #player.walking {
-      animation: player-bob .15s steps(2,end) infinite;
+      animation: player-bob .15s steps(2, end) infinite;
     }
 
     @keyframes player-bob {
@@ -244,9 +244,10 @@
     }
 
     /*
-      스크린의 세모 문양 바로 위 확인 버튼.
-      가까이 가면 부드럽게 나타나고,
-      멀어지면 같은 속도로 스르르 사라집니다.
+      확인 버튼
+      세모 문양 바로 위에서 한 개만 등장
+      가까워지면 부드럽게 나타나고
+      멀어지면 같은 모션으로 부드럽게 사라짐
     */
     #confirm-button {
       position: absolute;
@@ -262,31 +263,26 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: translate(-50%, calc(-50% + 10px)) scale(.9);
+      transform: translate(-50%, calc(-50% + 10px)) scale(.92);
       box-shadow:
         0 0 0 3px #000,
-        0 0 10px rgba(255,255,255,.3);
-
+        0 0 10px rgba(255, 255, 255, .3);
       transition:
         opacity .34s ease,
-        transform .34s cubic-bezier(.2,.8,.25,1),
-        filter .34s ease,
+        transform .34s cubic-bezier(.2, .8, .25, 1),
         visibility 0s linear .34s;
-
       cursor: pointer;
+      will-change: opacity, transform;
     }
 
     #confirm-button.visible {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
-      filter: brightness(1);
       transform: translate(-50%, -50%) scale(1);
-
       transition:
         opacity .34s ease,
-        transform .34s cubic-bezier(.2,.8,.25,1),
-        filter .34s ease,
+        transform .34s cubic-bezier(.2, .8, .25, 1),
         visibility 0s linear 0s;
     }
 
@@ -294,9 +290,6 @@
       transform: translate(-50%, calc(-50% + 1px)) scale(.98);
     }
 
-    /*
-      대화창과 조이스틱 영역
-    */
     #ui-zone {
       position: relative;
       width: 100%;
@@ -352,7 +345,7 @@
       align-self: start;
       color: #fff;
 
-      /* 여기에요 여기!!! T0 질문 / 설명 글자 크기 */
+      /* T0 질문 / 설명 글자 크기 */
       font-size: clamp(20px, 5.1vw, 33px);
 
       line-height: 1.18;
@@ -382,12 +375,11 @@
 
     .t0-choice.active {
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255,255,255,.78);
+      text-shadow: 0 0 5px rgba(255, 255, 255, .78);
     }
 
     /*
       T1 행동 선택창
-      bottom 숫자가 커질수록 T1 창이 위로 올라갑니다.
     */
     #t1-panel {
       position: absolute;
@@ -418,7 +410,7 @@
       display: grid;
       align-content: start;
 
-      /* 여기에요 여기!!! T1 선택지 줄 간격 */
+      /* T1 선택지 줄 간격 */
       gap: 5.8%;
 
       padding: 6.5% 9% 15%;
@@ -432,8 +424,8 @@
       color: #fff;
       padding: 0;
 
-      /* 여기에요 여기!!! T1 선택지 글자 크기 */
-      font-size: clamp(13px, 3.75vw, 30px);
+      /* T1 선택지 글자 크기 */
+      font-size: clamp(13px, 3.65vw, 30px);
 
       line-height: 1.04;
       text-align: left;
@@ -445,12 +437,11 @@
     .t1-action:focus-visible {
       outline: 0;
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255,255,255,.78);
+      text-shadow: 0 0 5px rgba(255, 255, 255, .78);
     }
 
     /*
       조이스틱
-      bottom 숫자가 커질수록 조이스틱이 위로 올라갑니다.
     */
     #joystick-base {
       position: absolute;
@@ -468,8 +459,8 @@
       background: #000;
       box-shadow:
         0 0 0 5px #000,
-        0 0 0 7px rgba(255,255,255,.16),
-        0 0 9px rgba(255,255,255,.2);
+        0 0 0 7px rgba(255, 255, 255, .16),
+        0 0 9px rgba(255, 255, 255, .2);
       touch-action: none;
     }
 
@@ -483,12 +474,12 @@
 
     #joystick-base::before {
       inset: 13%;
-      border: 2px solid rgba(255,255,255,.85);
+      border: 2px solid rgba(255, 255, 255, .85);
     }
 
     #joystick-base::after {
       inset: 28%;
-      border: 2px solid rgba(255,255,255,.5);
+      border: 2px solid rgba(255, 255, 255, .5);
     }
 
     #joystick-knob {
@@ -501,7 +492,7 @@
       border-radius: 50%;
       background: #000;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 7px rgba(255,255,255,.3);
+      box-shadow: 0 0 7px rgba(255, 255, 255, .3);
       pointer-events: none;
     }
 
@@ -516,7 +507,7 @@
 
     #cut-overlay.active {
       opacity: 1;
-      animation: cut .22s steps(2,end) both;
+      animation: cut .22s steps(2, end) both;
     }
 
     @keyframes cut {
@@ -569,16 +560,6 @@
 
       #ui-zone {
         height: 370px;
-      }
-
-      #t1-panel {
-        bottom: 78px;
-      }
-
-      #joystick-base {
-        bottom: 78px;
-        width: 30%;
-        min-width: 102px;
       }
 
       .t1-action {
@@ -656,6 +637,7 @@
 
   <script>
     const NO_ROOM_URL = "no-room.html";
+    const CONFIRM_FADE_MS = 360;
 
     const COPY = {
       confirm: "확인",
@@ -757,6 +739,8 @@
       y: 0
     };
 
+    let confirmHideTimer = null;
+
     const clamp = (value, min, max) =>
       Math.max(min, Math.min(max, value));
 
@@ -775,18 +759,14 @@
     }
 
     function screenReact(element) {
-      const host = element.closest(
-        "#t0-panel, #t1-panel, #confirm-button"
-      );
+      const host = element.closest("#t0-panel, #t1-panel");
 
       if (!host) {
         return;
       }
 
       host.classList.remove("screen-react");
-
       void host.offsetWidth;
-
       host.classList.add("screen-react");
 
       window.setTimeout(() => {
@@ -837,7 +817,8 @@
             span.classList.add("glow");
           }
 
-          span.textContent = character === " " ? "\u00A0" : character;
+          span.textContent =
+            character === " " ? "\u00A0" : character;
 
           element.append(span);
         }
@@ -864,8 +845,7 @@
         );
       }
 
-      element._typingTimer =
-        window.setTimeout(next, startDelay);
+      element._typingTimer = window.setTimeout(next, startDelay);
     }
 
     function stopPanelTyping() {
@@ -1010,24 +990,35 @@
     }
 
     function showConfirm(item) {
-      confirmButton.style.left = `${item.buttonX}%`;
-      confirmButton.style.top = `${item.buttonY}%`;
-
-      const isNew =
+      const targetChanged = state.confirmId !== item.id;
+      const mustReveal =
         confirmButton.hidden ||
-        state.confirmId !== item.id;
+        !confirmButton.classList.contains("visible");
 
-      state.confirmId = item.id;
+      if (confirmHideTimer) {
+        clearTimeout(confirmHideTimer);
+        confirmHideTimer = null;
+      }
+
+      if (targetChanged || confirmButton.hidden) {
+        state.confirmId = item.id;
+        confirmButton.style.left = `${item.buttonX}%`;
+        confirmButton.style.top = `${item.buttonY}%`;
+      }
 
       if (confirmButton.hidden) {
         confirmButton.hidden = false;
+        confirmButton.classList.remove("visible");
+        void confirmButton.offsetWidth;
       }
 
-      requestAnimationFrame(() => {
-        confirmButton.classList.add("visible");
-      });
+      if (mustReveal) {
+        requestAnimationFrame(() => {
+          confirmButton.classList.add("visible");
+        });
+      }
 
-      if (isNew) {
+      if (targetChanged || !confirmButton.textContent.trim()) {
         typeText(confirmButton, COPY.confirm, {
           speed: 72
         });
@@ -1039,29 +1030,38 @@
         return;
       }
 
-      state.confirmId = null;
-      confirmButton.classList.remove("visible");
-
-      if (immediate) {
-        confirmButton.hidden = true;
-        stopTyping(confirmButton);
+      if (
+        !immediate &&
+        state.confirmId === null &&
+        !confirmButton.classList.contains("visible")
+      ) {
         return;
       }
 
-      const hideToken =
-        (confirmButton._hideToken || 0) + 1;
+      state.confirmId = null;
 
-      confirmButton._hideToken = hideToken;
+      if (confirmHideTimer) {
+        clearTimeout(confirmHideTimer);
+        confirmHideTimer = null;
+      }
 
-      window.setTimeout(() => {
-        if (
-          confirmButton._hideToken === hideToken &&
-          !confirmButton.classList.contains("visible")
-        ) {
+      confirmButton.classList.remove("visible");
+      stopTyping(confirmButton);
+
+      if (immediate) {
+        confirmButton.hidden = true;
+        confirmButton.textContent = "";
+        return;
+      }
+
+      confirmHideTimer = window.setTimeout(() => {
+        if (!confirmButton.classList.contains("visible")) {
           confirmButton.hidden = true;
-          stopTyping(confirmButton);
+          confirmButton.textContent = "";
         }
-      }, 360);
+
+        confirmHideTimer = null;
+      }, CONFIRM_FADE_MS);
     }
 
     function updateConfirm() {
@@ -1075,7 +1075,14 @@
         return;
       }
 
-      showConfirm(item);
+      const alreadyCorrect =
+        state.confirmId === item.id &&
+        !confirmButton.hidden &&
+        confirmButton.classList.contains("visible");
+
+      if (!alreadyCorrect) {
+        showConfirm(item);
+      }
     }
 
     function closeAllPanels() {
