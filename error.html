@@ -117,22 +117,25 @@
     const errorMessage = "잘못된 방에 입장하셨습니다.";
 
     /*
-      두 에러룸이 같은 소리를 쓰도록 파일 이름을 맞춰뒀어.
-      GitHub 맨 위 폴더에 error-type-01.mp3를 올리면 바로 재생됨.
-
-      다른 소리도 섞고 싶으면 아래처럼 한 줄을 더 추가하면 됨.
-      "error-type-02.mp3",
+      GitHub 맨 위 폴더에 올린 실제 소리 파일 이름.
+      대소문자까지 It.mp3와 똑같아야 함.
     */
     const textSoundFiles = [
-      "error-type-01.mp3"
+      "It.mp3"
     ];
 
     const textSoundVolume = 0.16;
 
     const typingSettings = {
       startDelay: 950,
+
+      // 글자 기본 속도: 숫자가 낮을수록 빨라짐
       characterDelay: 72,
+
+      // 공백에서 쉬는 시간
       wordPause: 230,
+
+      // 마침표 등 문장부호에서 쉬는 시간
       punctuationPause: 260
     };
 
@@ -195,8 +198,8 @@
       typedMessage.appendChild(characterElement);
 
       /*
-        공백은 단어 멈춤 역할만 하고,
-        실제 글자가 뜰 때만 커스텀 비프가 재생됨.
+        공백은 단어 멈춤만 만들고 소리는 내지 않음.
+        실제 글자가 나올 때만 It.mp3가 재생됨.
       */
       if (character !== " ") {
         playTextSound();
