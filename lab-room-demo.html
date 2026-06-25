@@ -465,21 +465,25 @@
       text-shadow: 0 0 5px rgba(255, 255, 255, .78);
     }
 
-    #t1-panel {
-      position: absolute;
-      left: 0;
-      bottom: 78px;
-      z-index: 2;
+ #t1-panel {
+  position: absolute;
+  left: 0;
 
-      /*
-        모든 선택지를 같은 크기로 유지하면서
-        긴 문장도 담기도록 창 폭을 조금 넓힘.
-      */
-      width: 74%;
-      aspect-ratio: 2470 / 1271;
-      overflow: hidden;
-    }
+  /*
+    T1 대화창 원래 세로 위치
+  */
+  bottom: 78px;
 
+  /*
+    T1 대화창 원래 크기
+    64%가 원래 값입니다.
+  */
+  width: 64%;
+  aspect-ratio: 2470 / 1271;
+  overflow: hidden;
+}
+
+    
     #t1-panel.is-locked {
       pointer-events: none;
     }
