@@ -43,10 +43,6 @@
       padding: 30px 14px 46px;
     }
 
-    /*
-      맨 위 제목
-      효과 없음 / 모션 없음 / 회색 / 조금 아래 / 조금 크게
-    */
     .room-title {
       margin: 16px 0 0;
       color: #9c9ca8;
@@ -56,11 +52,6 @@
       letter-spacing: .035em;
     }
 
-    /*
-      언더테일식 타이핑
-      글자는 딱딱하게 나타나고,
-      일부 글자에만 짧은 잔떨림 또는 글로우
-    */
     .typed-target {
       position: relative;
     }
@@ -83,6 +74,23 @@
       animation:
         type-pop .035s steps(1, end) forwards,
         tiny-glow .28s steps(2, end) .04s 1;
+    }
+
+    .typed-char.afterimage {
+      position: relative;
+    }
+
+    .typed-char.afterimage::after {
+      position: absolute;
+      top: 1px;
+      left: -2px;
+      z-index: -1;
+      content: attr(data-echo);
+      color: #b8b8c8;
+      opacity: 0;
+      filter: blur(.45px);
+      pointer-events: none;
+      animation: soft-afterimage .74s ease-out .03s both;
     }
 
     @keyframes type-pop {
@@ -121,15 +129,23 @@
       }
 
       45% {
-        text-shadow: 0 0 4px rgba(255, 255, 255, .75);
+        text-shadow: 0 0 4px rgba(255,255,255,.75);
         filter: brightness(1.55);
       }
     }
 
-    /*
-      대화창 화면 반응
-      확인 버튼에는 적용하지 않음
-    */
+    @keyframes soft-afterimage {
+      0% {
+        opacity: .48;
+        transform: translate(0, 0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(7px, -1px);
+      }
+    }
+
     .screen-react {
       animation: screen-react .12s steps(2, end) both;
     }
@@ -151,17 +167,11 @@
       }
     }
 
-    /*
-      게임 본 화면 위치
-    */
     #room-stage {
       position: relative;
       width: 100%;
       aspect-ratio: 1.52 / 1;
-
-      /* 게임 화면 전체를 아래로 내리는 곳 */
       margin-top: clamp(94px, 23vw, 120px);
-
       overflow: hidden;
       background: #000;
     }
@@ -186,22 +196,108 @@
       pointer-events: none;
     }
 
-    .removed-cover {
+    .screen-cover {
       position: absolute;
-      border: 2px solid rgba(255, 255, 255, .58);
-      background: #050507;
-      box-shadow: 0 0 8px rgba(255, 255, 255, .12);
+      background: #020203;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+    }
+
+    .fallen-screen {
+      position: absolute;
+      z-index: 2;
+      width: 17%;
+      aspect-ratio: 2.35 / 1;
+      border: 2px solid #d9d9e6;
+      background:
+        linear-gradient(
+          90deg,
+          transparent 12%,
+          rgba(255,255,255,.5) 12% 14%,
+          transparent 14% 86%,
+          rgba(255,255,255,.3) 86% 88%,
+          transparent 88%
+        ),
+        #11121b;
+      box-shadow:
+        inset 0 0 0 2px #000,
+        0 0 7px rgba(255,255,255,.16);
+      transform: translate(-50%, -50%) rotate(var(--tilt));
+    }
+
+    .fallen-screen::before {
+      position: absolute;
+      inset: 17% 13%;
+      content: "";
+      border: 1px solid rgba(255,255,255,.58);
+      background:
+        linear-gradient(
+          135deg,
+          transparent 46%,
+          rgba(255,255,255,.35) 47% 49%,
+          transparent 50%
+        );
+    }
+
+    .fallen-screen::after {
+      position: absolute;
+      top: 100%;
+      left: 64%;
+      width: 18%;
+      height: 32%;
+      content: "";
+      border-left: 2px solid rgba(255,255,255,.55);
+      transform: rotate(24deg);
+      transform-origin: top;
+    }
+
+    .void-screen {
+      position: absolute;
+      z-index: 2;
+      border: 2px solid rgba(255,255,255,.56);
+      background:
+        radial-gradient(
+          ellipse at 50% 50%,
+          #000 0 48%,
+          #090912 54%,
+          #000 71%
+        );
+      box-shadow:
+        inset 0 0 13px #000,
+        0 0 8px rgba(255,255,255,.12);
+    }
+
+    .void-screen::before,
+    .void-screen::after {
+      position: absolute;
+      content: "";
+      background: rgba(255,255,255,.42);
+    }
+
+    .void-screen::before {
+      top: 13%;
+      left: 15%;
+      width: 2px;
+      height: 72%;
+      transform: rotate(26deg);
+    }
+
+    .void-screen::after {
+      top: 53%;
+      left: 7%;
+      width: 84%;
+      height: 2px;
+      transform: rotate(-14deg);
     }
 
     #player {
       position: absolute;
       left: 50%;
       top: 76%;
-      z-index: 2;
+      z-index: 3;
       width: 5.5%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
-      filter: drop-shadow(0 0 2px rgba(255, 255, 255, .6));
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.6));
       pointer-events: none;
     }
 
@@ -243,15 +339,9 @@
       }
     }
 
-    /*
-      확인 버튼
-      세모 문양 바로 위에서 한 개만 등장
-      가까워지면 부드럽게 나타나고
-      멀어지면 같은 모션으로 부드럽게 사라짐
-    */
     #confirm-button {
       position: absolute;
-      z-index: 5;
+      z-index: 6;
       min-width: 82px;
       padding: 10px 17px 9px;
       border: 3px solid #fff;
@@ -266,7 +356,7 @@
       transform: translate(-50%, calc(-50% + 10px)) scale(.92);
       box-shadow:
         0 0 0 3px #000,
-        0 0 10px rgba(255, 255, 255, .3);
+        0 0 10px rgba(255,255,255,.3);
       transition:
         opacity .34s ease,
         transform .34s cubic-bezier(.2, .8, .25, 1),
@@ -304,9 +394,6 @@
       pointer-events: none;
     }
 
-    /*
-      T0 질문 / 설명창
-    */
     #t0-panel {
       position: absolute;
       top: 24px;
@@ -344,10 +431,7 @@
     #t0-text {
       align-self: start;
       color: #fff;
-
-      /* T0 질문 / 설명 글자 크기 */
       font-size: clamp(20px, 5.1vw, 33px);
-
       line-height: 1.18;
       letter-spacing: .01em;
       white-space: pre-wrap;
@@ -375,22 +459,20 @@
 
     .t0-choice.active {
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255, 255, 255, .78);
+      text-shadow: 0 0 5px rgba(255,255,255,.78);
     }
 
-    /*
-      T1 행동 선택창
-    */
     #t1-panel {
       position: absolute;
       left: 0;
-
-      /* T1 창을 위로 올리는 곳 */
       bottom: 78px;
-
       width: 64%;
       aspect-ratio: 2470 / 1271;
       overflow: hidden;
+    }
+
+    #t1-panel.is-locked {
+      pointer-events: none;
     }
 
     #t1-panel .frame-crop img {
@@ -409,10 +491,7 @@
       inset: 0;
       display: grid;
       align-content: start;
-
-      /* T1 선택지 줄 간격 */
       gap: 5.8%;
-
       padding: 6.5% 9% 15%;
     }
 
@@ -425,7 +504,7 @@
       padding: 0;
 
       /* T1 선택지 글자 크기 */
-      font-size: clamp(13px, 3.65vw, 30px);
+      font-size: clamp(14px, 3.95vw, 32px);
 
       line-height: 1.04;
       text-align: left;
@@ -433,23 +512,21 @@
       cursor: pointer;
     }
 
+    .t1-action.is-long {
+      font-size: clamp(12px, 3.35vw, 28px);
+    }
+
     .t1-action:active,
     .t1-action:focus-visible {
       outline: 0;
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255, 255, 255, .78);
+      text-shadow: 0 0 5px rgba(255,255,255,.78);
     }
 
-    /*
-      조이스틱
-    */
     #joystick-base {
       position: absolute;
       right: 3%;
-
-      /* 조이스틱을 위로 올리는 곳 */
       bottom: 78px;
-
       width: 30%;
       min-width: 108px;
       max-width: 156px;
@@ -459,8 +536,8 @@
       background: #000;
       box-shadow:
         0 0 0 5px #000,
-        0 0 0 7px rgba(255, 255, 255, .16),
-        0 0 9px rgba(255, 255, 255, .2);
+        0 0 0 7px rgba(255,255,255,.16),
+        0 0 9px rgba(255,255,255,.2);
       touch-action: none;
     }
 
@@ -474,12 +551,12 @@
 
     #joystick-base::before {
       inset: 13%;
-      border: 2px solid rgba(255, 255, 255, .85);
+      border: 2px solid rgba(255,255,255,.85);
     }
 
     #joystick-base::after {
       inset: 28%;
-      border: 2px solid rgba(255, 255, 255, .5);
+      border: 2px solid rgba(255,255,255,.5);
     }
 
     #joystick-knob {
@@ -492,7 +569,7 @@
       border-radius: 50%;
       background: #000;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 7px rgba(255, 255, 255, .3);
+      box-shadow: 0 0 7px rgba(255,255,255,.3);
       pointer-events: none;
     }
 
@@ -507,7 +584,12 @@
 
     #cut-overlay.active {
       opacity: 1;
+      pointer-events: auto;
       animation: cut .22s steps(2, end) both;
+    }
+
+    #cut-overlay.binary-return {
+      animation: binary-return .56s steps(3, end) both;
     }
 
     @keyframes cut {
@@ -518,6 +600,42 @@
       100% {
         background: #000;
         opacity: 1;
+      }
+    }
+
+    @keyframes binary-return {
+      0% {
+        opacity: 0;
+        background: #000;
+      }
+
+      20% {
+        opacity: 1;
+        background:
+          linear-gradient(
+            0deg,
+            #fff 0 9%,
+            #000 9% 18%,
+            #fff 18% 21%,
+            #000 21% 100%
+          );
+      }
+
+      48% {
+        background:
+          linear-gradient(
+            0deg,
+            #000 0 42%,
+            #fff 42% 46%,
+            #000 46% 74%,
+            #fff 74% 78%,
+            #000 78% 100%
+          );
+      }
+
+      100% {
+        opacity: 1;
+        background: #000;
       }
     }
 
@@ -566,22 +684,16 @@
         font-size: 13px;
       }
 
+      .t1-action.is-long {
+        font-size: 12px;
+      }
+
       #t0-text {
         font-size: 18px;
       }
 
       .t0-choice {
         font-size: 15px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
       }
     }
   </style>
@@ -620,10 +732,10 @@
         </div>
 
         <div class="content">
-          <button class="t1-action typed-target" data-action="inspect" type="button"></button>
-          <button class="t1-action typed-target" data-action="drop" type="button"></button>
-          <button class="t1-action typed-target" data-action="peek" type="button"></button>
-          <button class="t1-action typed-target" data-action="quit" type="button"></button>
+          <button class="t1-action typed-target" type="button"></button>
+          <button class="t1-action typed-target" type="button"></button>
+          <button class="t1-action typed-target" type="button"></button>
+          <button class="t1-action typed-target" type="button"></button>
         </div>
       </section>
 
@@ -636,20 +748,273 @@
   <div id="cut-overlay" aria-hidden="true"></div>
 
   <script>
-    const NO_ROOM_URL = "no-room.html";
+    const BINARY_RETURN_URL = "index.html?return=binary";
     const CONFIRM_FADE_MS = 360;
 
-    const COPY = {
-      confirm: "확인",
-      question: "스크린을 확인하시겠습니까?",
-      yes: "• 네",
-      no: "• 아니오",
-      actions: [
-        "1. 조사한다",
-        "2. 바닥으로 버린다.",
-        "3. 안을 자세히 들여다 본다.",
-        "4. 관둔다"
-      ]
+    const S = (text, options = {}) => ({
+      text,
+      ...options
+    });
+
+    const P = (...segments) => ({
+      segments
+    });
+
+    const STORIES = {
+      screen01: {
+        opening: [
+          P(
+            S("스크린에는 오래된 관측 로그가 남아 있다.\n"),
+            S("같은 좌표를 반복해서 가리키는 흔적만 남아 있다.")
+          )
+        ],
+
+        actions: [
+          {
+            id: "knock",
+            label: "1. 스크린을 두드린다.",
+            pages: [
+              P(
+                S("스크린에게 노크를 했다.\n"),
+                S("...", {
+                  speed: 240,
+                  pauseAfter: 220
+                }),
+                S("아무런 반응이 없다.", {
+                  speed: 48
+                })
+              )
+            ]
+          },
+          {
+            id: "kick",
+            label: "2. 스크린을 걷어찬다.",
+            pages: [
+              P(
+                S("스크린을 걷어찼다.\n"),
+                S("아야하는 소리가 들리는 것 같다.\n", {
+                  pauseBefore: 120
+                }),
+                S("스크린은 시무룩해졌다.", {
+                  pauseBefore: 180
+                })
+              )
+            ]
+          },
+          {
+            id: "break",
+            label: "3. 부셔본다.",
+            destroy: "fallen",
+            pages: [
+              P(
+                S("스크린을 있는 힘껏 주먹으로 내리쳤다.\n"),
+                S("...", {
+                  speed: 240,
+                  pauseAfter: 220
+                }),
+                S("부셔졌다. 더 이상 스크린의 형체가 아니다.", {
+                  speed: 52
+                })
+              )
+            ]
+          },
+          {
+            id: "return",
+            label: "4. 돌아간다.",
+            returnOnly: true
+          }
+        ]
+      },
+
+      screen02: {
+        opening: [
+          P(
+            S("화면 안쪽에는 흐릿한 도면이 열려 있다.\n"),
+            S("출입문이 아니라, 안쪽으로 향하는 틈처럼 보인다.")
+          )
+        ],
+
+        actions: [
+          {
+            id: "stare",
+            label: "1. 스크린을 계속 바라본다.",
+            pages: [
+              P(
+                S("스크린을 계속 유심히 바라봤다.\n"),
+                S("누군가가 망치질 한 흔적이 보인다.\n"),
+                S("...", {
+                  speed: 120,
+                  pauseAfter: 110
+                }),
+                S("보아하니, ", {
+                  pauseAfter: 120
+                }),
+                S("가상의 물질로 만들어진 듯 하다.")
+              ),
+              P(
+                S("...", {
+                  speed: 120,
+                  pauseAfter: 130
+                }),
+                S("어딘가 정성스러운 손길의 냄새가 느껴진다.")
+              )
+            ]
+          },
+          {
+            id: "pet",
+            label: "2. 쓰다듬는다.",
+            pages: [
+              P(
+                S("스크린을 천천히 쓰다듬었다.\n"),
+                S("내부에서 돌아가던 모터 소리가 눈에 띄게 활발해졌다.\n", {
+                  pauseBefore: 110
+                }),
+                S("고양이처럼 기분 좋게 가르랑거리는 듯했다.", {
+                  pauseBefore: 110
+                })
+              ),
+              P(
+                S("띠로링, 하는 맑은 알림음이 연달아 울렸다.\n"),
+                S("왠지 잘했다고 칭찬해줘야 할 것 같은 반응이다.", {
+                  pauseBefore: 120
+                })
+              )
+            ]
+          },
+          {
+            id: "break",
+            label: "3. 부셔본다.",
+            destroy: "fallen",
+            pages: [
+              P(
+                S("스크린을 있는 힘껏 발로 짓밟았다.\n"),
+                S("...", {
+                  speed: 240,
+                  pauseAfter: 180
+                }),
+                S("글자가 한 글자씩, 버티듯 이어지다 가동이 멎었다.\n", {
+                  speed: 78
+                }),
+                S("띠링—...", {
+                  speed: 88,
+                  pauseAfter: 140
+                }),
+                S("\n알림음과 함께, 완전히 멈췄다.\n", {
+                  pauseBefore: 100
+                }),
+                S("...", {
+                  speed: 240,
+                  pauseAfter: 150
+                }),
+                S("더 이상 스크린의 형체 조차 남아 있지 않았다.")
+              )
+            ]
+          },
+          {
+            id: "return",
+            label: "4. 돌아간다.",
+            returnOnly: true
+          }
+        ]
+      },
+
+      screen03: {
+        opening: [
+          P(
+            S("스크린 표면은 멀쩡해 보인다.\n"),
+            S("하지만 안쪽에서 미세한 떨림이 계속 느껴진다.")
+          )
+        ],
+
+        actions: [
+          {
+            id: "inspect",
+            label: "1. 스크린을 조사한다.",
+            pages: [
+              P(
+                S("낡고 이끼가 끼어있는 가상의 스크린이다.\n"),
+                S("만져보려 손을 뻗었지만, 허공만 만져진다.\n", {
+                  pauseBefore: 100
+                }),
+                S("두께는 30mm로, 재질은 공기보다 얇다", {
+                  pauseBefore: 100
+                })
+              ),
+              P(
+                S("...", {
+                  speed: 140,
+                  pauseAfter: 120
+                }),
+                S("화면이 희미하게 떨리고 있다.")
+              )
+            ]
+          },
+          {
+            id: "message",
+            label: "2. 다음 화면으로 넘겨본다.",
+            pages: [
+              P(
+                S("스크린에서 숨겨진 문장이 나왔다.\n\n"),
+                S("힘들고, 역경이 몰아쳐도...\n", {
+                  afterimage: true,
+                  pauseBefore: 120
+                }),
+                S("당신은 계속 나아갈 수 있습니다.\n", {
+                  afterimage: true,
+                  pauseBefore: 100
+                }),
+                S("심해와, 이곳에 남겨진 우리들은\n", {
+                  afterimage: true,
+                  pauseBefore: 100
+                }),
+                S("당신을 기다리고 있습니다.", {
+                  afterimage: true,
+                  pauseBefore: 100
+                })
+              ),
+              P(
+                S("따뜻한 의자에 앉아\n", {
+                  afterimage: true
+                }),
+                S("아무 걱정 없이 쉬어 갈 그날을 위해.", {
+                  afterimage: true,
+                  pauseBefore: 100
+                })
+              ),
+              P(
+                S("......", {
+                  speed: 190,
+                  pauseAfter: 160
+                }),
+                S("글자가, 그곳에서 끊겼다.")
+              )
+            ]
+          },
+          {
+            id: "break",
+            label: "3. 부셔본다.",
+            destroy: "void",
+            pages: [
+              P(
+                S("스크린을 있는 힘껏 주먹으로 내리쳤다.\n"),
+                S("...", {
+                  speed: 240,
+                  pauseAfter: 180
+                }),
+                S("스크린이 산산조각 났다.\n"),
+                S("검은 공간이 드러났다.", {
+                  pauseBefore: 120
+                })
+              )
+            ]
+          },
+          {
+            id: "inside",
+            label: "4. 스크린의 안쪽을 들여다본다.",
+            returnBinary: true
+          }
+        ]
+      }
     };
 
     const OBJECTS = [
@@ -663,8 +1028,9 @@
         coverY: 28,
         coverW: 12,
         coverH: 25,
-        description:
-          "스크린에는 오래된 관측 로그가 남아 있다.\n같은 좌표를 반복해서 가리키는 흔적만 남아 있다."
+        fallenX: 17,
+        fallenY: 70,
+        fallenTilt: "-9deg"
       },
       {
         id: "screen02",
@@ -676,8 +1042,9 @@
         coverY: 28,
         coverW: 12,
         coverH: 25,
-        description:
-          "화면 안쪽에는 흐릿한 도면이 열려 있다.\n출입문이 아니라, 안쪽으로 향하는 틈처럼 보인다."
+        fallenX: 50,
+        fallenY: 70,
+        fallenTilt: "6deg"
       },
       {
         id: "screen03",
@@ -689,8 +1056,9 @@
         coverY: 28,
         coverW: 12,
         coverH: 25,
-        description:
-          "스크린 표면은 멀쩡해 보인다.\n하지만 안쪽에서 미세한 떨림이 계속 느껴진다."
+        fallenX: 83,
+        fallenY: 70,
+        fallenTilt: "-4deg"
       }
     ];
 
@@ -722,7 +1090,8 @@
       activeId: null,
       confirmId: null,
       selectedQuestion: "yes",
-      removed: new Set(),
+      destroyed: new Map(),
+      reading: null,
       textScene: 0
     };
 
@@ -766,7 +1135,9 @@
       }
 
       host.classList.remove("screen-react");
+
       void host.offsetWidth;
+
       host.classList.add("screen-react");
 
       window.setTimeout(() => {
@@ -774,33 +1145,67 @@
       }, 130);
     }
 
-    function typeText(element, text, options = {}) {
+    function typePage(element, page, options = {}) {
       stopTyping(element);
 
       const token = element._typingToken;
-      const speed = options.speed ?? 58;
-      const startDelay = options.startDelay ?? 0;
-      const chars = Array.from(text);
+      const segments =
+        typeof page === "string"
+          ? [S(page)]
+          : page.segments;
+
+      const baseSpeed = options.speed ?? 58;
 
       element.textContent = "";
-      element.setAttribute("aria-label", text.replace(/\n/g, " "));
+      element.setAttribute(
+        "aria-label",
+        segments
+          .map((segment) => segment.text)
+          .join("")
+          .replace(/\n/g, " ")
+      );
 
-      let index = 0;
+      let segmentIndex = 0;
+      let charIndex = 0;
+      let segmentStarted = false;
 
-      function next() {
+      function continueTyping() {
         if (element._typingToken !== token) {
           return;
         }
 
-        if (index >= chars.length) {
-          if (typeof options.onComplete === "function") {
-            options.onComplete();
-          }
-
+        if (segmentIndex >= segments.length) {
+          options.onComplete?.();
           return;
         }
 
-        const character = chars[index];
+        const segment = segments[segmentIndex];
+
+        if (charIndex === 0 && !segmentStarted) {
+          segmentStarted = true;
+
+          if (segment.pauseBefore) {
+            element._typingTimer = window.setTimeout(
+              continueTyping,
+              segment.pauseBefore
+            );
+            return;
+          }
+        }
+
+        if (charIndex >= segment.text.length) {
+          segmentIndex += 1;
+          charIndex = 0;
+          segmentStarted = false;
+
+          element._typingTimer = window.setTimeout(
+            continueTyping,
+            segment.pauseAfter || 0
+          );
+          return;
+        }
+
+        const character = segment.text[charIndex];
 
         if (character === "\n") {
           element.append(document.createElement("br"));
@@ -811,10 +1216,16 @@
 
           const roll = Math.random();
 
-          if (roll > .88) {
+          if (roll > .9) {
             span.classList.add("glitch");
-          } else if (roll > .78) {
+          } else if (roll > .81) {
             span.classList.add("glow");
+          }
+
+          if (segment.afterimage) {
+            span.classList.add("afterimage");
+            span.dataset.echo =
+              character === " " ? "" : character;
           }
 
           span.textContent =
@@ -825,27 +1236,30 @@
 
         screenReact(element);
 
-        index += 1;
+        charIndex += 1;
 
         let delay =
-          speed +
-          Math.round((Math.random() - .5) * 34);
+          (segment.speed ?? baseSpeed) +
+          Math.round((Math.random() - .5) * 26);
 
         if (/[.,?!]/.test(character)) {
-          delay += 80;
+          delay += 70;
         }
 
         if (character === " ") {
-          delay -= 10;
+          delay -= 8;
         }
 
         element._typingTimer = window.setTimeout(
-          next,
-          Math.max(34, delay)
+          continueTyping,
+          Math.max(32, delay)
         );
       }
 
-      element._typingTimer = window.setTimeout(next, startDelay);
+      element._typingTimer = window.setTimeout(
+        continueTyping,
+        options.startDelay ?? 0
+      );
     }
 
     function stopPanelTyping() {
@@ -855,76 +1269,7 @@
       stopTyping(t0Yes);
       stopTyping(t0No);
 
-      actionButtons.forEach((button) => {
-        stopTyping(button);
-      });
-    }
-
-    function typeQuestion() {
-      const scene = ++state.textScene;
-
-      stopTyping(t0Text);
-      stopTyping(t0Yes);
-      stopTyping(t0No);
-
-      t0Yes.disabled = true;
-      t0No.disabled = true;
-
-      typeText(t0Text, COPY.question, {
-        speed: 62,
-        onComplete: () => {
-          if (scene !== state.textScene) {
-            return;
-          }
-
-          typeText(t0Yes, COPY.yes, {
-            speed: 68,
-            onComplete: () => {
-              if (scene === state.textScene) {
-                t0Yes.disabled = false;
-              }
-            }
-          });
-
-          window.setTimeout(() => {
-            if (scene !== state.textScene) {
-              return;
-            }
-
-            typeText(t0No, COPY.no, {
-              speed: 68,
-              onComplete: () => {
-                if (scene === state.textScene) {
-                  t0No.disabled = false;
-                }
-              }
-            });
-          }, 120);
-        }
-      });
-    }
-
-    function typeActions() {
-      const scene = ++state.textScene;
-      let delay = 0;
-
-      actionButtons.forEach((button, index) => {
-        button.disabled = true;
-
-        const label = COPY.actions[index];
-
-        typeText(button, label, {
-          speed: 50,
-          startDelay: delay,
-          onComplete: () => {
-            if (scene === state.textScene) {
-              button.disabled = false;
-            }
-          }
-        });
-
-        delay += label.length * 50 + 90;
-      });
+      actionButtons.forEach(stopTyping);
     }
 
     function updatePlayer() {
@@ -937,7 +1282,7 @@
       let shortest = Infinity;
 
       for (const item of OBJECTS) {
-        if (state.removed.has(item.id)) {
+        if (state.destroyed.has(item.id)) {
           continue;
         }
 
@@ -969,29 +1314,65 @@
       );
     }
 
-    function renderRemoved() {
+    function renderStageEffects() {
       stageEffects.innerHTML = "";
 
-      for (const item of OBJECTS) {
-        if (!state.removed.has(item.id)) {
+      for (const [id, effect] of state.destroyed.entries()) {
+        const item = byId(id);
+
+        if (!item) {
           continue;
         }
 
         const cover = document.createElement("div");
 
-        cover.className = "removed-cover";
+        cover.className = "screen-cover";
         cover.style.left = `${item.coverX}%`;
         cover.style.top = `${item.coverY}%`;
         cover.style.width = `${item.coverW}%`;
         cover.style.height = `${item.coverH}%`;
 
         stageEffects.append(cover);
+
+        if (effect === "fallen") {
+          const fallen = document.createElement("div");
+
+          fallen.className = "fallen-screen";
+          fallen.style.left = `${item.fallenX}%`;
+          fallen.style.top = `${item.fallenY}%`;
+          fallen.style.setProperty(
+            "--tilt",
+            item.fallenTilt
+          );
+
+          stageEffects.append(fallen);
+        }
+
+        if (effect === "void") {
+          const hole = document.createElement("div");
+
+          hole.className = "void-screen";
+          hole.style.left = `${item.coverX}%`;
+          hole.style.top = `${item.coverY}%`;
+          hole.style.width = `${item.coverW}%`;
+          hole.style.height = `${item.coverH}%`;
+
+          stageEffects.append(hole);
+        }
       }
     }
 
+    function destroyScreen(id, effect) {
+      state.destroyed.set(id, effect);
+      renderStageEffects();
+      hideConfirm(true);
+    }
+
     function showConfirm(item) {
-      const targetChanged = state.confirmId !== item.id;
-      const mustReveal =
+      const targetChanged =
+        state.confirmId !== item.id;
+
+      const needsReveal =
         confirmButton.hidden ||
         !confirmButton.classList.contains("visible");
 
@@ -1009,19 +1390,21 @@
       if (confirmButton.hidden) {
         confirmButton.hidden = false;
         confirmButton.classList.remove("visible");
+
         void confirmButton.offsetWidth;
       }
 
-      if (mustReveal) {
+      if (needsReveal) {
         requestAnimationFrame(() => {
           confirmButton.classList.add("visible");
         });
       }
 
       if (targetChanged || !confirmButton.textContent.trim()) {
-        typeText(confirmButton, COPY.confirm, {
-          speed: 72
-        });
+        typePage(
+          confirmButton,
+          P(S("확인", { speed: 72 }))
+        );
       }
     }
 
@@ -1085,14 +1468,173 @@
       }
     }
 
+    function setT1Locked(locked) {
+      t1Panel.classList.toggle("is-locked", locked);
+    }
+
+    function setT1Actions(actions) {
+      actionButtons.forEach((button, index) => {
+        const action = actions[index];
+
+        stopTyping(button);
+        button.textContent = "";
+        button.dataset.action = action.id;
+        button.classList.toggle(
+          "is-long",
+          action.label.length > 16
+        );
+        button.disabled = true;
+      });
+    }
+
+    function typeT1Actions(actions) {
+      const scene = ++state.textScene;
+      let delay = 0;
+
+      setT1Actions(actions);
+
+      actionButtons.forEach((button, index) => {
+        const action = actions[index];
+
+        typePage(
+          button,
+          P(S(action.label, { speed: 50 })),
+          {
+            startDelay: delay,
+            onComplete: () => {
+              if (scene === state.textScene) {
+                button.disabled = false;
+              }
+            }
+          }
+        );
+
+        delay += action.label.length * 50 + 100;
+      });
+    }
+
+    function typeQuestion() {
+      const scene = ++state.textScene;
+
+      t0Yes.disabled = true;
+      t0No.disabled = true;
+
+      typePage(
+        t0Text,
+        P(S("스크린을 확인하시겠습니까?", { speed: 62 })),
+        {
+          onComplete: () => {
+            if (scene !== state.textScene) {
+              return;
+            }
+
+            typePage(
+              t0Yes,
+              P(S("• 네", { speed: 68 })),
+              {
+                onComplete: () => {
+                  if (scene === state.textScene) {
+                    t0Yes.disabled = false;
+                  }
+                }
+              }
+            );
+
+            window.setTimeout(() => {
+              if (scene !== state.textScene) {
+                return;
+              }
+
+              typePage(
+                t0No,
+                P(S("• 아니오", { speed: 68 })),
+                {
+                  onComplete: () => {
+                    if (scene === state.textScene) {
+                      t0No.disabled = false;
+                    }
+                  }
+                }
+              );
+            }, 120);
+          }
+        }
+      );
+    }
+
+    function showReadingPage() {
+      const reading = state.reading;
+
+      if (!reading) {
+        return;
+      }
+
+      reading.ready = false;
+
+      typePage(
+        t0Text,
+        reading.pages[reading.index],
+        {
+          onComplete: () => {
+            if (state.reading === reading) {
+              reading.ready = true;
+            }
+          }
+        }
+      );
+    }
+
+    function startReading(pages, onFinished, options = {}) {
+      state.mode = "reading";
+
+      state.reading = {
+        pages,
+        index: 0,
+        ready: false,
+        onFinished
+      };
+
+      t0Panel.hidden = false;
+      t0Panel.classList.add("is-message");
+      t0Choices.hidden = true;
+
+      if (options.lockT1) {
+        setT1Locked(true);
+      }
+
+      showReadingPage();
+    }
+
+    function advanceReading() {
+      const reading = state.reading;
+
+      if (!reading || !reading.ready) {
+        return;
+      }
+
+      if (reading.index < reading.pages.length - 1) {
+        reading.index += 1;
+        showReadingPage();
+        return;
+      }
+
+      const done = reading.onFinished;
+
+      state.reading = null;
+
+      done?.();
+    }
+
     function closeAllPanels() {
       state.mode = "free";
       state.activeId = null;
+      state.reading = null;
 
       stopPanelTyping();
 
       t0Panel.hidden = true;
       t1Panel.hidden = true;
+      t1Panel.classList.remove("is-locked");
       t0Panel.classList.remove("is-message");
 
       t0Choices.hidden = false;
@@ -1109,51 +1651,33 @@
       state.selectedQuestion = "yes";
 
       hideConfirm(true);
+      stopPanelTyping();
 
       t0Panel.classList.remove("is-message");
       t0Choices.hidden = false;
-
       t0Panel.hidden = false;
       t1Panel.hidden = true;
+      t1Panel.classList.remove("is-locked");
 
       updateQuestionSelection();
       typeQuestion();
     }
 
     function openT1Actions() {
-      if (!state.activeId) {
+      const story = STORIES[state.activeId];
+
+      if (!story) {
+        closeAllPanels();
         return;
       }
 
       state.mode = "actions";
 
-      t0Choices.hidden = true;
-      stopTyping(t0Yes);
-      stopTyping(t0No);
-
       t0Panel.hidden = false;
       t1Panel.hidden = false;
 
-      typeActions();
-    }
-
-    function showMessage(text) {
-      state.mode = "message";
-
-      state.textScene += 1;
-
-      stopTyping(t0Text);
-      stopTyping(t0Yes);
-      stopTyping(t0No);
-
-      t0Panel.classList.add("is-message");
-      t0Choices.hidden = true;
-      t0Panel.hidden = false;
-      t1Panel.hidden = false;
-
-      typeText(t0Text, text, {
-        speed: 56
-      });
+      setT1Locked(false);
+      typeT1Actions(story.actions);
     }
 
     function answerQuestion(answer) {
@@ -1162,54 +1686,78 @@
       }
 
       t0Choices.hidden = true;
+
       stopTyping(t0Yes);
       stopTyping(t0No);
 
-      if (answer === "yes") {
-        openT1Actions();
-      } else {
+      if (answer === "no") {
         closeAllPanels();
+        return;
       }
+
+      const story = STORIES[state.activeId];
+
+      if (!story) {
+        closeAllPanels();
+        return;
+      }
+
+      startReading(
+        story.opening,
+        () => openT1Actions(),
+        {
+          lockT1: false
+        }
+      );
     }
 
-    function runT1Action(action) {
+    function returnToBinary() {
+      state.mode = "cut";
+
+      cutOverlay.classList.remove("active");
+      cutOverlay.classList.add("active", "binary-return");
+
+      window.setTimeout(() => {
+        window.location.href = BINARY_RETURN_URL;
+      }, 560);
+    }
+
+    function runT1Action(actionId) {
       if (state.mode !== "actions") {
         return;
       }
 
-      const item = byId(state.activeId);
+      const story = STORIES[state.activeId];
 
-      if (!item) {
+      const action = story?.actions.find(
+        (item) => item.id === actionId
+      );
+
+      if (!action) {
+        return;
+      }
+
+      if (action.returnOnly) {
         closeAllPanels();
         return;
       }
 
-      if (action === "inspect") {
-        showMessage(item.description);
+      if (action.returnBinary) {
+        returnToBinary();
         return;
       }
 
-      if (action === "drop") {
-        state.removed.add(item.id);
-        renderRemoved();
-        showMessage("스크린을 바닥으로 버렸다.");
-        return;
+      if (action.destroy) {
+        destroyScreen(state.activeId, action.destroy);
       }
 
-      if (action === "peek") {
-        state.mode = "cut";
-        cutOverlay.classList.add("active");
-
-        window.setTimeout(() => {
-          window.location.href = NO_ROOM_URL;
-        }, 220);
-
-        return;
-      }
-
-      if (action === "quit") {
-        closeAllPanels();
-      }
+      startReading(
+        action.pages,
+        () => closeAllPanels(),
+        {
+          lockT1: true
+        }
+      );
     }
 
     function moveVector() {
@@ -1238,8 +1786,10 @@
 
     function setJoystick(clientX, clientY) {
       const rect = joystickBase.getBoundingClientRect();
+
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
+
       const maxRadius = rect.width * .28;
 
       const dx = clientX - centerX;
@@ -1294,9 +1844,23 @@
       });
     });
 
+    document.addEventListener("click", (event) => {
+      if (state.mode !== "reading") {
+        return;
+      }
+
+      if (event.target.closest("button")) {
+        return;
+      }
+
+      advanceReading();
+    });
+
     joystickBase.addEventListener("pointerdown", (event) => {
       joystick.active = true;
+
       joystickBase.setPointerCapture(event.pointerId);
+
       setJoystick(event.clientX, event.clientY);
     });
 
@@ -1308,12 +1872,6 @@
 
     joystickBase.addEventListener("pointerup", resetJoystick);
     joystickBase.addEventListener("pointercancel", resetJoystick);
-
-    document.addEventListener("pointerdown", () => {
-      if (state.mode === "message") {
-        closeAllPanels();
-      }
-    });
 
     document.addEventListener("keydown", (event) => {
       const key = event.key.toLowerCase();
@@ -1387,21 +1945,29 @@
         return;
       }
 
+      if (state.mode === "reading") {
+        if (key === "enter" || key === " ") {
+          advanceReading();
+        }
+
+        return;
+      }
+
       if (state.mode === "actions") {
         if (key === "1") {
-          runT1Action("inspect");
+          runT1Action(actionButtons[0].dataset.action);
         }
 
         if (key === "2") {
-          runT1Action("drop");
+          runT1Action(actionButtons[1].dataset.action);
         }
 
         if (key === "3") {
-          runT1Action("peek");
+          runT1Action(actionButtons[2].dataset.action);
         }
 
         if (key === "4" || key === "escape") {
-          runT1Action("quit");
+          runT1Action(actionButtons[3].dataset.action);
         }
       }
     });
@@ -1470,7 +2036,7 @@
     }
 
     updatePlayer();
-    renderRemoved();
+    renderStageEffects();
     closeAllPanels();
     requestAnimationFrame(loop);
   </script>
