@@ -61,11 +61,6 @@
       line-height: 1;
     }
 
-    /*
-      언더테일식에 가깝게:
-      글자는 딱딱하게 찍히고,
-      일부 글자만 가끔 잔떨림/글로우.
-    */
     .typed-char {
       display: inline-block;
       min-width: .08em;
@@ -181,10 +176,7 @@
       position: relative;
       width: 100%;
       aspect-ratio: 1.52 / 1;
-
-      /* 게임 화면 전체 아래 위치 */
       margin-top: clamp(94px, 23vw, 120px);
-
       overflow: hidden;
       background: #000;
     }
@@ -212,7 +204,7 @@
     .screen-cover {
       position: absolute;
       background: #020203;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
     }
 
     .fallen-screen {
@@ -225,15 +217,15 @@
         linear-gradient(
           90deg,
           transparent 12%,
-          rgba(255, 255, 255, .5) 12% 14%,
+          rgba(255,255,255,.5) 12% 14%,
           transparent 14% 86%,
-          rgba(255, 255, 255, .3) 86% 88%,
+          rgba(255,255,255,.3) 86% 88%,
           transparent 88%
         ),
         #11121b;
       box-shadow:
         inset 0 0 0 2px #000,
-        0 0 7px rgba(255, 255, 255, .16);
+        0 0 7px rgba(255,255,255,.16);
       transform: translate(-50%, -50%) rotate(var(--tilt));
     }
 
@@ -241,12 +233,12 @@
       position: absolute;
       inset: 17% 13%;
       content: "";
-      border: 1px solid rgba(255, 255, 255, .58);
+      border: 1px solid rgba(255,255,255,.58);
       background:
         linear-gradient(
           135deg,
           transparent 46%,
-          rgba(255, 255, 255, .35) 47% 49%,
+          rgba(255,255,255,.35) 47% 49%,
           transparent 50%
         );
     }
@@ -258,7 +250,7 @@
       width: 18%;
       height: 32%;
       content: "";
-      border-left: 2px solid rgba(255, 255, 255, .55);
+      border-left: 2px solid rgba(255,255,255,.55);
       transform: rotate(24deg);
       transform-origin: top;
     }
@@ -266,7 +258,7 @@
     .void-screen {
       position: absolute;
       z-index: 2;
-      border: 2px solid rgba(255, 255, 255, .56);
+      border: 2px solid rgba(255,255,255,.56);
       background:
         radial-gradient(
           ellipse at 50% 50%,
@@ -276,14 +268,14 @@
         );
       box-shadow:
         inset 0 0 13px #000,
-        0 0 8px rgba(255, 255, 255, .12);
+        0 0 8px rgba(255,255,255,.12);
     }
 
     .void-screen::before,
     .void-screen::after {
       position: absolute;
       content: "";
-      background: rgba(255, 255, 255, .42);
+      background: rgba(255,255,255,.42);
     }
 
     .void-screen::before {
@@ -310,7 +302,7 @@
       width: 5.5%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
-      filter: drop-shadow(0 0 2px rgba(255, 255, 255, .6));
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.6));
       pointer-events: none;
     }
 
@@ -368,7 +360,7 @@
       transform: translate(-50%, calc(-50% + 10px)) scale(.92);
       box-shadow:
         0 0 0 3px #000,
-        0 0 10px rgba(255, 255, 255, .3);
+        0 0 10px rgba(255,255,255,.3);
       transition:
         opacity .34s ease,
         transform .34s cubic-bezier(.2, .8, .25, 1),
@@ -477,13 +469,85 @@
       position: absolute;
       left: 0;
       bottom: 78px;
-      width: 64%;
+      z-index: 2;
+
+      /*
+        모든 선택지를 같은 크기로 유지하면서
+        긴 문장도 담기도록 창 폭을 조금 넓힘.
+      */
+      width: 74%;
       aspect-ratio: 2470 / 1271;
       overflow: hidden;
     }
 
     #t1-panel.is-locked {
       pointer-events: none;
+    }
+
+    /*
+      선택지는 타이핑하지 않고 한 번에 등장.
+      첫 순간에만 짧게 지지직/깜빡임 연출.
+    */
+    #t1-panel.choice-glitch-in {
+      animation: t1-choice-glitch-in .42s steps(2, end) both;
+    }
+
+    #t1-panel.choice-glitch-in .t1-action {
+      animation: t1-choice-text-flicker .42s steps(2, end) both;
+    }
+
+    @keyframes t1-choice-glitch-in {
+      0% {
+        opacity: 0;
+        filter: brightness(2.8) contrast(1.8);
+        transform: translateX(-5px);
+      }
+
+      22% {
+        opacity: 1;
+        filter: brightness(.5) contrast(2.2);
+        transform: translateX(3px);
+      }
+
+      45% {
+        opacity: .32;
+        filter: brightness(2.2) contrast(1.5);
+        transform: translateX(-2px);
+      }
+
+      70% {
+        opacity: 1;
+        filter: brightness(.86);
+        transform: translateX(1px);
+      }
+
+      100% {
+        opacity: 1;
+        filter: brightness(1);
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes t1-choice-text-flicker {
+      0%,
+      100% {
+        opacity: 1;
+        text-shadow: none;
+      }
+
+      18% {
+        opacity: .18;
+        text-shadow: 2px 0 0 rgba(255, 255, 255, .28);
+      }
+
+      46% {
+        opacity: 1;
+        text-shadow: -2px 0 0 rgba(255, 255, 255, .22);
+      }
+
+      68% {
+        opacity: .55;
+      }
     }
 
     #t1-panel .frame-crop img {
@@ -514,9 +578,17 @@
       color: #fff;
       padding: 0;
 
-      /* 기본 T1 선택지 크기 */
-      font-size: clamp(16px, 4.35vw, 35px);
+      /*
+        모든 T1 선택지는 자바스크립트의
+        UNIFORM_T1_CHOICE_SIZE 값으로 같은 크기가 적용됨.
+      */
+      font-size: clamp(13px, 3.55vw, 28px);
 
+      /*
+        긴 선택지가 프레임 안에 들어가도록
+        T1 선택지에만 자간을 조금 조밀하게 적용.
+      */
+      letter-spacing: .025em;
       line-height: 1.04;
       text-align: left;
       white-space: nowrap;
@@ -534,6 +606,7 @@
       position: absolute;
       right: 3%;
       bottom: 78px;
+      z-index: 3;
       width: 30%;
       min-width: 108px;
       max-width: 156px;
@@ -717,26 +790,8 @@
   <script>
     const BINARY_RETURN_URL = "index.html?return=binary";
     const CONFIRM_FADE_MS = 360;
+    const T1_GLITCH_MS = 420;
 
-    /*
-      전체 타이핑 속도 / 문장 사이 텀 조절.
-
-      defaultCharacter:
-      일반 글자 출력 속도.
-      숫자가 클수록 느려집니다.
-
-      sentencePause:
-      문장이 끝난 뒤 다음 문장까지의 추가 텀.
-
-      ellipsisPause:
-      ... 출력 뒤의 긴 텀.
-
-      lineBreakPause:
-      줄 바꿈 뒤 다음 줄까지의 텀.
-
-      segmentPause:
-      한 문장 조각이 끝난 뒤 다음 조각까지의 기본 텀.
-    */
     const TYPE_TIMING = {
       defaultCharacter: 76,
       choiceCharacter: 68,
@@ -748,115 +803,56 @@
     };
 
     /*
-      텍스트마다 따로 크기 조절하는 곳.
-
-      원하는 항목의 clamp(...) 숫자만 수정하면 됩니다.
-      첫 번째 숫자 = 작은 화면 최소 크기
-      두 번째 숫자 = 휴대폰 화면에 따라 커지는 정도
-      마지막 숫자 = 최대 크기
+      모든 T1 선택지 공통 글자 크기.
+      왼쪽 / 가운데 / 오른쪽 선택지가 전부 이 값 하나를 사용합니다.
     */
-    const TEXT_SIZES = {
-      /* 맨 위 Room- 11101011 제목 */
-      roomTitle: "clamp(20px, 5.8vw, 34px)",
+    const UNIFORM_T1_CHOICE_SIZE = "clamp(13px, 3.55vw, 28px)";
 
-      /* 스크린 위 확인 버튼 */
+    const TEXT_SIZES = {
+      roomTitle: "clamp(20px, 5.8vw, 34px)",
       confirmButton: "clamp(15px, 4vw, 23px)",
 
-      /* T0 질문 문장 */
       t0Question: "clamp(20px, 5.1vw, 33px)",
-
-      /* T0 예 선택지 */
       t0Yes: "clamp(16px, 4.3vw, 27px)",
-
-      /* T0 아니오 선택지 */
       t0No: "clamp(16px, 4.3vw, 27px)",
 
-      /* 왼쪽 스크린: 예 선택 후 초기 설명 */
       screen01Opening: "clamp(20px, 5.1vw, 33px)",
-
-      /* 왼쪽 스크린: 두드린다 설명 */
       screen01Knock: "clamp(20px, 5.1vw, 33px)",
-
-      /* 왼쪽 스크린: 걷어찬다 설명 */
       screen01Kick: "clamp(20px, 5.1vw, 33px)",
-
-      /* 왼쪽 스크린: 부셔본다 설명 */
       screen01Break: "clamp(20px, 5.1vw, 33px)",
 
-      /* 가운데 스크린: 예 선택 후 초기 설명 */
       screen02Opening: "clamp(20px, 5.1vw, 33px)",
-
-      /* 가운데 스크린: 계속 바라본다 1페이지 */
       screen02StareOne: "clamp(20px, 5.1vw, 33px)",
-
-      /* 가운데 스크린: 계속 바라본다 2페이지 */
       screen02StareTwo: "clamp(20px, 5.1vw, 33px)",
-
-      /* 가운데 스크린: 쓰다듬는다 1페이지 */
       screen02PetOne: "clamp(20px, 5.1vw, 33px)",
-
-      /* 가운데 스크린: 쓰다듬는다 2페이지 */
       screen02PetTwo: "clamp(20px, 5.1vw, 33px)",
-
-      /* 가운데 스크린: 부셔본다 설명 */
       screen02Break: "clamp(20px, 5.1vw, 33px)",
 
-      /* 오른쪽 스크린: 예 선택 후 초기 설명 */
       screen03Opening: "clamp(20px, 5.1vw, 33px)",
-
-      /* 오른쪽 스크린: 조사한다 1페이지 */
       screen03InspectOne: "clamp(20px, 5.1vw, 33px)",
-
-      /* 오른쪽 스크린: 조사한다 2페이지 */
       screen03InspectTwo: "clamp(20px, 5.1vw, 33px)",
-
-      /* 오른쪽 스크린: 숨겨진 문장 1페이지 */
       screen03MessageOne: "clamp(19px, 4.8vw, 31px)",
-
-      /* 오른쪽 스크린: 숨겨진 문장 2페이지 */
       screen03MessageTwo: "clamp(19px, 4.8vw, 31px)",
-
-      /* 오른쪽 스크린: 숨겨진 문장 마지막 페이지 */
       screen03MessageThree: "clamp(20px, 5.1vw, 33px)",
-
-      /* 오른쪽 스크린: 부셔본다 설명 */
       screen03Break: "clamp(20px, 5.1vw, 33px)",
 
-      /* 왼쪽 T1: 1번 선택지 */
-      leftChoiceOne: "clamp(15px, 4vw, 33px)",
+      /*
+        모든 T1 선택지 크기는 이 값으로 통일.
+      */
+      leftChoiceOne: UNIFORM_T1_CHOICE_SIZE,
+      leftChoiceTwo: UNIFORM_T1_CHOICE_SIZE,
+      leftChoiceThree: UNIFORM_T1_CHOICE_SIZE,
+      leftChoiceFour: UNIFORM_T1_CHOICE_SIZE,
 
-      /* 왼쪽 T1: 2번 선택지 */
-      leftChoiceTwo: "clamp(15px, 4vw, 33px)",
+      centerChoiceOne: UNIFORM_T1_CHOICE_SIZE,
+      centerChoiceTwo: UNIFORM_T1_CHOICE_SIZE,
+      centerChoiceThree: UNIFORM_T1_CHOICE_SIZE,
+      centerChoiceFour: UNIFORM_T1_CHOICE_SIZE,
 
-      /* 왼쪽 T1: 3번 선택지 */
-      leftChoiceThree: "clamp(15px, 4vw, 33px)",
-
-      /* 왼쪽 T1: 4번 선택지 */
-      leftChoiceFour: "clamp(15px, 4vw, 33px)",
-
-      /* 가운데 T1: 1번 선택지 */
-      centerChoiceOne: "clamp(13px, 3.6vw, 30px)",
-
-      /* 가운데 T1: 2번 선택지 */
-      centerChoiceTwo: "clamp(15px, 4vw, 33px)",
-
-      /* 가운데 T1: 3번 선택지 */
-      centerChoiceThree: "clamp(15px, 4vw, 33px)",
-
-      /* 가운데 T1: 4번 선택지 */
-      centerChoiceFour: "clamp(15px, 4vw, 33px)",
-
-      /* 오른쪽 T1: 1번 선택지 */
-      rightChoiceOne: "clamp(14px, 3.8vw, 31px)",
-
-      /* 오른쪽 T1: 2번 선택지 */
-      rightChoiceTwo: "clamp(12px, 3.35vw, 28px)",
-
-      /* 오른쪽 T1: 3번 선택지 */
-      rightChoiceThree: "clamp(15px, 4vw, 33px)",
-
-      /* 오른쪽 T1: 4번 선택지 */
-      rightChoiceFour: "clamp(11px, 3.05vw, 26px)"
+      rightChoiceOne: UNIFORM_T1_CHOICE_SIZE,
+      rightChoiceTwo: UNIFORM_T1_CHOICE_SIZE,
+      rightChoiceThree: UNIFORM_T1_CHOICE_SIZE,
+      rightChoiceFour: UNIFORM_T1_CHOICE_SIZE
     };
 
     const S = (text, options = {}) => ({
@@ -1248,6 +1244,7 @@
     };
 
     let confirmHideTimer = null;
+    let t1GlitchTimer = null;
 
     const clamp = (value, min, max) =>
       Math.max(min, Math.min(max, value));
@@ -1258,32 +1255,30 @@
     const distance = (a, b, c, d) =>
       Math.hypot(a - c, b - d);
 
+    /*
+      T0 전체 글자 크기 조절.
+      1 = 아주 살짝 작게
+      2 = 현재보다 살짝 작게
+      3 = 꽤 작게
+    */
+    const T0_TEXT_SIZE_OFFSET = 2;
 
+    function applyTextSize(element, sizeKey) {
+      const size = TEXT_SIZES[sizeKey];
 
-/* T0 전체 글자 크기 조절  전체글자크기
-   1 = 아주 살짝 작게
-   2 = 현재보다 살짝 작게
-   3 = 꽤 작게 */
-const T0_TEXT_SIZE_OFFSET = 2;
+      if (!size) {
+        return;
+      }
 
-function applyTextSize(element, sizeKey) {
-  const size = TEXT_SIZES[sizeKey];
+      const isT0Text =
+        element === t0Text ||
+        element === t0Yes ||
+        element === t0No;
 
-  if (!size) {
-    return;
-  }
-
-  const isT0Text =
-    element === t0Text ||
-    element === t0Yes ||
-    element === t0No;
-
-  element.style.fontSize = isT0Text
-    ? `calc(${size} - ${T0_TEXT_SIZE_OFFSET}px)`
-    : size;
-}
-
-  
+      element.style.fontSize = isT0Text
+        ? `calc(${size} - ${T0_TEXT_SIZE_OFFSET}px)`
+        : size;
+    }
 
     function stopTyping(element) {
       element._typingToken = (element._typingToken || 0) + 1;
@@ -1664,51 +1659,68 @@ function applyTextSize(element, sizeKey) {
       t1Panel.classList.toggle("is-locked", locked);
     }
 
+    function clearT1Glitch() {
+      if (t1GlitchTimer) {
+        clearTimeout(t1GlitchTimer);
+        t1GlitchTimer = null;
+      }
+
+      t1Panel.classList.remove("choice-glitch-in");
+    }
+
+    function hideT1Choices() {
+      clearT1Glitch();
+
+      actionButtons.forEach((button) => {
+        stopTyping(button);
+        button.disabled = true;
+      });
+
+      t1Panel.hidden = true;
+      t1Panel.classList.remove("is-locked");
+    }
+
     function setT1Actions(actions) {
       actionButtons.forEach((button, index) => {
         const action = actions[index];
 
         stopTyping(button);
-        button.textContent = "";
-        button.dataset.action = action.id;
-        button.disabled = true;
 
+        /*
+          타이핑 없이 선택지 문장을 한 번에 전부 표시.
+        */
+        button.textContent = action.label;
+        button.setAttribute("aria-label", action.label);
+        button.dataset.action = action.id;
+        button.disabled = false;
+
+        /*
+          모든 T1 선택지는 같은 공통 글자 크기 사용.
+        */
         applyTextSize(button, action.sizeKey);
       });
     }
 
-    function typeT1Actions(actions) {
-      const scene = ++state.textScene;
-      let delay = 0;
-
+    function showT1Choices(actions) {
       setT1Actions(actions);
 
-      actionButtons.forEach((button, index) => {
-        const action = actions[index];
+      t1Panel.hidden = false;
+      t1Panel.classList.remove("is-locked");
 
-        typePage(
-          button,
-          P(
-            action.sizeKey,
-            S(action.label, {
-              speed: TYPE_TIMING.choiceCharacter
-            })
-          ),
-          {
-            startDelay: delay,
-            onComplete: () => {
-              if (scene === state.textScene) {
-                button.disabled = false;
-              }
-            }
-          }
-        );
+      /*
+        전체 선택지가 즉시 뜬 뒤,
+        한 번만 짧게 지지직/깜빡임.
+      */
+      clearT1Glitch();
 
-        delay +=
-          action.label.length *
-          TYPE_TIMING.choiceCharacter +
-          TYPE_TIMING.segmentPause;
-      });
+      void t1Panel.offsetWidth;
+
+      t1Panel.classList.add("choice-glitch-in");
+
+      t1GlitchTimer = window.setTimeout(() => {
+        t1Panel.classList.remove("choice-glitch-in");
+        t1GlitchTimer = null;
+      }, T1_GLITCH_MS);
     }
 
     function typeQuestion() {
@@ -1846,8 +1858,7 @@ function applyTextSize(element, sizeKey) {
       stopPanelTyping();
 
       t0Panel.hidden = true;
-      t1Panel.hidden = true;
-      t1Panel.classList.remove("is-locked");
+      hideT1Choices();
       t0Panel.classList.remove("is-message");
 
       t0Choices.hidden = false;
@@ -1869,8 +1880,7 @@ function applyTextSize(element, sizeKey) {
       t0Panel.classList.remove("is-message");
       t0Choices.hidden = false;
       t0Panel.hidden = false;
-      t1Panel.hidden = true;
-      t1Panel.classList.remove("is-locked");
+      hideT1Choices();
 
       updateQuestionSelection();
       typeQuestion();
@@ -1887,10 +1897,12 @@ function applyTextSize(element, sizeKey) {
       state.mode = "actions";
 
       t0Panel.hidden = false;
-      t1Panel.hidden = false;
 
-      setT1Locked(false);
-      typeT1Actions(story.actions);
+      /*
+        선택지는 타이핑하지 않고,
+        전체가 즉시 나타난 뒤 지지직 연출만 재생.
+      */
+      showT1Choices(story.actions);
     }
 
     function answerQuestion(answer) {
@@ -1950,6 +1962,12 @@ function applyTextSize(element, sizeKey) {
         return;
       }
 
+      /*
+        선택하는 즉시 T1 선택지 창을 닫음.
+        이제 선택한 행동의 설명만 T0에 남습니다.
+      */
+      hideT1Choices();
+
       if (action.returnOnly) {
         closeAllPanels();
         return;
@@ -1968,7 +1986,7 @@ function applyTextSize(element, sizeKey) {
         action.pages,
         () => closeAllPanels(),
         {
-          lockT1: true
+          lockT1: false
         }
       );
     }
