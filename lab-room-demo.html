@@ -14,6 +14,14 @@
       font-display: swap;
     }
 
+    :root {
+      /*
+        전체 텍스트 자간.
+        숫자를 키우면 모든 글자 간격이 넓어집니다.
+      */
+      --all-text-letter-spacing: .085em;
+    }
+
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -27,10 +35,12 @@
       background: #000;
       color: #fff;
       font-family: "DeterminationK2", monospace;
+      letter-spacing: var(--all-text-letter-spacing);
     }
 
     button {
       font: inherit;
+      letter-spacing: inherit;
     }
 
     [hidden] {
@@ -49,13 +59,13 @@
       font-size: clamp(20px, 5.8vw, 34px);
       font-weight: 400;
       line-height: 1;
-      letter-spacing: .035em;
     }
 
-    .typed-target {
-      position: relative;
-    }
-
+    /*
+      언더테일식에 가깝게:
+      글자는 딱딱하게 찍히고,
+      일부 글자만 가끔 잔떨림/글로우.
+    */
     .typed-char {
       display: inline-block;
       min-width: .08em;
@@ -129,7 +139,7 @@
       }
 
       45% {
-        text-shadow: 0 0 4px rgba(255,255,255,.75);
+        text-shadow: 0 0 4px rgba(255, 255, 255, .75);
         filter: brightness(1.55);
       }
     }
@@ -171,7 +181,10 @@
       position: relative;
       width: 100%;
       aspect-ratio: 1.52 / 1;
+
+      /* 게임 화면 전체 아래 위치 */
       margin-top: clamp(94px, 23vw, 120px);
+
       overflow: hidden;
       background: #000;
     }
@@ -199,7 +212,7 @@
     .screen-cover {
       position: absolute;
       background: #020203;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1);
     }
 
     .fallen-screen {
@@ -212,15 +225,15 @@
         linear-gradient(
           90deg,
           transparent 12%,
-          rgba(255,255,255,.5) 12% 14%,
+          rgba(255, 255, 255, .5) 12% 14%,
           transparent 14% 86%,
-          rgba(255,255,255,.3) 86% 88%,
+          rgba(255, 255, 255, .3) 86% 88%,
           transparent 88%
         ),
         #11121b;
       box-shadow:
         inset 0 0 0 2px #000,
-        0 0 7px rgba(255,255,255,.16);
+        0 0 7px rgba(255, 255, 255, .16);
       transform: translate(-50%, -50%) rotate(var(--tilt));
     }
 
@@ -228,12 +241,12 @@
       position: absolute;
       inset: 17% 13%;
       content: "";
-      border: 1px solid rgba(255,255,255,.58);
+      border: 1px solid rgba(255, 255, 255, .58);
       background:
         linear-gradient(
           135deg,
           transparent 46%,
-          rgba(255,255,255,.35) 47% 49%,
+          rgba(255, 255, 255, .35) 47% 49%,
           transparent 50%
         );
     }
@@ -245,7 +258,7 @@
       width: 18%;
       height: 32%;
       content: "";
-      border-left: 2px solid rgba(255,255,255,.55);
+      border-left: 2px solid rgba(255, 255, 255, .55);
       transform: rotate(24deg);
       transform-origin: top;
     }
@@ -253,7 +266,7 @@
     .void-screen {
       position: absolute;
       z-index: 2;
-      border: 2px solid rgba(255,255,255,.56);
+      border: 2px solid rgba(255, 255, 255, .56);
       background:
         radial-gradient(
           ellipse at 50% 50%,
@@ -263,14 +276,14 @@
         );
       box-shadow:
         inset 0 0 13px #000,
-        0 0 8px rgba(255,255,255,.12);
+        0 0 8px rgba(255, 255, 255, .12);
     }
 
     .void-screen::before,
     .void-screen::after {
       position: absolute;
       content: "";
-      background: rgba(255,255,255,.42);
+      background: rgba(255, 255, 255, .42);
     }
 
     .void-screen::before {
@@ -297,7 +310,7 @@
       width: 5.5%;
       aspect-ratio: 14 / 22;
       transform: translate(-50%, -50%);
-      filter: drop-shadow(0 0 2px rgba(255,255,255,.6));
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, .6));
       pointer-events: none;
     }
 
@@ -349,14 +362,13 @@
       color: #fff;
       font-size: clamp(15px, 4vw, 23px);
       line-height: 1;
-      letter-spacing: .04em;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
       transform: translate(-50%, calc(-50% + 10px)) scale(.92);
       box-shadow:
         0 0 0 3px #000,
-        0 0 10px rgba(255,255,255,.3);
+        0 0 10px rgba(255, 255, 255, .3);
       transition:
         opacity .34s ease,
         transform .34s cubic-bezier(.2, .8, .25, 1),
@@ -433,7 +445,6 @@
       color: #fff;
       font-size: clamp(20px, 5.1vw, 33px);
       line-height: 1.18;
-      letter-spacing: .01em;
       white-space: pre-wrap;
       word-break: keep-all;
     }
@@ -459,7 +470,7 @@
 
     .t0-choice.active {
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255,255,255,.78);
+      text-shadow: 0 0 5px rgba(255, 255, 255, .78);
     }
 
     #t1-panel {
@@ -503,8 +514,8 @@
       color: #fff;
       padding: 0;
 
-      /* T1 선택지 글자 크기 */
-      font-size: clamp(14px, 3.95vw, 32px);
+      /* 기본 T1 선택지 크기 */
+      font-size: clamp(16px, 4.35vw, 35px);
 
       line-height: 1.04;
       text-align: left;
@@ -512,15 +523,11 @@
       cursor: pointer;
     }
 
-    .t1-action.is-long {
-      font-size: clamp(12px, 3.35vw, 28px);
-    }
-
     .t1-action:active,
     .t1-action:focus-visible {
       outline: 0;
       transform: translateX(2px);
-      text-shadow: 0 0 5px rgba(255,255,255,.78);
+      text-shadow: 0 0 5px rgba(255, 255, 255, .78);
     }
 
     #joystick-base {
@@ -536,8 +543,8 @@
       background: #000;
       box-shadow:
         0 0 0 5px #000,
-        0 0 0 7px rgba(255,255,255,.16),
-        0 0 9px rgba(255,255,255,.2);
+        0 0 0 7px rgba(255, 255, 255, .16),
+        0 0 9px rgba(255, 255, 255, .2);
       touch-action: none;
     }
 
@@ -551,12 +558,12 @@
 
     #joystick-base::before {
       inset: 13%;
-      border: 2px solid rgba(255,255,255,.85);
+      border: 2px solid rgba(255, 255, 255, .85);
     }
 
     #joystick-base::after {
       inset: 28%;
-      border: 2px solid rgba(255,255,255,.5);
+      border: 2px solid rgba(255, 255, 255, .5);
     }
 
     #joystick-knob {
@@ -569,7 +576,7 @@
       border-radius: 50%;
       background: #000;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 7px rgba(255,255,255,.3);
+      box-shadow: 0 0 7px rgba(255, 255, 255, .3);
       pointer-events: none;
     }
 
@@ -639,30 +646,6 @@
       }
     }
 
-    @media (min-width: 700px) {
-      #app {
-        width: min(92vw, 960px);
-        padding: 36px 24px 40px;
-      }
-
-      .room-title {
-        font-size: 36px;
-      }
-
-      #room-stage {
-        margin-top: 112px;
-      }
-
-      #ui-zone {
-        height: min(70vw, 690px);
-      }
-
-      #joystick-base {
-        width: 29%;
-        min-width: 146px;
-      }
-    }
-
     @media (max-width: 360px) {
       #app {
         padding-inline: 10px;
@@ -679,22 +662,6 @@
       #ui-zone {
         height: 370px;
       }
-
-      .t1-action {
-        font-size: 13px;
-      }
-
-      .t1-action.is-long {
-        font-size: 12px;
-      }
-
-      #t0-text {
-        font-size: 18px;
-      }
-
-      .t0-choice {
-        font-size: 15px;
-      }
     }
   </style>
 </head>
@@ -707,7 +674,7 @@
       <img id="room-bg" src="./room-bg.png" alt="">
       <div id="stage-effects" aria-hidden="true"></div>
       <div id="player" aria-hidden="true"></div>
-      <button id="confirm-button" class="typed-target" type="button" hidden></button>
+      <button id="confirm-button" type="button" hidden></button>
     </section>
 
     <section id="ui-zone" aria-label="연구실 인터페이스">
@@ -717,11 +684,11 @@
         </div>
 
         <div class="content">
-          <div id="t0-text" class="typed-target"></div>
+          <div id="t0-text"></div>
 
           <div id="t0-choices">
-            <button class="t0-choice typed-target" id="t0-yes" type="button"></button>
-            <button class="t0-choice typed-target" id="t0-no" type="button"></button>
+            <button class="t0-choice" id="t0-yes" type="button"></button>
+            <button class="t0-choice" id="t0-no" type="button"></button>
           </div>
         </div>
       </section>
@@ -732,10 +699,10 @@
         </div>
 
         <div class="content">
-          <button class="t1-action typed-target" type="button"></button>
-          <button class="t1-action typed-target" type="button"></button>
-          <button class="t1-action typed-target" type="button"></button>
-          <button class="t1-action typed-target" type="button"></button>
+          <button class="t1-action" type="button"></button>
+          <button class="t1-action" type="button"></button>
+          <button class="t1-action" type="button"></button>
+          <button class="t1-action" type="button"></button>
         </div>
       </section>
 
@@ -751,12 +718,154 @@
     const BINARY_RETURN_URL = "index.html?return=binary";
     const CONFIRM_FADE_MS = 360;
 
+    /*
+      전체 타이핑 속도 / 문장 사이 텀 조절.
+
+      defaultCharacter:
+      일반 글자 출력 속도.
+      숫자가 클수록 느려집니다.
+
+      sentencePause:
+      문장이 끝난 뒤 다음 문장까지의 추가 텀.
+
+      ellipsisPause:
+      ... 출력 뒤의 긴 텀.
+
+      lineBreakPause:
+      줄 바꿈 뒤 다음 줄까지의 텀.
+
+      segmentPause:
+      한 문장 조각이 끝난 뒤 다음 조각까지의 기본 텀.
+    */
+    const TYPE_TIMING = {
+      defaultCharacter: 76,
+      choiceCharacter: 68,
+      confirmCharacter: 72,
+      sentencePause: 320,
+      ellipsisPause: 620,
+      lineBreakPause: 180,
+      segmentPause: 230
+    };
+
+    /*
+      텍스트마다 따로 크기 조절하는 곳.
+
+      원하는 항목의 clamp(...) 숫자만 수정하면 됩니다.
+      첫 번째 숫자 = 작은 화면 최소 크기
+      두 번째 숫자 = 휴대폰 화면에 따라 커지는 정도
+      마지막 숫자 = 최대 크기
+    */
+    const TEXT_SIZES = {
+      /* 맨 위 Room- 11101011 제목 */
+      roomTitle: "clamp(20px, 5.8vw, 34px)",
+
+      /* 스크린 위 확인 버튼 */
+      confirmButton: "clamp(15px, 4vw, 23px)",
+
+      /* T0 질문 문장 */
+      t0Question: "clamp(20px, 5.1vw, 33px)",
+
+      /* T0 예 선택지 */
+      t0Yes: "clamp(16px, 4.3vw, 27px)",
+
+      /* T0 아니오 선택지 */
+      t0No: "clamp(16px, 4.3vw, 27px)",
+
+      /* 왼쪽 스크린: 예 선택 후 초기 설명 */
+      screen01Opening: "clamp(20px, 5.1vw, 33px)",
+
+      /* 왼쪽 스크린: 두드린다 설명 */
+      screen01Knock: "clamp(20px, 5.1vw, 33px)",
+
+      /* 왼쪽 스크린: 걷어찬다 설명 */
+      screen01Kick: "clamp(20px, 5.1vw, 33px)",
+
+      /* 왼쪽 스크린: 부셔본다 설명 */
+      screen01Break: "clamp(20px, 5.1vw, 33px)",
+
+      /* 가운데 스크린: 예 선택 후 초기 설명 */
+      screen02Opening: "clamp(20px, 5.1vw, 33px)",
+
+      /* 가운데 스크린: 계속 바라본다 1페이지 */
+      screen02StareOne: "clamp(20px, 5.1vw, 33px)",
+
+      /* 가운데 스크린: 계속 바라본다 2페이지 */
+      screen02StareTwo: "clamp(20px, 5.1vw, 33px)",
+
+      /* 가운데 스크린: 쓰다듬는다 1페이지 */
+      screen02PetOne: "clamp(20px, 5.1vw, 33px)",
+
+      /* 가운데 스크린: 쓰다듬는다 2페이지 */
+      screen02PetTwo: "clamp(20px, 5.1vw, 33px)",
+
+      /* 가운데 스크린: 부셔본다 설명 */
+      screen02Break: "clamp(20px, 5.1vw, 33px)",
+
+      /* 오른쪽 스크린: 예 선택 후 초기 설명 */
+      screen03Opening: "clamp(20px, 5.1vw, 33px)",
+
+      /* 오른쪽 스크린: 조사한다 1페이지 */
+      screen03InspectOne: "clamp(20px, 5.1vw, 33px)",
+
+      /* 오른쪽 스크린: 조사한다 2페이지 */
+      screen03InspectTwo: "clamp(20px, 5.1vw, 33px)",
+
+      /* 오른쪽 스크린: 숨겨진 문장 1페이지 */
+      screen03MessageOne: "clamp(19px, 4.8vw, 31px)",
+
+      /* 오른쪽 스크린: 숨겨진 문장 2페이지 */
+      screen03MessageTwo: "clamp(19px, 4.8vw, 31px)",
+
+      /* 오른쪽 스크린: 숨겨진 문장 마지막 페이지 */
+      screen03MessageThree: "clamp(20px, 5.1vw, 33px)",
+
+      /* 오른쪽 스크린: 부셔본다 설명 */
+      screen03Break: "clamp(20px, 5.1vw, 33px)",
+
+      /* 왼쪽 T1: 1번 선택지 */
+      leftChoiceOne: "clamp(15px, 4vw, 33px)",
+
+      /* 왼쪽 T1: 2번 선택지 */
+      leftChoiceTwo: "clamp(15px, 4vw, 33px)",
+
+      /* 왼쪽 T1: 3번 선택지 */
+      leftChoiceThree: "clamp(15px, 4vw, 33px)",
+
+      /* 왼쪽 T1: 4번 선택지 */
+      leftChoiceFour: "clamp(15px, 4vw, 33px)",
+
+      /* 가운데 T1: 1번 선택지 */
+      centerChoiceOne: "clamp(13px, 3.6vw, 30px)",
+
+      /* 가운데 T1: 2번 선택지 */
+      centerChoiceTwo: "clamp(15px, 4vw, 33px)",
+
+      /* 가운데 T1: 3번 선택지 */
+      centerChoiceThree: "clamp(15px, 4vw, 33px)",
+
+      /* 가운데 T1: 4번 선택지 */
+      centerChoiceFour: "clamp(15px, 4vw, 33px)",
+
+      /* 오른쪽 T1: 1번 선택지 */
+      rightChoiceOne: "clamp(14px, 3.8vw, 31px)",
+
+      /* 오른쪽 T1: 2번 선택지 */
+      rightChoiceTwo: "clamp(12px, 3.35vw, 28px)",
+
+      /* 오른쪽 T1: 3번 선택지 */
+      rightChoiceThree: "clamp(15px, 4vw, 33px)",
+
+      /* 오른쪽 T1: 4번 선택지 */
+      rightChoiceFour: "clamp(11px, 3.05vw, 26px)"
+    };
+
     const S = (text, options = {}) => ({
       text,
       ...options
     });
 
-    const P = (...segments) => ({
+    const P = (sizeKey, ...segments) => ({
+      sizeKey,
       segments
     });
 
@@ -764,6 +873,7 @@
       screen01: {
         opening: [
           P(
+            "screen01Opening",
             S("스크린에는 오래된 관측 로그가 남아 있다.\n"),
             S("같은 좌표를 반복해서 가리키는 흔적만 남아 있다.")
           )
@@ -773,15 +883,17 @@
           {
             id: "knock",
             label: "1. 스크린을 두드린다.",
+            sizeKey: "leftChoiceOne",
             pages: [
               P(
+                "screen01Knock",
                 S("스크린에게 노크를 했다.\n"),
                 S("...", {
                   speed: 240,
                   pauseAfter: 220
                 }),
                 S("아무런 반응이 없다.", {
-                  speed: 48
+                  speed: 56
                 })
               )
             ]
@@ -789,14 +901,16 @@
           {
             id: "kick",
             label: "2. 스크린을 걷어찬다.",
+            sizeKey: "leftChoiceTwo",
             pages: [
               P(
+                "screen01Kick",
                 S("스크린을 걷어찼다.\n"),
                 S("아야하는 소리가 들리는 것 같다.\n", {
-                  pauseBefore: 120
+                  pauseBefore: 150
                 }),
                 S("스크린은 시무룩해졌다.", {
-                  pauseBefore: 180
+                  pauseBefore: 220
                 })
               )
             ]
@@ -804,16 +918,18 @@
           {
             id: "break",
             label: "3. 부셔본다.",
+            sizeKey: "leftChoiceThree",
             destroy: "fallen",
             pages: [
               P(
+                "screen01Break",
                 S("스크린을 있는 힘껏 주먹으로 내리쳤다.\n"),
                 S("...", {
                   speed: 240,
-                  pauseAfter: 220
+                  pauseAfter: 260
                 }),
                 S("부셔졌다. 더 이상 스크린의 형체가 아니다.", {
-                  speed: 52
+                  speed: 58
                 })
               )
             ]
@@ -821,6 +937,7 @@
           {
             id: "return",
             label: "4. 돌아간다.",
+            sizeKey: "leftChoiceFour",
             returnOnly: true
           }
         ]
@@ -829,6 +946,7 @@
       screen02: {
         opening: [
           P(
+            "screen02Opening",
             S("화면 안쪽에는 흐릿한 도면이 열려 있다.\n"),
             S("출입문이 아니라, 안쪽으로 향하는 틈처럼 보인다.")
           )
@@ -838,23 +956,26 @@
           {
             id: "stare",
             label: "1. 스크린을 계속 바라본다.",
+            sizeKey: "centerChoiceOne",
             pages: [
               P(
+                "screen02StareOne",
                 S("스크린을 계속 유심히 바라봤다.\n"),
                 S("누군가가 망치질 한 흔적이 보인다.\n"),
                 S("...", {
-                  speed: 120,
-                  pauseAfter: 110
+                  speed: 150,
+                  pauseAfter: 150
                 }),
                 S("보아하니, ", {
-                  pauseAfter: 120
+                  pauseAfter: 180
                 }),
                 S("가상의 물질로 만들어진 듯 하다.")
               ),
               P(
+                "screen02StareTwo",
                 S("...", {
-                  speed: 120,
-                  pauseAfter: 130
+                  speed: 150,
+                  pauseAfter: 180
                 }),
                 S("어딘가 정성스러운 손길의 냄새가 느껴진다.")
               )
@@ -863,20 +984,23 @@
           {
             id: "pet",
             label: "2. 쓰다듬는다.",
+            sizeKey: "centerChoiceTwo",
             pages: [
               P(
+                "screen02PetOne",
                 S("스크린을 천천히 쓰다듬었다.\n"),
                 S("내부에서 돌아가던 모터 소리가 눈에 띄게 활발해졌다.\n", {
-                  pauseBefore: 110
+                  pauseBefore: 150
                 }),
                 S("고양이처럼 기분 좋게 가르랑거리는 듯했다.", {
-                  pauseBefore: 110
+                  pauseBefore: 150
                 })
               ),
               P(
+                "screen02PetTwo",
                 S("띠로링, 하는 맑은 알림음이 연달아 울렸다.\n"),
                 S("왠지 잘했다고 칭찬해줘야 할 것 같은 반응이다.", {
-                  pauseBefore: 120
+                  pauseBefore: 170
                 })
               )
             ]
@@ -884,27 +1008,29 @@
           {
             id: "break",
             label: "3. 부셔본다.",
+            sizeKey: "centerChoiceThree",
             destroy: "fallen",
             pages: [
               P(
+                "screen02Break",
                 S("스크린을 있는 힘껏 발로 짓밟았다.\n"),
                 S("...", {
                   speed: 240,
-                  pauseAfter: 180
+                  pauseAfter: 220
                 }),
                 S("글자가 한 글자씩, 버티듯 이어지다 가동이 멎었다.\n", {
-                  speed: 78
+                  speed: 92
                 }),
                 S("띠링—...", {
-                  speed: 88,
-                  pauseAfter: 140
+                  speed: 105,
+                  pauseAfter: 180
                 }),
                 S("\n알림음과 함께, 완전히 멈췄다.\n", {
-                  pauseBefore: 100
+                  pauseBefore: 150
                 }),
                 S("...", {
                   speed: 240,
-                  pauseAfter: 150
+                  pauseAfter: 180
                 }),
                 S("더 이상 스크린의 형체 조차 남아 있지 않았다.")
               )
@@ -913,6 +1039,7 @@
           {
             id: "return",
             label: "4. 돌아간다.",
+            sizeKey: "centerChoiceFour",
             returnOnly: true
           }
         ]
@@ -921,6 +1048,7 @@
       screen03: {
         opening: [
           P(
+            "screen03Opening",
             S("스크린 표면은 멀쩡해 보인다.\n"),
             S("하지만 안쪽에서 미세한 떨림이 계속 느껴진다.")
           )
@@ -930,20 +1058,23 @@
           {
             id: "inspect",
             label: "1. 스크린을 조사한다.",
+            sizeKey: "rightChoiceOne",
             pages: [
               P(
+                "screen03InspectOne",
                 S("낡고 이끼가 끼어있는 가상의 스크린이다.\n"),
                 S("만져보려 손을 뻗었지만, 허공만 만져진다.\n", {
-                  pauseBefore: 100
+                  pauseBefore: 150
                 }),
                 S("두께는 30mm로, 재질은 공기보다 얇다", {
-                  pauseBefore: 100
+                  pauseBefore: 150
                 })
               ),
               P(
+                "screen03InspectTwo",
                 S("...", {
-                  speed: 140,
-                  pauseAfter: 120
+                  speed: 150,
+                  pauseAfter: 170
                 }),
                 S("화면이 희미하게 떨리고 있다.")
               )
@@ -952,39 +1083,43 @@
           {
             id: "message",
             label: "2. 다음 화면으로 넘겨본다.",
+            sizeKey: "rightChoiceTwo",
             pages: [
               P(
+                "screen03MessageOne",
                 S("스크린에서 숨겨진 문장이 나왔다.\n\n"),
                 S("힘들고, 역경이 몰아쳐도...\n", {
                   afterimage: true,
-                  pauseBefore: 120
+                  pauseBefore: 160
                 }),
                 S("당신은 계속 나아갈 수 있습니다.\n", {
                   afterimage: true,
-                  pauseBefore: 100
+                  pauseBefore: 150
                 }),
                 S("심해와, 이곳에 남겨진 우리들은\n", {
                   afterimage: true,
-                  pauseBefore: 100
+                  pauseBefore: 150
                 }),
                 S("당신을 기다리고 있습니다.", {
                   afterimage: true,
-                  pauseBefore: 100
+                  pauseBefore: 150
                 })
               ),
               P(
+                "screen03MessageTwo",
                 S("따뜻한 의자에 앉아\n", {
                   afterimage: true
                 }),
                 S("아무 걱정 없이 쉬어 갈 그날을 위해.", {
                   afterimage: true,
-                  pauseBefore: 100
+                  pauseBefore: 150
                 })
               ),
               P(
+                "screen03MessageThree",
                 S("......", {
-                  speed: 190,
-                  pauseAfter: 160
+                  speed: 200,
+                  pauseAfter: 180
                 }),
                 S("글자가, 그곳에서 끊겼다.")
               )
@@ -993,17 +1128,19 @@
           {
             id: "break",
             label: "3. 부셔본다.",
+            sizeKey: "rightChoiceThree",
             destroy: "void",
             pages: [
               P(
+                "screen03Break",
                 S("스크린을 있는 힘껏 주먹으로 내리쳤다.\n"),
                 S("...", {
                   speed: 240,
-                  pauseAfter: 180
+                  pauseAfter: 220
                 }),
                 S("스크린이 산산조각 났다.\n"),
                 S("검은 공간이 드러났다.", {
-                  pauseBefore: 120
+                  pauseBefore: 150
                 })
               )
             ]
@@ -1011,6 +1148,7 @@
           {
             id: "inside",
             label: "4. 스크린의 안쪽을 들여다본다.",
+            sizeKey: "rightChoiceFour",
             returnBinary: true
           }
         ]
@@ -1064,6 +1202,7 @@
 
     const $ = (selector) => document.querySelector(selector);
 
+    const roomTitle = $(".room-title");
     const player = $("#player");
     const confirmButton = $("#confirm-button");
     const stageEffects = $("#stage-effects");
@@ -1119,6 +1258,14 @@
     const distance = (a, b, c, d) =>
       Math.hypot(a - c, b - d);
 
+    function applyTextSize(element, sizeKey) {
+      const size = TEXT_SIZES[sizeKey];
+
+      if (size) {
+        element.style.fontSize = size;
+      }
+    }
+
     function stopTyping(element) {
       element._typingToken = (element._typingToken || 0) + 1;
 
@@ -1154,7 +1301,12 @@
           ? [S(page)]
           : page.segments;
 
-      const baseSpeed = options.speed ?? 58;
+      const baseSpeed =
+        options.speed ?? TYPE_TIMING.defaultCharacter;
+
+      if (page.sizeKey) {
+        applyTextSize(element, page.sizeKey);
+      }
 
       element.textContent = "";
       element.setAttribute(
@@ -1180,6 +1332,7 @@
         }
 
         const segment = segments[segmentIndex];
+        const text = segment.text;
 
         if (charIndex === 0 && !segmentStarted) {
           segmentStarted = true;
@@ -1193,19 +1346,23 @@
           }
         }
 
-        if (charIndex >= segment.text.length) {
+        if (charIndex >= text.length) {
           segmentIndex += 1;
           charIndex = 0;
           segmentStarted = false;
 
+          const nextDelay =
+            segment.pauseAfter ??
+            TYPE_TIMING.segmentPause;
+
           element._typingTimer = window.setTimeout(
             continueTyping,
-            segment.pauseAfter || 0
+            nextDelay
           );
           return;
         }
 
-        const character = segment.text[charIndex];
+        const character = text[charIndex];
 
         if (character === "\n") {
           element.append(document.createElement("br"));
@@ -1216,9 +1373,9 @@
 
           const roll = Math.random();
 
-          if (roll > .9) {
+          if (roll > .91) {
             span.classList.add("glitch");
-          } else if (roll > .81) {
+          } else if (roll > .82) {
             span.classList.add("glow");
           }
 
@@ -1240,19 +1397,28 @@
 
         let delay =
           (segment.speed ?? baseSpeed) +
-          Math.round((Math.random() - .5) * 26);
+          Math.round((Math.random() - .5) * 24);
 
-        if (/[.,?!]/.test(character)) {
-          delay += 70;
+        const ellipsisFinished =
+          text.slice(charIndex - 3, charIndex) === "...";
+
+        if (ellipsisFinished) {
+          delay += TYPE_TIMING.ellipsisPause;
+        } else if (/[.!?]/.test(character)) {
+          delay += TYPE_TIMING.sentencePause;
+        }
+
+        if (character === "\n") {
+          delay += TYPE_TIMING.lineBreakPause;
         }
 
         if (character === " ") {
-          delay -= 8;
+          delay -= 7;
         }
 
         element._typingTimer = window.setTimeout(
           continueTyping,
-          Math.max(32, delay)
+          Math.max(36, delay)
         );
       }
 
@@ -1401,9 +1567,16 @@
       }
 
       if (targetChanged || !confirmButton.textContent.trim()) {
+        applyTextSize(confirmButton, "confirmButton");
+
         typePage(
           confirmButton,
-          P(S("확인", { speed: 72 }))
+          P(
+            "confirmButton",
+            S("확인", {
+              speed: TYPE_TIMING.confirmCharacter
+            })
+          )
         );
       }
     }
@@ -1479,11 +1652,9 @@
         stopTyping(button);
         button.textContent = "";
         button.dataset.action = action.id;
-        button.classList.toggle(
-          "is-long",
-          action.label.length > 16
-        );
         button.disabled = true;
+
+        applyTextSize(button, action.sizeKey);
       });
     }
 
@@ -1498,7 +1669,12 @@
 
         typePage(
           button,
-          P(S(action.label, { speed: 50 })),
+          P(
+            action.sizeKey,
+            S(action.label, {
+              speed: TYPE_TIMING.choiceCharacter
+            })
+          ),
           {
             startDelay: delay,
             onComplete: () => {
@@ -1509,7 +1685,10 @@
           }
         );
 
-        delay += action.label.length * 50 + 100;
+        delay +=
+          action.label.length *
+          TYPE_TIMING.choiceCharacter +
+          TYPE_TIMING.segmentPause;
       });
     }
 
@@ -1521,7 +1700,12 @@
 
       typePage(
         t0Text,
-        P(S("스크린을 확인하시겠습니까?", { speed: 62 })),
+        P(
+          "t0Question",
+          S("스크린을 확인하시겠습니까?", {
+            speed: TYPE_TIMING.defaultCharacter
+          })
+        ),
         {
           onComplete: () => {
             if (scene !== state.textScene) {
@@ -1530,7 +1714,12 @@
 
             typePage(
               t0Yes,
-              P(S("• 네", { speed: 68 })),
+              P(
+                "t0Yes",
+                S("• 네", {
+                  speed: TYPE_TIMING.choiceCharacter
+                })
+              ),
               {
                 onComplete: () => {
                   if (scene === state.textScene) {
@@ -1547,7 +1736,12 @@
 
               typePage(
                 t0No,
-                P(S("• 아니오", { speed: 68 })),
+                P(
+                  "t0No",
+                  S("• 아니오", {
+                    speed: TYPE_TIMING.choiceCharacter
+                  })
+                ),
                 {
                   onComplete: () => {
                     if (scene === state.textScene) {
@@ -1556,7 +1750,7 @@
                   }
                 }
               );
-            }, 120);
+            }, TYPE_TIMING.segmentPause);
           }
         }
       );
@@ -1858,9 +2052,7 @@
 
     joystickBase.addEventListener("pointerdown", (event) => {
       joystick.active = true;
-
       joystickBase.setPointerCapture(event.pointerId);
-
       setJoystick(event.clientX, event.clientY);
     });
 
@@ -2034,6 +2226,9 @@
 
       requestAnimationFrame(loop);
     }
+
+    applyTextSize(roomTitle, "roomTitle");
+    applyTextSize(confirmButton, "confirmButton");
 
     updatePlayer();
     renderStageEffects();
