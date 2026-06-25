@@ -1258,13 +1258,32 @@
     const distance = (a, b, c, d) =>
       Math.hypot(a - c, b - d);
 
-    function applyTextSize(element, sizeKey) {
-      const size = TEXT_SIZES[sizeKey];
 
-      if (size) {
-        element.style.fontSize = size;
-      }
-    }
+
+/* T0 전체 글자 크기 조절  전체글자크기
+   1 = 아주 살짝 작게
+   2 = 현재보다 살짝 작게
+   3 = 꽤 작게 */
+const T0_TEXT_SIZE_OFFSET = 2;
+
+function applyTextSize(element, sizeKey) {
+  const size = TEXT_SIZES[sizeKey];
+
+  if (!size) {
+    return;
+  }
+
+  const isT0Text =
+    element === t0Text ||
+    element === t0Yes ||
+    element === t0No;
+
+  element.style.fontSize = isT0Text
+    ? `calc(${size} - ${T0_TEXT_SIZE_OFFSET}px)`
+    : size;
+}
+
+  
 
     function stopTyping(element) {
       element._typingToken = (element._typingToken || 0) + 1;
